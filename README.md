@@ -21,7 +21,7 @@ npm install npm@latest -g
 ```sh
 npm install npm@latest -g
 ```
-* expo
+* expo - make sure that your path variable is configured, if not the terminal may not find the command. If so try https://forums.expo.io/t/expo-cli-looks-installed-but-expo-command-not-found/14535
 ```sh
 npm install -g expo-cli
 ```
