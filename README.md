@@ -1,6 +1,9 @@
 # Timely
 
+## Note: Do not make commits without verifying with the team on Discord. 
 
+Status - Template code for a simple tab switch application. Note: The current template uses TypeScript, but we(the team) probably don't need much of it.
+React-native is fairly different from React so please do read a little about it. 
 
 <!-- GETTING STARTED -->
 ## Getting Started
