@@ -6,6 +6,7 @@ export type RootStackParamList = {
 export type BottomTabParamList = {
   TabOne: undefined;
   TabTwo: undefined;
+  Plan: undefined;
 };
 
 export type TabOneParamList = {
@@ -14,4 +15,14 @@ export type TabOneParamList = {
 
 export type TabTwoParamList = {
   TabTwoScreen: undefined;
+};
+
+export type PlanParamList = {
+  PlanScreen: { selected: string };
+  NewEvent: undefined;
+};
+
+export type PlanSelectParamList = {
+  Events: undefined;
+  Goals: undefined;
 };

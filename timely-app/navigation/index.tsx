@@ -11,21 +11,21 @@ import SignInScreen from '../screens/SignInScreen'
 import SignUpScreen from '../screens/SignUpScreen'
 
 import firebase from "../fbconfig";
-import React, {useContext, useEffect, useState} from "react";
-import {AuthContext} from "./AuthProvider"
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "./AuthProvider.js"
 
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
 
-  const {currentUser} = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
 
   return (
-    
+
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-       { currentUser ? <RootNavigator /> : <SignInNavigator /> }
+      { currentUser ? <RootNavigator /> : <SignInNavigator />}
     </NavigationContainer>
 
   );
@@ -46,13 +46,13 @@ function RootNavigator() {
 
 const AuthStack = createStackNavigator();
 
-function SignInNavigator(){
+function SignInNavigator() {
   return (
 
-  <AuthStack.Navigator>
-    <AuthStack.Screen name="SignIn" component={SignInScreen} options={{title: "Sign In"}} />
-    <AuthStack.Screen name="SignUp" component={SignUpScreen} options={{title: "Sign Up"}}/>
-  </AuthStack.Navigator>
+    <AuthStack.Navigator>
+      <AuthStack.Screen name="SignIn" component={SignInScreen} options={{ title: "Sign In" }} />
+      <AuthStack.Screen name="SignUp" component={SignUpScreen} options={{ title: "Sign Up" }} />
+    </AuthStack.Navigator>
 
   );
 }
