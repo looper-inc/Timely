@@ -1,8 +1,9 @@
 import {View, StyleSheet, TouchableOpacity, Text, Alert} from 'react-native';
-import React, {useContext, useState} from 'react'
+import React, { useState} from 'react'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
-import firebase, {googleProvider} from "../fbconfig"; 
+import firebase from "../fbconfig"; 
+import * as Google from 'expo-google-app-auth';
 
 export const SignInScreen = ({navigation}) => {
     const [email, setEmail] = useState();
@@ -24,27 +25,46 @@ export const SignInScreen = ({navigation}) => {
             console.log(err)
         }
     }
-    function handleSigninWithGoogle(){
-        try{
-            firebase
-                  .auth()
-                  .signInWithPopup(googleProvider).then((res)=>{
-                    //save user info to firestore
-                    return db.collection('profiles').doc(res.user.uid).set(
-                    {email: email}
-                    )
-                }).then(() =>{
-                    console.log('SIGNED UP WITH GOOGLE PROVIDER SUCCESSFULLY')
-                }).catch((err) => {
-                    Alert.alert('OOPS!', err.message, [{text:'close'}])
-                    console.log(err)
-                });
-                  
-          } catch (error){
-              alert(error);
-          }
+
+    async function handleSignInWithGoogleAsync() {
+        try {
+          const result = await Google.logInAsync({
+            androidClientId: '953645514664-3j4ed83dtshv3bpuagshrq99gbcpa0v6.apps.googleusercontent.com',
+            iosClientId: '953645514664-nabr329ih9vkf53l4ghh5a1060ihaec3.apps.googleusercontent.com',
+            scopes: ['profile', 'email'],
+          });
       
-    }
+          if (result.type === 'success') {
+            const { idToken, accessToken } = result;
+            const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
+            firebase
+              .auth()
+              .signInAndRetrieveDataWithCredential(credential)
+              .then((res) => {
+                //save user info to firestore
+                return db.collection('profiles').doc(res.user.uid).set(
+                    {
+                        email: res.user.email,
+                        first_name: result.user.familyName,
+                        last_name: result.user.givenName,
+                        profile_visibility: true,
+                        profileImgURL: result.user.photoUrl,
+                        status: 0,
+                        notification: false
+                    }
+                )}).then(() =>{
+                    console.log('SIGNED UP WITH GOOGLE PROVIDER SUCCESSFULLY')
+                }).catch(error => {
+                    console.log("firestore error:", error);
+                });
+          } else {
+            return { cancelled: true };
+          }
+        } catch (e) {
+          return { error: true };
+        }
+      }
+
     return (
         <View style={styles.container}>
         <Text style={styles.text}>Timely</Text>
@@ -71,7 +91,7 @@ export const SignInScreen = ({navigation}) => {
           buttonTitle="Sign In" onPress={handleSignIn}
         />
   
-        <TouchableOpacity style={styles.verticalButton} onPress={handleSigninWithGoogle}>
+        <TouchableOpacity style={styles.verticalButton} onPress={handleSignInWithGoogleAsync}>
           <Text style={styles.navButtonText}>Sign In with Google?</Text>
         </TouchableOpacity>
   

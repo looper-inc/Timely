@@ -29,7 +29,13 @@ export const SignUpScreen = ({navigation}) => {
                 ).then((res)=>{
                     //save user info to firestore
                     return db.collection('profiles').doc(res.user.uid).set(
-                    {email: email}
+                    
+                        {
+                            email: res.user.email,
+                            profile_visibility: true,
+                            status: 0,
+                            notification: false
+                        }
                     )
                 }).then(() =>{
                     console.log('SIGNED UP SUCCESSFULLY')
