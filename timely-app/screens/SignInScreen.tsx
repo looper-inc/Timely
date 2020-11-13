@@ -2,7 +2,7 @@ import {View, StyleSheet, TouchableOpacity, Text, Alert} from 'react-native';
 import React, { useState} from 'react'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
-import firebase from "../fbconfig"; 
+import firebase from "../fbconfig";
 import * as Google from 'expo-google-app-auth';
 
 export const SignInScreen = ({navigation}) => {
@@ -35,8 +35,30 @@ export const SignInScreen = ({navigation}) => {
           });
       
           if (result.type === 'success') {
-            const { idToken, accessToken } = result;
-            const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
+
+            onSignIn(result)
+
+          } else {
+            return { cancelled: true };
+          }
+        } catch (e) {
+          return { error: true };
+        }
+      }
+
+      function onSignIn(googleUser) {
+        console.log('Google Auth Response', googleUser);
+        // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+        var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
+          unsubscribe();
+          // Check if we are already signed-in Firebase with the correct user.
+          if (!isUserEqual(googleUser, firebaseUser)) {
+            // Build Firebase credential with the Google ID token.
+            var credential = firebase.auth.GoogleAuthProvider.credential(
+                googleUser.idToken,
+                googleUser.accessToken
+            );
+            // Sign in with credential from the Google user.
             firebase
               .auth()
               .signInAndRetrieveDataWithCredential(credential)
@@ -45,24 +67,36 @@ export const SignInScreen = ({navigation}) => {
                 return db.collection('profiles').doc(res.user.uid).set(
                     {
                         email: res.user.email,
-                        first_name: result.user.familyName,
-                        last_name: result.user.givenName,
+                        first_name: googleUser.user.givenName,
+                        last_name: googleUser.user.familyName,
                         profile_visibility: true,
-                        profileImgURL: result.user.photoUrl,
+                        profileImgURL: googleUser.user.photoUrl,
                         status: 0,
                         notification: false
                     }
                 )}).then(() =>{
                     console.log('SIGNED UP WITH GOOGLE PROVIDER SUCCESSFULLY')
                 }).catch(error => {
-                    console.log("firestore error:", error);
+                    console.log("google provider error:", error);
                 });
           } else {
-            return { cancelled: true };
+            console.log('User already signed-in Firebase.');
           }
-        } catch (e) {
-          return { error: true };
+        });
+      }
+
+      function isUserEqual(googleUser, firebaseUser) {
+        if (firebaseUser) {
+          var providerData = firebaseUser.providerData;
+          for (var i = 0; i < providerData.length; i++) {
+            if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
+                providerData[i].uid === googleUser.getBasicProfile().getId()) {
+              // We don't need to reauth the Firebase connection.
+              return true;
+            }
+          }
         }
+        return false;
       }
 
     return (
