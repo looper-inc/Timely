@@ -19,7 +19,6 @@ export default function PlanNavigator() {
                 options={{
                     headerTitle: 'Plan',
                 }}
-                initialParams={{ selected: 'events' }}
             />
             <PlanStack.Screen
                 name="NewEvent"

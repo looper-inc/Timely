@@ -1,10 +1,7 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Button, SafeAreaView } from 'react-native';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
-import FormButton from '../components/FormButton';
-import firebase from "../fbconfig";
 import SelectPlan from '../components/PlanScreen/SelectPlan';
 import EventsScreen from './EventsScreen';
 import GoalsScreen from './GoalsScreen';
@@ -18,38 +15,44 @@ import NewEventButton from '../components/PlanScreen/NewEventButton';
 const PlanSelectStack = createStackNavigator<PlanSelectParamList>();
 
 
-export default class PlanScreen extends React.Component<{ route: any, navigation: any }, {}> {
+export default class PlanScreen extends React.Component<{ route: any, navigation: any }, { selected: string }> {
   constructor(props) {
     super(props)
-    this.state = {}
-    this.handleSignOut = this.handleSignOut.bind(this)
+    this.state = {
+      selected: 'Events'
+    }
+    props.navigation.setOptions({
+      headerRight: () => {
+        return <NewEventButton
+          selected={this.state.selected}
+          {...props}
+        />
+      }
+    })
+    this.handleSelect = this.handleSelect.bind(this)
   }
 
-  handleSignOut() {
-    firebase.auth().signOut();
+  handleSelect(selected) {
+    this.setState({ selected }, () => {
+      this.props.navigation.navigate(selected)
+    })
   }
 
   render() {
     return (
-      <View style={styles.container}>
-        <SelectPlan onSelect={selected => {
-          this.props.navigation.navigate(selected)
-        }} />
+      <SafeAreaView style={styles.container}>
+        <SelectPlan onSelect={this.handleSelect} />
         <PlanSelectStack.Navigator>
           <PlanSelectStack.Screen
             name="Events"
             component={EventsScreen}
-            options={{
-              headerTitle: 'Plan',
-              headerRight: NewEventButton
-            }}
           />
           <PlanSelectStack.Screen
             name="Goals"
             component={GoalsScreen}
           />
         </PlanSelectStack.Navigator>
-      </View>
+      </SafeAreaView>
     );
   }
 }

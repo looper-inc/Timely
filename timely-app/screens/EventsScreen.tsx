@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, SafeAreaView, FlatList } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import EventBlock from '../components/EventBlock';
 import firebase from "../fbconfig";
 import { events12 } from '../constants/DummyData'
-import { FlatList } from 'react-native-gesture-handler';
 
 
 export default class EventsScreen extends React.Component {
@@ -26,14 +25,14 @@ export default class EventsScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <FlatList
           style={{ width: '100%' }}
           data={events12}
           renderItem={this.renderItem}
           keyExtractor={event => event.event_id}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 }

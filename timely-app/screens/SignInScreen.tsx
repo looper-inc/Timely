@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Alert, SafeAreaView } from 'react-native';
 import React, { useState } from 'react'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
@@ -102,7 +102,7 @@ export const SignInScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.text}>Timely</Text>
 
       <FormInput
@@ -138,7 +138,7 @@ export const SignInScreen = ({ navigation }) => {
           Don't have an acount? Create here
           </Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   )
 };
 

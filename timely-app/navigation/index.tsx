@@ -12,7 +12,7 @@ import SignUpScreen from '../screens/SignUpScreen'
 
 import firebase from "../fbconfig";
 import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "./AuthProvider.js"
+import { AuthContext } from "../providers/AuthProvider.js"
 
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
