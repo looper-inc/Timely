@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^10.0.0",
+    "@react-native-community/datetimepicker": "^3.0.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/bottom-tabs": "^5.8.0",
     "@react-navigation/native": "^5.8.9",
@@ -47,5 +48,6 @@
     "jest-expo": "~39.0.0",
     "typescript": "~3.9.5"
   },
-  "private": true
+  "private": true,
+  "name": "timely-app"
 }
