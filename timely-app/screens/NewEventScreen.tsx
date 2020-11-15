@@ -22,11 +22,17 @@ export default class NewEvent extends React.Component {
 
   // Access auth
   static contextType = AuthContext
+
+
+  // Saves to database
   handleSubmit(values) {
     const { uid } = this.context.currentUser
     const db = firebase.firestore();
+
     const now = Date.now()
     const event_id = "e" + now + uid
+
+    // Setting events doc
     return db.collection('events').doc(uid).set(
       {
         [event_id]: {
@@ -35,14 +41,16 @@ export default class NewEvent extends React.Component {
           created: now,
           timezone_offset: (new Date).getTimezoneOffset()
         }
-      }, { merge: true }
-    ).then(() => {
-      Alert.alert('EVENT CREATED')
-    }).catch(function (err) {
-      // Handle Errors here.
-      Alert.alert('OOPS!', err.message, [{ text: 'close' }])
-      console.log(err)
-    });
+      }, { merge: true }) // Merge to not overwrite, but set to create if not exists
+      // What to do after
+      .then(() => {
+        Alert.alert('EVENT CREATED')
+      })
+      // Handle errors
+      .catch(function (err) {
+        Alert.alert('OOPS!', err.message, [{ text: 'close' }])
+        console.log(err)
+      });
   }
 
   render() {

@@ -7,8 +7,8 @@ const EventBlock = ({ event, ...rest }) => {
         <TouchableOpacity style={styles.container} {...rest}>
             <Text style={styles.title}>{event.title}</Text>
             <Text style={styles.description}>{event.description}</Text>
-            <Text style={styles.description}>Start {event.started}</Text>
-            <Text style={styles.description}>End {event.end}</Text>
+            <Text style={styles.description}>Start {event.start.toDate().toString()}</Text>
+            <Text style={styles.description}>End {event.end.toDate().toString()}</Text>
         </TouchableOpacity>
     );
 };
