@@ -1,23 +1,26 @@
-import {View, StyleSheet, TouchableOpacity, Text, Alert} from 'react-native';
+import {StyleSheet, TouchableOpacity, Alert, Image} from 'react-native';
 import React, { useContext, useState} from 'react'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig";
 import * as Google from 'expo-google-app-auth';
 import {AuthContext} from "../providers/AuthProvider"
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { Text, View } from '../components/Themed';
+import GoogleButton from '../components/GoogleButton'
 
 export const SignInScreen = ({navigation}) => {
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
 
     const db = firebase.firestore();
     const {currentUser} = useContext(AuthContext);
 
-    function handleSignIn(){
+    function handleSignIn(values){
+        console.log('is pressed?? ', values)
         try{
             firebase
             .auth()
-            .signInWithEmailAndPassword(email, password).then((res) =>{
+            .signInWithEmailAndPassword(values.email, values.password).then((res) =>{
                 console.log('SIGNED IN SUCCESSFULLY: ', res.user.email)
                 return db.collection('profiles').doc(res.user.uid).update(
                   {
@@ -25,7 +28,7 @@ export const SignInScreen = ({navigation}) => {
                   }
                 )
             }).catch((err) => {
-                Alert.alert('OOPS!', err.message, [{text:'OK'}])
+                Alert.alert('OOPS!', err.message, [{text:'Try again!'}])
                 console.log(err)
             });
         } catch(err){
@@ -116,35 +119,90 @@ export const SignInScreen = ({navigation}) => {
         return false;
       }
 
+    /****** VALIDATION using Formik and Yup ******/  
+    const initialValues = {
+      email: '',
+      password: ''
+    }
+    
+    // With Yup validationSchema
+    const signInValidationSchema = Yup.object().shape({
+      email: Yup.string()
+          .email("Please enter valid email")
+          .required('Email Address is Required'),
+      password: Yup
+      .string()
+      .required('Password is required'),
+    })
+
     return (
         <View style={styles.container}>
-        <Text style={styles.text}>Timely</Text>
-  
-        <FormInput
-          labelValue={email}
-          onChangeText={(userEmail) => setEmail(userEmail)}
-          placeholderText="Email"
-          iconType="user"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
+        <Image
+          source={require('../logo.png')}
+          style={styles.logo}
         />
-  
-        <FormInput
-          labelValue={password}
-          onChangeText={(userPassword)=> setPassword(userPassword)}
-          placeholderText="Password"
-          iconType="lock"
-          secureTextEntry={true}
+        {/* <Text style={styles.text}>Timely</Text> */}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={signInValidationSchema}
+          onSubmit={(values) => { handleSignIn(values) }}
+        >
+          {({
+          handleChange, 
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          isValid,
+          touched
+          }) => (
+          <>
+          <FormInput
+            labelValue={values.email}
+            onChangeText={handleChange('email')}
+            placeholderText="Email"
+            iconType="user"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            onBlur={handleBlur('email')}
+          />
+
+          {
+            (errors.email && touched.email) && 
+            <Text style={styles.alertText}>{errors.email}</Text>
+          }
+
+          <FormInput
+            labelValue={values.password}
+            onChangeText={handleChange('password')}
+            placeholderText="Password"
+            iconType="lock"
+            secureTextEntry={true}
+            onBlur={handleBlur('password')}
+          />
+
+          {
+            (errors.password && touched.password) &&
+            <Text style={styles.alertText}>{errors.password}</Text>
+          }
+
+          <FormButton
+            buttonTitle="Sign In" 
+            onPress={handleSubmit} 
+            disabled={!(isValid)}
+          />
+            </>
+          )}
+        </Formik>
+
+        <GoogleButton
+            buttonTitle="Sign In with Google"
+            btnType="google"
+            color="#de4d41"
+            backgroundColor="#f5e7ea"
+            onPress={handleSignInWithGoogleAsync}
         />
-  
-        <FormButton
-          buttonTitle="Sign In" onPress={handleSignIn}
-        />
-  
-        <TouchableOpacity style={styles.verticalButton} onPress={handleSignInWithGoogleAsync}>
-          <Text style={styles.navButtonText}>Sign In with Google?</Text>
-        </TouchableOpacity>
   
         <TouchableOpacity
           style={styles.verticalButton}
@@ -153,6 +211,9 @@ export const SignInScreen = ({navigation}) => {
             Don't have an acount? Create here
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
+            <Text style={styles.navButtonText}>Forgot Password?</Text>
+          </TouchableOpacity>
       </View>
     )
 };
@@ -168,8 +229,8 @@ const styles = StyleSheet.create({
       padding: 20,
     },
     logo: {
-      height: 150,
-      width: 150,
+      height: 200,
+      width: 200,
       resizeMode: 'cover',
     },
     text: {
@@ -190,4 +251,15 @@ const styles = StyleSheet.create({
       color: '#2e64e5',
       fontFamily: 'Roboto',
     },
+    alertText:{
+      margin: 5,
+      color: '#ff7979',
+      fontSize: 12,
+      marginTop: 0,
+      fontWeight: 'bold'
+    },
+    forgotButton: {
+      marginVertical: 10,
+      fontSize: 13,
+    }
   });
