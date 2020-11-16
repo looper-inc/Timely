@@ -1,8 +1,11 @@
-import {View, StyleSheet, TouchableOpacity, Text, Alert} from 'react-native';
+import { StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import React, {useContext, useState} from 'react'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig"; 
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { Text, View } from '../components/Themed';
 
 export const SignUpScreen = ({navigation}) => {
     const [email, setEmail] = useState('');
@@ -15,81 +18,129 @@ export const SignUpScreen = ({navigation}) => {
 
     const db = firebase.firestore();
 
-    function handleSignUp(){
-        if (email.length == 0){
-            setEmailErr('Email cannot be blank!')
-        }else if(password.length < 6 || comPassword.length < 6){
-            setPasswordErr('Password must be greater than 5 characters');
-            setComPasswordErr('Password must be greater than 5 characters');
-        }else{
-            try{
-                firebase.auth().createUserWithEmailAndPassword(
-                    email,
-                    password
-                ).then((res)=>{
-                    //save user info to firestore
-                    return db.collection('profiles').doc(res.user.uid).set(
-                        {
-                            email: res.user.email,
-                            profile_visibility: true,
-                            status: 0,
-                            notification: false,
-                            created: Date.now()
-                        }
-                    )
-                }).then(() =>{
-                    console.log('SIGNED UP SUCCESSFULLY')
-                }).catch(function(err) {
-                    // Handle Errors here.
-                    Alert.alert('OOPS!', err.message, [{text:'OK'}])
-                    console.log(err)
-                });
-            }catch(err){
-                console.log(err)
-            }
-        }
+    /****** VALIDATION using Formik and Yup ******/  
+    const initialValues = {
+      email: '',
+      password: '',
+      confirmPassword: ''
+    }
+    
+    // With Yup validationSchema
+    const signUpValidationSchema = Yup.object().shape({
+      email: Yup.string()
+          .email("Please enter valid email")
+          .required('Email Address is Required'),
+      password: Yup
+      .string()
+      .min(6, ({ min }) => `Password must be at least ${min} characters`)
+      .required('Password is required'),
+      confirmPassword: Yup
+      .string()
+      .oneOf([Yup.ref('password')], 'Passwords do not match')
+      .required('Confirm password is required'),
+    })
+
+    function handleSignUp(values){
+
+      try{
+          firebase.auth().createUserWithEmailAndPassword(
+            values.email,
+            values.password
+          ).then((res)=>{
+              //save user info to firestore
+              return db.collection('profiles').doc(res.user.uid).set(
+                  {
+                      email: res.user.email,
+                      profile_visibility: true,
+                      status: 0,
+                      notification: false,
+                      created: Date.now()
+                  }
+              )
+          }).then(() =>{
+              console.log('SIGNED UP SUCCESSFULLY')
+          }).catch(function(err) {
+              // Handle Errors here.
+              Alert.alert('OOPS!', err.message, [{text:'TRY AGAIN!'}])
+              console.log(err)
+          });
+      }catch(err){
+          console.log(err)
+      }
+        
     }
 
     return (
         <View style={styles.container}>
         <Text style={styles.text}>Create An Account.</Text>
-  
-        <FormInput
-          labelValue={email}
-          onChangeText={(userEmail) => setEmail(userEmail)}
-          placeholderText="Email"
-          iconType="user"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+        <Formik
+          initialValues={initialValues}
+          validationSchema={signUpValidationSchema}
+          onSubmit={(values) => { handleSignUp(values) }}
+        >
+          {({
+          handleChange, 
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          isValid,
+          touched
+          }) => (
+          <>  
+            <FormInput
+              labelValue={values.email}
+              onChangeText={handleChange('email')}
+              placeholderText="Email"
+              iconType="user"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              onBlur={handleBlur('email')}
+            />
 
-        {emailErr ? <Text style={styles.alertText}>{emailErr}</Text> : null}
+            {
+              (errors.email && touched.email) && 
+              <Text style={styles.alertText}>{errors.email}</Text>
+            }
 
-        <FormInput
-          labelValue={password}
-          onChangeText={(userPassword)=> setPassword(userPassword)}
-          placeholderText="Password"
-          iconType="lock"
-          secureTextEntry={true}
-        />
+            <FormInput
+              labelValue={values.password}
+              onChangeText={handleChange('password')}
+              placeholderText="Password"
+              iconType="lock"
+              secureTextEntry={true}
+              onBlur={handleBlur('password')}
+            />
 
-        {passwordErr ? <Text style={styles.alertText}>{passwordErr}</Text> : null}
+            {
+              (errors.password && touched.password) && 
+              <Text style={styles.alertText}>{errors.password}</Text>
+            }
 
-        <FormInput
-          labelValue={comPassword}
-          onChangeText={(comfirmed)=> setComPassword(comfirmed)}
-          placeholderText="Comfirmed Password"
-          iconType="lock"
-          secureTextEntry={true}
-        />
+            <FormInput
+              labelValue={values.confirmPassword}
+              onChangeText={handleChange('confirmPassword')}
+              placeholderText="Confirm Password"
+              iconType="lock"
+              secureTextEntry={true}
+              onBlur={handleBlur('confirmPassword')}
+            />
 
-        {comPasswordErr ? <Text style={styles.alertText}>{comPasswordErr}</Text> : null}
+            {
+              errors.confirmPassword && 
+              <Text style={styles.alertText}>{errors.confirmPassword}</Text>
+            }
 
-        <FormButton
-          buttonTitle="Sign Up" onPress={handleSignUp}
-        />
-  
+            <FormButton
+              buttonTitle="Sign Up"
+              onPress={handleSubmit} 
+              disabled={!(isValid)}
+            />
+            </>
+          )}
+        </Formik>
+
         <TouchableOpacity
           style={styles.verticalButton}
           onPress={() => navigation.navigate('SignIn')}>
@@ -135,9 +186,10 @@ const styles = StyleSheet.create({
       fontFamily: 'Roboto',
     },
     alertText:{
-        marginBottom: 10,
-        color: '#ff7979',
-        fontSize: 12,
-        marginTop: 0,
-    }
+      margin: 5,
+      color: '#ff7979',
+      fontSize: 12,
+      marginTop: 0,
+      fontWeight: 'bold'
+    },
   });

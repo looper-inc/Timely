@@ -103,7 +103,7 @@ export const SignInScreen = ({navigation}) => {
       }
 
       function isUserEqual(googleUser, firebaseUser) {
-        
+
         if (firebaseUser) {
           var providerData = firebaseUser.providerData;
           for (var i = 0; i < providerData.length; i++) {
