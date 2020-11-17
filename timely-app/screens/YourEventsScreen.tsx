@@ -8,7 +8,7 @@ import firebase from "../fbconfig";
 import { events12 } from '../constants/DummyData'
 import { AuthContext } from '../providers/AuthProvider';
 
-export default class EventsScreen extends React.Component<{}, { events_list: Array<Object> }>{
+export default class YourEventsScreen extends React.Component<{}, { events_list: Array<Object> }>{
   constructor(props) {
     super(props)
     this.state = {

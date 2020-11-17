@@ -13,7 +13,7 @@ import { AuthContext } from '../providers/AuthProvider';
 import DateTimePicker from '../components/DateTimePicker';
 
 
-export default class NewEvent extends React.Component {
+export default class AddEvent extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}

@@ -1,7 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
-import NewEventButton from '../components/PlanScreen/NewEventButton';
-import NewEvent from '../screens/NewEventScreen';
+import AddEvent from '../screens/AddEventScreen';
 
 import PlanScreen from '../screens/PlanScreen';
 import {
@@ -22,7 +21,7 @@ export default function PlanNavigator() {
             />
             <PlanStack.Screen
                 name="NewEvent"
-                component={NewEvent}
+                component={AddEvent}
                 options={{
                     headerTitle: 'New Event',
                 }}

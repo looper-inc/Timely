@@ -3,7 +3,7 @@ import { StyleSheet, Button, SafeAreaView } from 'react-native';
 
 import { Text, View } from '../components/Themed';
 import SelectPlan from '../components/PlanScreen/SelectPlan';
-import EventsScreen from './EventsScreen';
+import YourEventsScreen from './YourEventsScreen';
 import GoalsScreen from './GoalsScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -45,7 +45,7 @@ export default class PlanScreen extends React.Component<{ route: any, navigation
         <PlanSelectStack.Navigator>
           <PlanSelectStack.Screen
             name="Events"
-            component={EventsScreen}
+            component={YourEventsScreen}
           />
           <PlanSelectStack.Screen
             name="Goals"
