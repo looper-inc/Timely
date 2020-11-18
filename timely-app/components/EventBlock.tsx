@@ -1,8 +1,9 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, Dimensions, View } from 'react-native';
 
 
 const EventBlock = ({ event, ...rest }) => {
+    if (!event) return <View />
     return (
         <TouchableOpacity style={styles.container} {...rest}>
             <Text style={styles.title}>{event.title}</Text>

@@ -31,10 +31,14 @@ export default class YourEventsScreen extends React.Component<{}, { events_list:
     const db = firebase.firestore();
 
     // Getting correct document in events collection
-    return db.collection('events').doc(uid).get()
-      .then(doc => {
+    return db.collection('events').doc(uid).collection('list').get()
+      .then(docs => {
+        const events_list = []
+        docs.forEach(doc => {
+          events_list.push(doc.data())
+        })
         this.setState(
-          { events_list: Object.entries(Object(doc.data())) },
+          { events_list },
           () => { console.log(this.state) }
         )
       })
@@ -50,7 +54,7 @@ export default class YourEventsScreen extends React.Component<{}, { events_list:
   }
 
   renderItem = ({ item }) => {
-    return <EventBlock event={item[1]} />
+    return <EventBlock event={item} />
   }
 
   render() {
