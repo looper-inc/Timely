@@ -33,15 +33,13 @@ export default class AddEvent extends React.Component {
     const event_id = "e" + now + uid
 
     // Setting events doc
-    return db.collection('events').doc(uid).set(
+    return db.collection('events').doc(uid).collection('list').add(
       {
-        [event_id]: {
-          ...values,
-          event_status: "TBD",
-          created: now,
-          timezone_offset: (new Date).getTimezoneOffset()
-        }
-      }, { merge: true }) // Merge to not overwrite, but set to create if not exists
+        ...values,
+        event_status: "TBD",
+        created: now,
+        timezone_offset: (new Date).getTimezoneOffset()
+      }) // Merge to not overwrite, but set to create if not exists
       // What to do after
       .then(() => {
         Alert.alert('EVENT CREATED')
