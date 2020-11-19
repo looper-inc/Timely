@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, TextInput, StyleSheet, Dimensions } from 'react-native';
 
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
 
@@ -9,6 +11,9 @@ const windowWidth = Dimensions.get('window').width
 const FormInput = ({ labelValue, placeholderText, iconType, ...rest }) => {
   return (
     <View style={styles.inputContainer}>
+      <View style={styles.iconStyle}>
+        <AntDesign name={iconType} size={25} color="#666" />
+      </View>      
       <TextInput
         value={labelValue}
         style={styles.input}
