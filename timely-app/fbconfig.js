@@ -7,7 +7,10 @@ var firebaseConfig = {
   projectId: "looper-a2cea",
   storageBucket: "looper-a2cea.appspot.com",
   messagingSenderId: "953645514664",
-  appId: "1:953645514664:web:9632ddecbc608eba7f279d"
+  appId: "1:953645514664:web:9632ddecbc608eba7f279d",
+  passwordReset: email => {
+    return firebase.auth().sendPasswordResetEmail(email)
+  },
 };
 
 firebase.initializeApp(firebaseConfig);
