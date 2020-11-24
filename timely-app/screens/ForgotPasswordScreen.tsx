@@ -7,8 +7,9 @@ import * as Yup from 'yup';
 import * as Google from 'expo-google-app-auth';
 import {AuthContext} from "../providers/AuthProvider"
 import { Text, View } from '../components/Themed';
-import { TextInput } from 'react-native-gesture-handler';
+import { TextInput, TouchableNativeFeedback } from 'react-native-gesture-handler';
 import { moveMessagePortToContext } from 'worker_threads';
+import { ErrorMessage, Formik } from 'formik';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -21,32 +22,74 @@ export const ForgotPasswordScreen = ({navigation}) => {
     const db = firebase.firestore();
     const {currentUser} = useContext(AuthContext);
 
+    function handleSendResetLink(email){
+        console.log('is pressed??', email)
+        try{
+
+            /* TODO */
+
+
+        } catch(err){
+            console.log(err)
+        }
+    }
+
+    const initialValues = {
+        email: '',
+    }
+
+    const ForgotPasswordValidationSchema = Yup.object().shape({
+        email: Yup.string()
+            .email("Please enter valid email")
+            .required('Email Address is Required'),
+      })
+
     return (
         <View style={styles.container}>
             <Image
                 source={require('..assets/images/padlock.png')}
                 style={styles.padlock}
             />
-            <Text style={styles.text}>
-                Trouble Logging In?
-            </Text>
-            <Text style={styles.text}>
-                Enter your UCSD email and we'll send you a link to get back in your account.
-            </Text>
-            <TextInput style={styles.textInput}>
 
-            </TextInput>
-            <Button 
-                title="Send Login Link" 
-                onPress={() => ""}
-            />
-            <Text>
-                OR
-            </Text>
-            <Button
-                title="Create a New Account"
-                onPress={() => ""}
-            />
+            <Formik
+                initialValues={initialValues}
+                validationSchema={ForgotPasswordValidationSchema}
+                onSubmit={(values) => { handleSendResetLink }}
+            >
+                {({
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    values,
+                    errors,
+                    isValid,
+                    touched
+                }) => (
+                    <>
+                    <FormInput
+                        labelValue={values.email}
+                        onChangeText={handleChange('email')}
+                        placeholderText="Email"
+                        iconType="user"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        onBlur={handleBlur('email')}
+                    />
+
+                    {
+                        (errors.email && touched.email) &&
+                        <Text style={styles.alertText}>{errors.email}</Text>
+                    }
+
+                    <FormButton
+                        buttonTitle="Send Login Link"
+                        onPress={handleSubmit}
+                        disabled={!(isValid)}
+                    />
+                        </>
+                )}
+            </Formik>
         </View>
     )
 };
@@ -65,5 +108,12 @@ const styles = StyleSheet.create({
     },
     textInput: {
 
-    }
+    },
+    alertText:{
+        margin: 5,
+        color: '#ff7979',
+        fontSize: 12,
+        marginTop: 0,
+        fontWeight: 'bold'
+      }
 });
