@@ -46,10 +46,14 @@ export const ForgotPasswordScreen = ({navigation}) => {
 
     return (
         <View style={styles.container}>
+
             <Image
-                source={require('..assets/images/padlock.png')}
+                source={require('../assets/images/padlock.png')}
                 style={styles.padlock}
             />
+
+            <Text style = {styles.topText}>Trouble Logging In?</Text>
+            <Text style = {styles.bottomText}>Enter your UCSD email and we'll send you a link to get back into your account.</Text>
 
             <Formik
                 initialValues={initialValues}
@@ -98,13 +102,30 @@ export default ForgotPasswordScreen;
 
 const styles = StyleSheet.create({
     container: {
-
+        backgroundColor: '#f9fafd',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20
     },
     padlock: {
-
+        marginTop: -250,
+        marginBottom: -100,
+        resizeMode: 'center'
     },
-    text: {
-
+    topText: {
+        fontFamily: 'Roboto',
+        textAlign: 'center',
+        fontSize: 18,
+        color: '#000000',
+        marginBottom: 25,
+    },
+    bottomText: {
+        fontFamily: 'Roboto',
+        textAlign: 'center',
+        fontSize: 14,
+        color: '#000000',
+        marginBottom: 25,
     },
     textInput: {
 
