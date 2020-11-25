@@ -19,6 +19,7 @@
     "@react-navigation/stack": "^5.9.0",
     "expo": "~39.0.2",
     "expo-asset": "~8.2.0",
+    "expo-cli": "^3.28.5",
     "expo-constants": "~9.2.0",
     "expo-font": "~8.3.0",
     "expo-linking": "^1.0.1",
@@ -40,5 +41,10 @@
     "jest-expo": "~39.0.0",
     "typescript": "~3.9.5"
   },
-  "private": true
+  "private": true,
+  "name": "timely-app",
+  "version": "1.0.0",
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
