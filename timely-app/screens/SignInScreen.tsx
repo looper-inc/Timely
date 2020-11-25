@@ -205,15 +205,17 @@ export const SignInScreen = ({navigation}) => {
         />
   
         <TouchableOpacity
-          style={styles.verticalButton}
-          onPress={() => navigation.navigate('SignUp')}>
+        style={styles.verticalButton}
+        onPress={() => navigation.navigate('SignUp')}>          
           <Text style={styles.navButtonText}>
             Don't have an acount? Create here
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
-            <Text style={styles.navButtonText}>Forgot Password?</Text>
-          </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.forgotButton} 
+          onPress={() => navigation.navigate('ForgotPassword')}>
+          <Text style={styles.navButtonText}>Forgot Password?</Text>
+        </TouchableOpacity>
       </View>
     )
 };

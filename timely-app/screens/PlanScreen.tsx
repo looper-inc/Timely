@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Button, SafeAreaView } from 'react-native';
 
 import { Text, View } from '../components/Themed';
-import SelectPlan from '../components/PlanScreen/SelectPlan';
+import SelectPlan from './PlanScreen/SelectPlan';
 import YourEventsScreen from './YourEventsScreen';
 import GoalsScreen from './GoalsScreen';
 import { NavigationContainer } from '@react-navigation/native';
@@ -10,7 +10,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import {
   PlanSelectParamList
 } from '../types';
-import NewEventButton from '../components/PlanScreen/NewEventButton';
+import NewEventButton from './PlanScreen/NewEventButton';
 
 const PlanSelectStack = createStackNavigator<PlanSelectParamList>();
 

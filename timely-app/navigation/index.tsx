@@ -9,6 +9,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 import SignInScreen from '../screens/SignInScreen'
 import SignUpScreen from '../screens/SignUpScreen'
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen'
 
 import firebase from "../fbconfig";
 import React, { useContext, useEffect, useState } from "react";
@@ -52,6 +53,7 @@ function SignInNavigator() {
     <AuthStack.Navigator>
       <AuthStack.Screen name="SignIn" component={SignInScreen} options={{ title: "Sign In" }} />
       <AuthStack.Screen name="SignUp" component={SignUpScreen} options={{ title: "Sign Up" }} />
+      <AuthStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{title: "Forgot Password" }} />
     </AuthStack.Navigator>
 
   );
