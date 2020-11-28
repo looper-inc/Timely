@@ -1,46 +1,42 @@
-import * as React from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
-
+import { StyleSheet, SafeAreaView, View, Image, TextInput, TouchableWithoutFeedback } from 'react-native';
+import  React,{useState, useEffect, useContext} from 'react'
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import { Text } from '../components/Themed';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig";
+import { AuthContext } from "../providers/AuthProvider.js";
+import {windowHeight, windowWidth} from '../utils/Dimensions';
+import { TouchableOpacity} from 'react-native-gesture-handler';
+import ListItem from '../components/PlanScreen/ListItem';
 
+export const GoalsScreen = ({navigation}) => {
 
-export default class GoalsScreen extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
-    this.handleSignOut = this.handleSignOut.bind(this)
-  }
-
-  handleSignOut() {
-    firebase.auth().signOut();
-  }
-
-  render() {
+    const { currentUser } = useContext(AuthContext);
+    const handleDetail = () => {
+        console.log('hello: ' + currentUser.uid)
+    }
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Goals</Text>
+        <ListItem 
+          title={'Training in 3 hour! Training in 3 hour! Training in 3 hour!'}
+          titleComplete = 'today'
+          edit= {handleDetail}
+          />
+        <ListItem />
       </SafeAreaView>
     );
-  }
+
 }
 
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
+
+
 });
+
+export default GoalsScreen;

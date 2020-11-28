@@ -11,13 +11,17 @@ import * as Yup from 'yup';
 import {Formik} from 'formik'
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
+import Loader from '../components/Loader';
+import {windowHeight, windowWidth} from '../utils/Dimensions';
 
-const windowHeight = Dimensions.get('window').height
-const windowWidth = Dimensions.get('window').width
 
-export const NewGoalScreen = () => {
+export const NewGoalScreen = ({navigation}) => {
     const { currentUser } = useContext(AuthContext);
     const [image, setImage] = useState(null);
+    const [progress, setProgress] = useState();
+    const [isDone, setIsDone] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [messText, setMessText] = useState();
     const db = firebase.firestore();
     const fStorage = firebase.storage();
 
@@ -49,40 +53,109 @@ export const NewGoalScreen = () => {
 
     const handleUploadImage = async (values) => {
 
+        //showing indicator
+        setLoading(true);
+
         try {
             if(image){
+                //send a message to indicator modal
+                setMessText('Uploading...')
                 const img_extension = image.split('.').pop();
                 const imageName = 'goal-image-' + Math.random().toString(36).substr(2, 9) + '.' + img_extension;
+                
                 const response = await fetch(image);
                 const file = await response.blob();
-                const ref = fStorage.ref().child('goal_images/' + imageName);
-                return ref.put(file).then((snapshot)=>{
-                    snapshot.ref.getDownloadURL().then((url) => {
-                        console.log('Upload Image SUCCESSFULLY: ', url)
+                const uploadTask = fStorage.ref().child('goal_images/' + imageName).put(file);
+                setTimeout(() => {
+                    // Listen for state changes, errors, and completion of the upload.
+                    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+                    (snapshot) => {
+                        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                        setProgress(progress);
+                        switch (snapshot.state) {
+                        case firebase.storage.TaskState.PAUSED: // or 'paused'
+                            console.log('Upload is paused');
+                            setMessText('Upload is paused')
+                            break;
+                        case firebase.storage.TaskState.RUNNING: // or 'running'
+                            console.log('Upload is running');
+                            setMessText('Upload is running')
+                            break;
+                        }
+                    }, (error) => {
+
+                    setMessText('Error: ' + error.code)
+                    setLoading(false)
+                    // A full list of error codes is available at
+                    // https://firebase.google.com/docs/storage/web/handle-errors
+                    switch (error.code) {
+                        case 'storage/unauthorized':
+                            console.log('User does not have permission to access the object');
+                        break;
+
+                        case 'storage/canceled':
+                            console.log('User canceled the upload');
+                        break;
+
+                        case 'storage/unknown':
+                            console.log('Unknown error occurred, inspect error.serverResponse')
+                        break;
+                    }
+                    }, () => {
+                        // Upload completed successfully, now we can get the download URL
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        console.log('File available at', downloadURL);
+                        setMessText('Adding new goal...')
+                        return db.collection('goals').doc(currentUser.uid).collection('list').add(
+                            {
+                                ...values,
+                                created: Date.now(),
+                                picUrl: downloadURL
+                            }
+                        ).then(()=>{
+                            setIsDone(true)
+                            console.log('Add New Goal SUCCESSFULLY');
+                            setMessText('Added new goal successfully!')
+                            setTimeout(() => {
+                                setLoading(false);
+                                navigation.navigate('PlanScreen');
+                            }, 2000);
+                        })
+                        });
+                    });
+            }, 2500);
+            }else{
+                setMessText('Adding new goal...')
+                setTimeout(() => {
+                    // add new goal without a picture url
+                    return db.collection('goals').doc(currentUser.uid).collection('list').add(
+                        {
+                            ...values,
+                            created: Date.now(),
+                        }
+                    ).then(()=>{
+                        console.log('Add New Goal without a picture SUCCESSFULLY')
+                        setIsDone(true)
+                        setMessText('Added new goal successfully!')
+                        setTimeout(() => {
+                            setLoading(false);
+                            navigation.navigate('PlanScreen');
+                        }, 1500);
                     })
-                });
+                }, 1500);
             }
-             
-            // return db.collection('goals').doc(currentUser.uid).collection('list').add(
-            //     {
-            //         title: values.title,
-            //         description: values.description,
-            //         created: Date.now(),
-            //         end: values.end,
-            //         status: values.status,
-            //         public: values.public
-            //     }
-            // ).then(()=>{
-            //     console.log('Add New Goal SUCCESSFULLY')
-            // })
+
         } catch (error) {
-            
+            console.log(error)
         }
     }
 
     /****** VALIDATION using Formik and Yup ******/
     const hourFromNow = new Date()
-    hourFromNow.setHours(hourFromNow.getHours() + 1)    
+    hourFromNow.setHours(hourFromNow.getHours() + 1)
+
     const initialValues = {
         title: '',
         description: '',
@@ -104,8 +177,10 @@ export const NewGoalScreen = () => {
       })
 
     return(
+        
         <ScrollView>
             <SafeAreaView style={styles.container}>
+                {loading ? <Loader progress={progress} isDone={isDone} messText={messText}/> : null}
 
                 {image ? <Image source={{ uri: image }} style={styles.defaultPic} /> :
 
@@ -124,14 +199,14 @@ export const NewGoalScreen = () => {
                 onSubmit={(values) => { handleUploadImage(values) }}
                 >
                 {({
-                handleChange, 
-                handleBlur,
-                handleSubmit,
-                setFieldValue,
-                values,
-                errors,
-                isValid,
-                touched
+                    handleChange, 
+                    handleBlur,
+                    handleSubmit,
+                    setFieldValue,
+                    values,
+                    errors,
+                    isValid,
+                    touched
                 }) => (
                 <>
                 <FormInput
@@ -147,6 +222,8 @@ export const NewGoalScreen = () => {
                     <Text style={styles.alertText}>{errors.title}</Text>
                 }
                 <TextInput
+                    value={values.description}
+                    onChangeText={handleChange('description')}
                     placeholder={"Description"}
                     numberOfLines = {4}
                     multiline = {true}
@@ -202,7 +279,7 @@ export const NewGoalScreen = () => {
                     value={values.public}
                     onValueChange={value =>
                         setFieldValue('public', value)
-                      }
+                    }
                     >
 
                 </Switch>
