@@ -78,6 +78,7 @@ export const SignInScreen = ({navigation}) => {
                             email: res.user.email,
                             first_name: googleUser.user.givenName,
                             last_name: googleUser.user.familyName,
+                            full_name: googleUser.user.givenName.toLowerCase() + ' ' + googleUser.user.familyName.toLowerCase(), 
                             profile_visibility: true,
                             profileImgURL: googleUser.user.photoUrl,
                             status: 0,
