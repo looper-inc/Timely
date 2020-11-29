@@ -23,7 +23,7 @@ export const GoalsScreen = ({navigation}) => {
       setLoading(true)
       let initialQuery = await db.collection('goals')
       .doc(currentUser.uid)
-      .collection('list').orderBy('created').limit(limit);
+      .collection('list').orderBy('created',"desc").limit(limit);
 
       initialQuery.onSnapshot((snapshot) => {
         if(snapshot.size){
@@ -74,7 +74,6 @@ export const GoalsScreen = ({navigation}) => {
 
     const handleDetail = (itemDetail) => {
         navigation.navigate('EditGoal', itemDetail);
-        console.log(itemDetail.id)
     }
       // Render Footer
     const renderFooter = () => {

@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     },
         titleComplete:{
         fontSize: 10,
-        top: '60%',
+        top: '55%',
         color: '#34495e',
         fontWeight: 'bold'
     }

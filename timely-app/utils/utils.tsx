@@ -7,3 +7,7 @@ export const getFormattedDate = (date) => {
 
     return "" + month + '/' + day + '/' + year + ' ' + hour + ':' + minute
 }
+
+export const createRandomString = () =>{
+    return Math.random().toString(36).substr(2, 9);
+}

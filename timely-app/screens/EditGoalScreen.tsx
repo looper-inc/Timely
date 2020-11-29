@@ -12,13 +12,14 @@ import {Formik} from 'formik'
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
 import Loader from '../components/Loader';
-import {getFormattedDate} from '../utils/DateFormat';
+import {createRandomString} from '../utils/utils';
 import {windowHeight, windowWidth} from '../utils/Dimensions';
 
 
 export const EditGoalScreen = ({route, navigation}) => {
     const { currentUser } = useContext(AuthContext);
     const [image, setImage] = useState(null);
+    const [isPickedPic, setIsPickedPic] = useState(false);
     const [progress, setProgress] = useState();
     const [isDone, setIsDone] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -38,7 +39,8 @@ export const EditGoalScreen = ({route, navigation}) => {
       })();
 
       //retrieve goal detail
-      console.log('detail is: ' + getFormattedDate(route.params.end.toDate()));
+      console.log('detail id is: ' + route.params.id);
+      console.log('pic: ' + route.params.picUrl);
       //console.log(route.params);
       //set picture image
       setImage(route.params.picUrl)
@@ -55,41 +57,23 @@ export const EditGoalScreen = ({route, navigation}) => {
         console.log(result);
     
         if (!result.cancelled) {
+          setIsPickedPic(true);
           setImage(result.uri);
         }
     };
 
-    const retrieveData = async () => {
-        //set loading
-        setLoading(true)
-        let initialQuery = await db.collection('goals')
-        .doc(currentUser.uid)
-        .collection('list').doc(goalId).get();
-  
-        initialQuery.forEach((snapshot) => {
-          if(snapshot.size){
-            //console.log(goals);
-            //set goals data to state
-            setGoalList(snapshot.data());
-            console.log(snapshot.data());
-          }else{
-              console.log('Data not exist');
-          }
-        });
-  
-      }
 
-    const handleUploadImage = async (values) => {
+    const handleUpdateGoal= async (values) => {
 
         //showing indicator
         setLoading(true);
 
         try {
-            if(image){
+            if(isPickedPic){
                 //send a message to indicator modal
                 setMessText('Uploading...')
                 const img_extension = image.split('.').pop();
-                const imageName = 'goal-image-' + Math.random().toString(36).substr(2, 9) + '.' + img_extension;
+                const imageName = 'goal-image-' + createRandomString() + '.' + img_extension;
                 
                 const response = await fetch(image);
                 const file = await response.blob();
@@ -135,38 +119,57 @@ export const EditGoalScreen = ({route, navigation}) => {
                         // Upload completed successfully, now we can get the download URL
                         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
                         console.log('File available at', downloadURL);
-                        setMessText('Adding new goal...')
-                        return db.collection('goals').doc(currentUser.uid).collection('list').add(
-                            {
-                                ...values,
-                                created: Date.now(),
-                                picUrl: downloadURL
-                            }
-                        ).then(()=>{
-                            setIsDone(true)
-                            console.log('Add New Goal SUCCESSFULLY');
-                            setMessText('Added new goal successfully!')
-                            setTimeout(() => {
-                                setLoading(false);
-                                navigation.navigate('PlanScreen');
-                            }, 2000);
-                        })
+                        
+                        //delete old picture
+                        if(route.params.picUrl){
+                            setMessText('Deleting old picture...')
+                            
+                            fStorage.refFromURL(route.params.picUrl).delete().then(()=>{
+                                setMessText('Old picture has been deleted!')
+                            }).catch(function(error) {
+                                setLoading(false)
+                                console.log('Delete picture: Uh-oh, an error occurred! ' + error)
+                            });
+                        }
+                        setTimeout(() => {
+                            setMessText('Updating goal...')
+                            return db.collection('goals')
+                                    .doc(currentUser.uid)
+                                    .collection('list')
+                                    .doc(route.params.id).update(
+                                {
+                                    ...values,
+                                    modifiedDate: Date.now(),
+                                    picUrl: downloadURL
+                                }
+                            ).then(()=>{
+                                setIsDone(true)
+                                console.log('Updated Goal SUCCESSFULLY');
+                                setMessText('Updated goal successfully!')
+                                setTimeout(() => {
+                                    setLoading(false);
+                                    navigation.navigate('PlanScreen');
+                                }, 2000);
+                            })
                         });
+                        }, 1500);
                     });
             }, 2500);
             }else{
-                setMessText('Adding new goal...')
+                setMessText('Updating goal...')
                 setTimeout(() => {
                     // add new goal without a picture url
-                    return db.collection('goals').doc(currentUser.uid).collection('list').add(
+                    return db.collection('goals').doc(currentUser.uid)
+                            .collection('list')
+                            .doc(route.params.id).update(
                         {
                             ...values,
-                            created: Date.now(),
+                            modifiedDate: Date.now(),
                         }
                     ).then(()=>{
-                        console.log('Add New Goal without a picture SUCCESSFULLY')
+                        console.log('Updated goal without a picture SUCCESSFULLY')
                         setIsDone(true)
-                        setMessText('Added new goal successfully!')
+                        setMessText('Updated goal successfully!')
                         setTimeout(() => {
                             setLoading(false);
                             navigation.navigate('PlanScreen');
@@ -221,7 +224,7 @@ export const EditGoalScreen = ({route, navigation}) => {
                 <Formik
                 initialValues={initialValues}
                 validationSchema={signInValidationSchema}
-                onSubmit={(values) => { handleUploadImage(values) }}
+                onSubmit={(values) => { handleUpdateGoal(values) }}
                 >
                 {({
                     handleChange, 
