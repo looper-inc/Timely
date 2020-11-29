@@ -3,6 +3,7 @@ import * as React from 'react';
 import AddEvent from '../screens/AddEventScreen';
 import NewGoal from '../screens/NewGoalScreen';
 import PlanScreen from '../screens/PlanScreen';
+import EditGoal from '../screens/EditGoalScreen';
 import {
     PlanParamList
 } from '../types';
@@ -31,6 +32,13 @@ export default function PlanNavigator() {
                 component={NewGoal}
                 options={{
                     headerTitle: 'New Goal',
+                }}
+            />
+            <PlanStack.Screen
+                name="EditGoal"
+                component={EditGoal}
+                options={{
+                    headerTitle: 'Edit Goal',
                 }}
             />
         </PlanStack.Navigator>

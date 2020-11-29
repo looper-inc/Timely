@@ -5,44 +5,41 @@ import { Text } from '../Themed';
 import {windowHeight, windowWidth} from '../../utils/Dimensions';
 import { TouchableOpacity} from 'react-native-gesture-handler'
 
-export const ListItem = (props) => {
+export const ListItem = ({title, titleComplete, image_url, onPressDetail, itemDetail}) => (
 
-    const {
-        title,
-        titleComplete,
-        edit,
-        ...attributes
-      } = props;
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.defaultPic}>
-                <AntDesign name="picture" size={35} color="#666" />
-            </View>
+        <View style={styles.list}>
+            {image_url ? <Image source={{ uri: image_url }} style={styles.defaultPic} /> :
+                <View style={styles.defaultPic}>
+                    <AntDesign name="picture" size={35} color="#666" />
+                </View> 
+            }
             <View style={styles.content}>
-            <TouchableWithoutFeedback onPress={edit}>
+            <TouchableWithoutFeedback>
             <View style={styles.contentText}>
                 <Text style={styles.title}>{title}</Text>
                 <Text style={styles.titleComplete}>Complete By: {titleComplete}</Text>
             </View>
             </TouchableWithoutFeedback>
-            <TouchableOpacity style={styles.editButton} >
+            <TouchableOpacity style={styles.editButton} onPress={() => onPressDetail(itemDetail)}>
                 <AntDesign name="edit" size={20} color="#f9fafd" />
             </TouchableOpacity>
             </View>
-        
+
         </View>
 
-    );
 
-}
+);
 
 
 const styles = StyleSheet.create({
-    container: {
+    list: {
+        flex: 1,
         flexDirection: 'row',
         backgroundColor: '#f9fafd',
         marginTop: 5,
+        marginLeft: 5,
+        marginRight: 5,
     },
 
     title: {
@@ -70,13 +67,13 @@ const styles = StyleSheet.create({
         height: windowHeight/ 8,
     },
         contentText:{
-        width: '80%',
+        width: '82%',
         height: '90%',
         alignSelf: 'flex-start',
         margin: 3,
     },
         editButton: {
-        backgroundColor: '#27ae60',
+        backgroundColor: '#20bf6b',
         width: 40,
         height: 40,
         justifyContent: 'center',
@@ -86,8 +83,8 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
         titleComplete:{
-        fontSize: 12,
-        marginTop: 20,
+        fontSize: 10,
+        top: '60%',
         color: '#34495e',
         fontWeight: 'bold'
     }

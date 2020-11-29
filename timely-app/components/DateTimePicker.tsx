@@ -90,6 +90,9 @@ const styles = StyleSheet.create({
     editDate: {
         padding: 10,
         alignSelf: 'center',
+        borderColor: '#0984e3',
+        borderRadius: 3,
+        borderWidth: 2,
     },
     textDate: {
         color: '#0984e3',

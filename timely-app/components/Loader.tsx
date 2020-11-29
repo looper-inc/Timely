@@ -33,7 +33,7 @@ const Loader = props => {
                 <AntDesign name="check" size={45} color="#2ecc71" />
                 <Text style={styles.messText}>{messText}</Text>
              </>
-            ) : 
+            ) :
 
             (
                 <>
