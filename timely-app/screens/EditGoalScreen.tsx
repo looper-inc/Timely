@@ -24,7 +24,7 @@ export const EditGoalScreen = ({route, navigation}) => {
     const [isDone, setIsDone] = useState(false);
     const [loading, setLoading] = useState(false);
     const [messText, setMessText] = useState();
-    const [goalList, setGoalList] = useState();
+
     const db = firebase.firestore();
     const fStorage = firebase.storage();
 
@@ -40,8 +40,7 @@ export const EditGoalScreen = ({route, navigation}) => {
 
       //retrieve goal detail
       console.log('detail id is: ' + route.params.id);
-      console.log('pic: ' + route.params.picUrl);
-      //console.log(route.params);
+      //console.log('pic: ' + route.params.picUrl);
       //set picture image
       setImage(route.params.picUrl)
     }, []);
@@ -125,8 +124,10 @@ export const EditGoalScreen = ({route, navigation}) => {
                             setMessText('Deleting old picture...')
                             
                             fStorage.refFromURL(route.params.picUrl).delete().then(()=>{
-                                setMessText('Old picture has been deleted!')
+                                setMessText('Old pic has been deleted!')
+
                             }).catch(function(error) {
+                                setMessText('Uh-oh, an error occurred!')
                                 setLoading(false)
                                 console.log('Delete picture: Uh-oh, an error occurred! ' + error)
                             });
@@ -149,7 +150,7 @@ export const EditGoalScreen = ({route, navigation}) => {
                                 setTimeout(() => {
                                     setLoading(false);
                                     navigation.navigate('PlanScreen');
-                                }, 2000);
+                                }, 1500);
                             })
                         });
                         }, 1500);
@@ -173,9 +174,9 @@ export const EditGoalScreen = ({route, navigation}) => {
                         setTimeout(() => {
                             setLoading(false);
                             navigation.navigate('PlanScreen');
-                        }, 1500);
+                        }, 500);
                     })
-                }, 1500);
+                }, 1000);
             }
 
         } catch (error) {
@@ -184,10 +185,11 @@ export const EditGoalScreen = ({route, navigation}) => {
     }
 
     /****** VALIDATION using Formik and Yup ******/
+    const endDate = route.params.end.toDate();
     const initialValues = {
         title: route.params.title,
         description: route.params.description,
-        end: route.params.end.toDate(),
+        end: endDate,
         status: route.params.status,
         public: route.params.public,
       }
@@ -195,7 +197,7 @@ export const EditGoalScreen = ({route, navigation}) => {
       // With Yup validationSchema
       const signInValidationSchema = Yup.object().shape({
         title: Yup.string()
-            .required('Title Address is Required'),
+            .required('Title is Required'),
         public: Yup.boolean(),
         status: Yup.boolean(),
         end: Yup.string()
@@ -384,7 +386,7 @@ const styles = StyleSheet.create({
     descriptionBoxStyle:{
         backgroundColor: '#fff',
         height:windowHeight/8,
-        paddingLeft: 10,
+        paddingLeft: 5,
         borderColor: '#ccc',
         borderRadius: 3,
         borderWidth: 1,

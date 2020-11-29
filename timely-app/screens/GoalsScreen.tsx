@@ -11,11 +11,13 @@ export const GoalsScreen = ({navigation}) => {
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [lastVisited, setLastVisited] = useState();
+    const [scrollBegin, setScrollBegin] = useState();
     const { currentUser } = useContext(AuthContext);
     const db = firebase.firestore();
 
     useEffect(()=>{
       retrieveData();
+      console.log('reached ' + scrollBegin)
     },[]);
 
     const retrieveData = async () => {
@@ -73,8 +75,13 @@ export const GoalsScreen = ({navigation}) => {
     }
 
     const handleDetail = (itemDetail) => {
-        navigation.navigate('EditGoal', itemDetail);
+      navigation.navigate('EditGoal', itemDetail);
     }
+
+    const handleViewDetail = (itemDetail) =>{
+      navigation.navigate('GoalDetail', itemDetail);
+    }
+
       // Render Footer
     const renderFooter = () => {
       console.log('is loading??? ');
@@ -99,16 +106,14 @@ export const GoalsScreen = ({navigation}) => {
           <FlatList 
             data={goalList}
             renderItem={({item}) => <ListItem 
-              title={item.title} 
-              titleComplete={(new Date(item.end.toDate())).toUTCString()} 
-              image_url={item.picUrl}
               itemDetail={item}
               onPressDetail={handleDetail}
-            onEndReached={() => {
-              console.log("reached");
-            }}
-            onEndReachedThreshold={0.9}
-            refreshing={true}
+              onPressVewDetail = {handleViewDetail}
+            onMomentumScrollBegin={() => {
+              console.log('scrolling')
+              setScrollBegin(true)}}
+            onMomentumScrollEnd={() => setScrollBegin(false)}
+
             />}
           />
         </SafeAreaView>
@@ -120,7 +125,6 @@ export const GoalsScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
   },
 
 });

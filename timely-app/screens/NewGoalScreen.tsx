@@ -13,7 +13,7 @@ import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
 import Loader from '../components/Loader';
 import {windowHeight, windowWidth} from '../utils/Dimensions';
-
+import {createRandomString} from '../utils/utils';
 
 export const NewGoalScreen = ({navigation}) => {
     const { currentUser } = useContext(AuthContext);
@@ -61,7 +61,7 @@ export const NewGoalScreen = ({navigation}) => {
                 //send a message to indicator modal
                 setMessText('Uploading...')
                 const img_extension = image.split('.').pop();
-                const imageName = 'goal-image-' + Math.random().toString(36).substr(2, 9) + '.' + img_extension;
+                const imageName = 'goal-image-' + createRandomString() + '.' + img_extension;
                 
                 const response = await fetch(image);
                 const file = await response.blob();
@@ -121,7 +121,7 @@ export const NewGoalScreen = ({navigation}) => {
                             setTimeout(() => {
                                 setLoading(false);
                                 navigation.navigate('PlanScreen');
-                            }, 2000);
+                            }, 1500);
                         })
                         });
                     });
@@ -167,7 +167,7 @@ export const NewGoalScreen = ({navigation}) => {
       // With Yup validationSchema
       const signInValidationSchema = Yup.object().shape({
         title: Yup.string()
-            .required('Title Address is Required'),
+            .required('Title is Required'),
         public: Yup.boolean(),
         status: Yup.boolean(),
         end: Yup.string()
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     descriptionBoxStyle:{
         backgroundColor: '#fff',
         height:windowHeight/8,
-        paddingLeft: 10,
+        paddingLeft: 5,
         borderColor: '#ccc',
         borderRadius: 3,
         borderWidth: 1,

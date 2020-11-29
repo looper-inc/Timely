@@ -5,25 +5,37 @@ import { Text } from '../Themed';
 import {windowHeight, windowWidth} from '../../utils/Dimensions';
 import { TouchableOpacity} from 'react-native-gesture-handler'
 
-export const ListItem = ({title, titleComplete, image_url, onPressDetail, itemDetail}) => (
+export const ListItem = ({
+                            onPressDetail, 
+                            itemDetail, 
+                            onPressVewDetail}) => (
 
 
         <View style={styles.list}>
-            {image_url ? <Image source={{ uri: image_url }} style={styles.defaultPic} /> :
+            <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
+            {itemDetail.picUrl ? <Image source={{ uri: itemDetail.picUrl }} style={styles.defaultPic} /> :
                 <View style={styles.defaultPic}>
                     <AntDesign name="picture" size={35} color="#666" />
                 </View> 
             }
-            <View style={styles.content}>
-            <TouchableWithoutFeedback>
-            <View style={styles.contentText}>
-                <Text style={styles.title}>{title}</Text>
-                <Text style={styles.titleComplete}>Complete By: {titleComplete}</Text>
-            </View>
             </TouchableWithoutFeedback>
-            <TouchableOpacity style={styles.editButton} onPress={() => onPressDetail(itemDetail)}>
-                <AntDesign name="edit" size={20} color="#f9fafd" />
-            </TouchableOpacity>
+            <View style={styles.content}>
+                <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
+                <View style={styles.contentText}>
+                    <Text style={styles.title}>{itemDetail.title}</Text>
+                    {console.log(itemDetail.status)}
+                    {
+                        
+                        itemDetail.status ?
+                        <Text style={styles.status}>Completed</Text> :
+                        <Text style={styles.statusNotComp}>Not yet completed</Text>
+                    }
+                    <Text style={styles.titleComplete}>Complete By: {(new Date(itemDetail.end.toDate())).toLocaleString('en-US')}</Text>
+                </View>
+                </TouchableWithoutFeedback>
+                <TouchableOpacity style={styles.editButton} onPress={() => onPressDetail(itemDetail)}>
+                    <AntDesign name="edit" size={20} color="#f9fafd" />
+                </TouchableOpacity>
             </View>
 
         </View>
@@ -40,6 +52,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginLeft: 5,
         marginRight: 5,
+        borderRadius: 3,
     },
 
     title: {
@@ -61,16 +74,15 @@ const styles = StyleSheet.create({
     content:{
         flex: 1,
         flexDirection: 'row',
-        padding: 5,
+        paddingLeft: 4,
         backgroundColor: '#ecf0f1',
-        width: '95%',
-        height: windowHeight/ 8,
+        margin: 1
     },
         contentText:{
         width: '82%',
         height: '90%',
         alignSelf: 'flex-start',
-        margin: 3,
+        margin: 1,
     },
         editButton: {
         backgroundColor: '#20bf6b',
@@ -82,11 +94,33 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         marginTop: 20
     },
-        titleComplete:{
+    titleComplete:{
         fontSize: 10,
-        top: '55%',
+        top: '40%',
         color: '#34495e',
         fontWeight: 'bold'
+    },
+    status:{
+        backgroundColor: '#22a6b3',
+        fontSize: 9,
+        top: '35%',
+        color: '#ecf0f1',
+        fontWeight: 'bold',
+        borderRadius: 3,
+        alignSelf: 'flex-start',
+        paddingVertical: 3,
+        paddingHorizontal: 5,
+    },
+    statusNotComp:{
+        backgroundColor: '#ff7979',
+        fontSize: 9,
+        top: '35%',
+        color: '#ecf0f1',
+        fontWeight: 'bold',
+        borderRadius: 3,
+        alignSelf: 'flex-start',
+        paddingVertical: 3,
+        paddingHorizontal: 5,
     }
 });
 

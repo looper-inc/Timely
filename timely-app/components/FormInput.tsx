@@ -12,9 +12,9 @@ const FormInput = ({ labelValue, placeholderText, iconType, nOfLines, ...rest })
   return (
     <View style={styles.inputContainer}>
       { iconType ?
-      <View style={styles.iconStyle}>
-        <AntDesign name={iconType} size={25} color="#666" />
-      </View> : null
+        <View style={styles.iconStyle}>
+          <AntDesign name={iconType} size={25} color="#666" />
+        </View> : null
       }      
       <TextInput
         value={labelValue}
