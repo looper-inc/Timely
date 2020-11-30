@@ -1,16 +1,7 @@
 import {SafeAreaView, Switch,StyleSheet, ScrollView, View,
     Text, TextInput,TouchableOpacity, Image, Platform, Dimensions} from 'react-native'
 import  React,{useState, useEffect, useContext} from 'react'
-import FormButton from '../components/FormButton';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-import * as ImagePicker from 'expo-image-picker';
-import FormInput from '../components/FormInput';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import DateTimePicker from '../components/DateTimePicker';
-import * as Yup from 'yup';
-import {Formik} from 'formik'
-import firebase from "../fbconfig";
-import Loader from '../components/Loader';
 import {windowHeight, windowWidth} from '../utils/Dimensions';
 
 

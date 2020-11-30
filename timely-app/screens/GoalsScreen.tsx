@@ -8,8 +8,7 @@ import ListItem from '../components/PlanScreen/ListItem';
 
 export const GoalsScreen = ({navigation}) => {
     const [goalList, setGoalList] = useState();
-    const [limit, setLimit] = useState(10);
-    const [loading, setLoading] = useState(false);
+    const [limit, setLimit] = useState(7);
     const [isFetching, setIsFetching] = useState(false);
     const [lastVisited, setLastVisited] = useState();
     const { currentUser } = useContext(AuthContext);
@@ -18,15 +17,20 @@ export const GoalsScreen = ({navigation}) => {
     const fStorage = firebase.storage();
 
     useEffect(()=>{
-      retrieveData();
+      try {
+        retrieveData();
+      }
+      catch (error) {
+        console.log('retrieveData error: ' + error);
+      }
     },[]);
 
     const retrieveData = async () => {
       //set loading
-      setLoading(true)
+      //setLoading(true)
       let initialQuery = await db.collection('goals')
       .doc(currentUser.uid)
-      .collection('list').orderBy('created',"desc");
+      .collection('list').orderBy('created',"desc").limit(limit);
 
       initialQuery.onSnapshot((snapshot) => {
         if(snapshot.size){
@@ -40,36 +44,42 @@ export const GoalsScreen = ({navigation}) => {
           
           //Cloud Firestore: Last Visible Document
           //Document ID To Start From For Proceeding Queries
-          let last = snapshot.docs[snapshot.docs.length - 1].id;
-          console.log('visited: ' + last);
+          let last = snapshot.docs[snapshot.docs.length - 1];
+          //console.log('visited: ' + last);
           setLastVisited(last);
-          setLoading(false)
+          //setLoading(false)
         }
       });
 
     }
     const retrieveMoreData = async () =>{
 
-      //set loading
-      setLoading(true);
-
       let initialQuery = await db.collection('goals')
       .doc(currentUser.uid)
-      .collection('list').orderBy('created').startAfter(lastVisited).limit(limit);
+      .collection('list').orderBy('created',"desc").startAfter(lastVisited).limit(limit);
 
       initialQuery.onSnapshot((snapshot) => {
         if(snapshot.size){
+          //set loading
+          setIsFetching(true);
           let moreGoals = [...goalList];
           snapshot.forEach(item => {
+            //console.log(item.data())
             moreGoals.push({...item.data(), id: item.id});
           });
-          console.log(moreGoals);
-          //set goals data to state
-          setGoalList(moreGoals);
+          //console.log(moreGoals);
+          setTimeout(() => {
+            //set goals data to state
+            setGoalList(moreGoals);
+            setIsFetching(false);
+          }, 500);
           
-          let last = snapshot.docs[snapshot.docs.length - 1].id;
-          console.log('visited: ' + last);
+          let last = snapshot.docs[snapshot.docs.length - 1];
           setLastVisited(last);
+          
+        }else{
+          console.log('no more row to fetch')
+          setIsFetching(false);
         }
       });
     }
@@ -107,17 +117,11 @@ export const GoalsScreen = ({navigation}) => {
 
       // Render Footer
     const renderFooter = () => {
-      console.log('is loading??? ');
+      //console.log('is fechting more data ??? ');
       try {
-        // Check If Loading
-        if (loading) {
           return (
-            <ActivityIndicator size="small" color="#ff7979" />
+            <ActivityIndicator size="large" color="#0abde3" />
           )
-        }
-        else {
-          return null;
-        }
       }
       catch (error) {
         console.log(error);
@@ -126,20 +130,21 @@ export const GoalsScreen = ({navigation}) => {
     return (
       
         <SafeAreaView style={styles.container}>
-          <FlatList 
+          <FlatList
             data={goalList}
             renderItem={({item}) => <ListItem 
               itemDetail={item}
               onPressDetail={handleDetail}
               onPressVewDetail = {handleViewDetail}
               onPressRemoveGoal = {handleRemoveGoal}
-              onEndReached={()=>{
-                console.log('reached')
-              }}
-              onEndReachedThreshold={0.9}
             />}
+            onEndReached={()=>
+              retrieveMoreData()
+            }
+            onEndReachedThreshold={0.1}
           />
-          {isFetching && <Text>Fetching more list items...</Text>}
+          {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
+
         </SafeAreaView>
     );
 
