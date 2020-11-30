@@ -9,7 +9,7 @@ import FormButton from '../components/FormButton';
 import firebase from "../fbconfig";
 
 
-export default class ChangePasswordScreen extends React.Component {
+export default class ChangePasswordScreen extends React.Component <{ currentPassword: string, newPassword: any }> {
  
     constructor(props) {
         super(props);
@@ -22,14 +22,14 @@ export default class ChangePasswordScreen extends React.Component {
       reauthenticate = (currentPassword) => {
           var user = firebase.auth().currentUser;
           var cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
-          user.reauthenticateWithCredential(cred);
+          return user.reauthenticateWithCredential(cred);
       }
 
       onChangePasswordPress = () =>{
           this.reauthenticate(this.state.currentPassword).then(() => {
-              var authuser = firebase.auth().currentUser;
+              var user = firebase.auth().currentUser;
               
-              authuser.updatePassword(this.state.newPassword).then(() => {
+              user.updatePassword(this.state.newPassword).then(() => {
                   Alert.alert("Password  was changed.");
               }).catch((error) => {
                   Alert.alert(error.message);
