@@ -174,9 +174,9 @@ export const EditGoalScreen = ({route, navigation}) => {
                         setTimeout(() => {
                             setLoading(false);
                             navigation.navigate('PlanScreen');
-                        }, 500);
+                        }, 300);
                     })
-                }, 1000);
+                }, 500);
             }
 
         } catch (error) {

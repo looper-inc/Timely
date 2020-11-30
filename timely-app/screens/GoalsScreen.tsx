@@ -1,23 +1,24 @@
 import { StyleSheet, SafeAreaView, 
-  FlatList, ActivityIndicator, View} from 'react-native';
+  FlatList, ActivityIndicator, View, Text, Alert} from 'react-native';
 import  React,{useState, useEffect, useContext} from 'react'
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
 import ListItem from '../components/PlanScreen/ListItem';
 
+
 export const GoalsScreen = ({navigation}) => {
     const [goalList, setGoalList] = useState();
-    const [limit, setLimit] = useState(7);
+    const [limit, setLimit] = useState(10);
     const [loading, setLoading] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
     const [lastVisited, setLastVisited] = useState();
-    const [scrollBegin, setScrollBegin] = useState();
     const { currentUser } = useContext(AuthContext);
+
     const db = firebase.firestore();
+    const fStorage = firebase.storage();
 
     useEffect(()=>{
       retrieveData();
-      console.log('reached ' + scrollBegin)
     },[]);
 
     const retrieveData = async () => {
@@ -25,7 +26,7 @@ export const GoalsScreen = ({navigation}) => {
       setLoading(true)
       let initialQuery = await db.collection('goals')
       .doc(currentUser.uid)
-      .collection('list').orderBy('created',"desc").limit(limit);
+      .collection('list').orderBy('created',"desc");
 
       initialQuery.onSnapshot((snapshot) => {
         if(snapshot.size){
@@ -47,11 +48,11 @@ export const GoalsScreen = ({navigation}) => {
       });
 
     }
+    const retrieveMoreData = async () =>{
 
-    const retrieveDataMore = async () =>{
-      console.log('is calling??? ');
       //set loading
-      setRefreshing(true)
+      setLoading(true);
+
       let initialQuery = await db.collection('goals')
       .doc(currentUser.uid)
       .collection('list').orderBy('created').startAfter(lastVisited).limit(limit);
@@ -69,7 +70,6 @@ export const GoalsScreen = ({navigation}) => {
           let last = snapshot.docs[snapshot.docs.length - 1].id;
           console.log('visited: ' + last);
           setLastVisited(last);
-          setRefreshing(false)
         }
       });
     }
@@ -80,6 +80,29 @@ export const GoalsScreen = ({navigation}) => {
 
     const handleViewDetail = (itemDetail) =>{
       navigation.navigate('GoalDetail', itemDetail);
+    }
+
+    const handleRemoveGoal = (itemDetail) =>{
+        if(itemDetail.picUrl){
+
+            fStorage.refFromURL(itemDetail.picUrl).delete().then(()=>{
+              console.log('Old pic has been deleted!')
+
+            }).catch(function(error) {
+                setLoading(false)
+                console.log('Delete picture: Uh-oh, an error occurred! ' + error)
+            });
+        }
+
+        db.collection("goals")
+          .doc(currentUser.uid)
+          .collection('list')
+          .doc(itemDetail.id)
+          .delete().then(function() {
+            console.log("Document successfully deleted!");
+        }).catch(function(error) {
+            console.error("Error removing document: ", error);
+        });        
     }
 
       // Render Footer
@@ -109,13 +132,14 @@ export const GoalsScreen = ({navigation}) => {
               itemDetail={item}
               onPressDetail={handleDetail}
               onPressVewDetail = {handleViewDetail}
-            onMomentumScrollBegin={() => {
-              console.log('scrolling')
-              setScrollBegin(true)}}
-            onMomentumScrollEnd={() => setScrollBegin(false)}
-
+              onPressRemoveGoal = {handleRemoveGoal}
+              onEndReached={()=>{
+                console.log('reached')
+              }}
+              onEndReachedThreshold={0.9}
             />}
           />
+          {isFetching && <Text>Fetching more list items...</Text>}
         </SafeAreaView>
     );
 

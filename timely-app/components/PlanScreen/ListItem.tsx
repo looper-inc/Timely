@@ -1,5 +1,5 @@
-import { StyleSheet, SafeAreaView, View, Image, TextInput, TouchableWithoutFeedback } from 'react-native';
-import  React,{useState, useEffect, useContext} from 'react';
+import { StyleSheet, SafeAreaView, View, Image, Alert, TouchableWithoutFeedback } from 'react-native';
+import  React from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Text } from '../Themed';
 import {windowHeight, windowWidth} from '../../utils/Dimensions';
@@ -8,8 +8,25 @@ import { TouchableOpacity} from 'react-native-gesture-handler'
 export const ListItem = ({
                             onPressDetail, 
                             itemDetail, 
-                            onPressVewDetail}) => (
+                            onPressVewDetail,
+                            onPressRemoveGoal}) => {
 
+    const createDeleteAlert = () =>
+        Alert.alert(
+            "Goal Delete",
+            "Are you sure about this?",
+            [
+            {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+            },
+            { text: "DELETE", onPress: () => onPressRemoveGoal(itemDetail) }
+            ],
+            { cancelable: false }
+        );
+                            
+    return (
 
         <View style={styles.list}>
             <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
@@ -22,8 +39,8 @@ export const ListItem = ({
             <View style={styles.content}>
                 <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
                 <View style={styles.contentText}>
-                    <Text style={styles.title}>{itemDetail.title}</Text>
-                    {console.log(itemDetail.status)}
+                    <Text style={styles.title} numberOfLines={3}>{itemDetail.title}</Text>
+                    
                     {
                         
                         itemDetail.status ?
@@ -33,15 +50,20 @@ export const ListItem = ({
                     <Text style={styles.titleComplete}>Complete By: {(new Date(itemDetail.end.toDate())).toLocaleString('en-US')}</Text>
                 </View>
                 </TouchableWithoutFeedback>
-                <TouchableOpacity style={styles.editButton} onPress={() => onPressDetail(itemDetail)}>
-                    <AntDesign name="edit" size={20} color="#f9fafd" />
-                </TouchableOpacity>
+                <View style={styles.buttonSetting}>
+                    <TouchableOpacity style={styles.editButton} onPress={() => onPressDetail(itemDetail)}>
+                        <AntDesign name="edit" size={18} color="#f9fafd" />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.removeButton} onPress={() => createDeleteAlert()}>
+                        <AntDesign name="delete" size={18} color="#f9fafd" />
+                    </TouchableOpacity>
+                </View>
             </View>
 
         </View>
 
 
-);
+)};
 
 
 const styles = StyleSheet.create({
@@ -56,9 +78,14 @@ const styles = StyleSheet.create({
     },
 
     title: {
-      fontSize: 14,
+      fontSize: 13,
       color: '#2c3e50',
-      alignSelf: 'flex-start'
+      alignSelf: 'flex-start',
+      textTransform: 'capitalize',
+      fontWeight: 'bold',
+      height:'60%',
+      marginBottom: 3,
+      marginTop: 2
     },
     defaultPic:{
         backgroundColor: '#dcdde1',
@@ -84,26 +111,37 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         margin: 1,
     },
-        editButton: {
-        backgroundColor: '#20bf6b',
-        width: 40,
-        height: 40,
+    buttonSetting:{
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 4,
+    },
+    editButton: {
+        backgroundColor: '#20bf6b',
+        width: 38,
+        height: 38,
+        justifyContent: 'center',
+        alignItems: 'center',
         borderRadius: 3,
-        marginTop: 20
+        marginBottom: 2
+    },
+    removeButton: {
+        backgroundColor: '#353b48',
+        width: 38,
+        height: 38,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 3,
+        marginTop: 2
     },
     titleComplete:{
         fontSize: 10,
-        top: '40%',
         color: '#34495e',
         fontWeight: 'bold'
     },
     status:{
         backgroundColor: '#22a6b3',
         fontSize: 9,
-        top: '35%',
         color: '#ecf0f1',
         fontWeight: 'bold',
         borderRadius: 3,
@@ -112,9 +150,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
     },
     statusNotComp:{
-        backgroundColor: '#ff7979',
+        backgroundColor: '#ff6b6b',
         fontSize: 9,
-        top: '35%',
         color: '#ecf0f1',
         fontWeight: 'bold',
         borderRadius: 3,
