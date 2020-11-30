@@ -8,18 +8,20 @@ const windowWidth = Dimensions.get('window').width
 
 
 
-const FormInput = ({ labelValue, placeholderText, iconType, ...rest }) => {
+const FormInput = ({ labelValue, placeholderText, iconType, nOfLines, ...rest }) => {
   return (
     <View style={styles.inputContainer}>
-      <View style={styles.iconStyle}>
-        <AntDesign name={iconType} size={25} color="#666" />
-      </View>      
+      { iconType ?
+        <View style={styles.iconStyle}>
+          <AntDesign name={iconType} size={25} color="#666" />
+        </View> : null
+      }      
       <TextInput
         value={labelValue}
         style={styles.input}
-        numberOfLines={1}
+        numberOfLines={nOfLines ? nOfLines : 1}
         placeholder={placeholderText}
-        placeholderTextColor="#666"
+        placeholderTextColor="grey"
         {...rest}
       />
     </View>
