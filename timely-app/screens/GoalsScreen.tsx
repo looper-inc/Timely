@@ -7,10 +7,11 @@ import ListItem from '../components/PlanScreen/ListItem';
 
 
 export const GoalsScreen = ({navigation}) => {
-    const [goalList, setGoalList] = useState();
+    const [goalList, setGoalList] = useState(null);
     const [limit, setLimit] = useState(7);
     const [isFetching, setIsFetching] = useState(false);
     const [lastVisited, setLastVisited] = useState();
+    const [loading, setLoading] = useState();
     const { currentUser } = useContext(AuthContext);
 
     const db = firebase.firestore();
@@ -26,28 +27,34 @@ export const GoalsScreen = ({navigation}) => {
     },[]);
 
     const retrieveData = async () => {
-      //set loading
-      //setLoading(true)
+
       let initialQuery = await db.collection('goals')
       .doc(currentUser.uid)
       .collection('list').orderBy('created',"desc").limit(limit);
 
       initialQuery.onSnapshot((snapshot) => {
         if(snapshot.size){
+          //set loading
+          setLoading(true);
+
           let goals = [];
           snapshot.forEach(item => {
             goals.push({...item.data(), id: item.id});
           });
           //console.log(goals);
           //set goals data to state
-          setGoalList(goals);
-          
+          setTimeout(() => {
+            setGoalList(goals);
+            setLoading(false);
+          }, 500);
           //Cloud Firestore: Last Visible Document
           //Document ID To Start From For Proceeding Queries
           let last = snapshot.docs[snapshot.docs.length - 1];
           //console.log('visited: ' + last);
           setLastVisited(last);
           //setLoading(false)
+        }else{
+          setLoading(false);
         }
       });
 
@@ -99,7 +106,7 @@ export const GoalsScreen = ({navigation}) => {
               console.log('Old pic has been deleted!')
 
             }).catch(function(error) {
-                setLoading(false)
+                //setLoading(false)
                 console.log('Delete picture: Uh-oh, an error occurred! ' + error)
             });
         }
@@ -112,38 +119,36 @@ export const GoalsScreen = ({navigation}) => {
             console.log("Document successfully deleted!");
         }).catch(function(error) {
             console.error("Error removing document: ", error);
-        });        
+        });
     }
 
-      // Render Footer
-    const renderFooter = () => {
-      //console.log('is fechting more data ??? ');
-      try {
-          return (
-            <ActivityIndicator size="large" color="#0abde3" />
-          )
-      }
-      catch (error) {
-        console.log(error);
-      }
-    };
     return (
       
         <SafeAreaView style={styles.container}>
-          <FlatList
-            data={goalList}
-            renderItem={({item}) => <ListItem 
-              itemDetail={item}
-              onPressDetail={handleDetail}
-              onPressVewDetail = {handleViewDetail}
-              onPressRemoveGoal = {handleRemoveGoal}
-            />}
-            onEndReached={()=>
-              retrieveMoreData()
-            }
-            onEndReachedThreshold={0.1}
-          />
-          {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
+          {
+            goalList ? 
+            <>
+            <FlatList
+              data={goalList}
+              renderItem={({item}) => <ListItem 
+                itemDetail={item}
+                onPressDetail={handleDetail}
+                onPressVewDetail = {handleViewDetail}
+                onPressRemoveGoal = {handleRemoveGoal}
+              />}
+              onEndReached={()=>
+                retrieveMoreData()
+              }
+              onEndReachedThreshold={0.1}
+            />
+            {isFetching && <ActivityIndicator  size="large" color="#0097e6" />}
+            </> :
+            <>
+            {loading && <ActivityIndicator size="large" color="#0097e6" />}
+            {(!goalList && !loading) && <Text style={styles.noDataText}>No Goals Available.</Text>}
+            
+            </>
+        }
 
         </SafeAreaView>
     );
@@ -154,6 +159,14 @@ export const GoalsScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+  },
+  noDataText:{
+    fontSize: 16,
+    color: '#f5f6fa',
+    textTransform: 'capitalize',
+    fontWeight: 'bold',
+    alignSelf: 'center'
   },
 
 });

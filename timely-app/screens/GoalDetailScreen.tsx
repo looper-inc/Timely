@@ -4,17 +4,13 @@ import  React,{useState, useEffect, useContext} from 'react'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {windowHeight, windowWidth} from '../utils/Dimensions';
 
-
 export const GoalDetailScreen = ({route, navigation}) => {
-    const [image, setImage] = useState(null);
-
-    useEffect(() => {
-        setImage(route.params.picUrl)
-    }, []);
+    const endDate = route.params.end.toDate();
+    const image = route.params.picUrl;
   
 
     return(
-        <ScrollView>
+        <ScrollView contentContainerStyle={{flexGrow: 1}}>
             <SafeAreaView style={styles.container}>
 
                 {image ? <Image source={{ uri: image }} style={styles.defaultPic} /> :
@@ -24,62 +20,80 @@ export const GoalDetailScreen = ({route, navigation}) => {
                     </View>
                 }
 
-                <Text style={styles.completionBoxStyle}
+                
+                <Text style={styles.title}
                 >
                     {route.params.title}
                 </Text>
+                <View style={styles.detailContent}>
+                    <AntDesign style={styles.detailIcon} name="filetext1" size={45}  />
 
-                <Text style={styles.completionBoxStyle}
-                >
-                    {route.params.description}
-                </Text>
-
-                <Text style={styles.completionBoxStyle}
-                >
-                    Completed By:
-                </Text>
-
-                <Text style={styles.completionBoxStyle}
-                >
-                    {(new Date(route.params.end.toDate())).toLocaleString('en-US')}
-                </Text>
-
-                <Text
-                    style={styles.notCompleteTextBoxStyle}
+                    <Text style={styles.contentText}
+                          numberOfLines = {5}
                     >
-                    Status:
-                </Text>
-                {
-                    route.params.status ?
-                    <Text
-                        style={styles.notCompleteTextBoxStyle}
-                    >
-                    Completed
-                    </Text> :
-                    <Text
-                    style={styles.notCompleteTextBoxStyle}
-                    >
-                    Not yet completed
+                        {route.params.description}
                     </Text>
-                }
-                <Text 
-                    style={styles.notCompleteTextBoxStyle}
-                    >
-                    Public:
-                </Text>
-                {
-                    route.params.public ?
-                    <Text
-                        style={styles.notCompleteTextBoxStyle}
-                    >
-                    Yes
-                    </Text> :
-                    <Text
-                    style={styles.notCompleteTextBoxStyle}
-                    >
-                    No
-                    </Text>
-                }
+                </View>
+                <View style={styles.detailContent}>
+                <AntDesign style={styles.detailIcon} name="clockcircleo" size={45}  />
+                    <View style={styles.contentBody}>
+                        <Text style={styles.contentText}
+                        >
+                            Completed By:
+                        </Text>
+
+                        <Text style={styles.notCompleteTextBoxStyle}
+                        >
+                            {(new Date(endDate)).toLocaleString('en-US')}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.detailContent}>
+                    <AntDesign style={styles.detailIcon} name="checksquareo" size={45}  />
+                    <View style={styles.contentBody}>
+                        <Text
+                            style={styles.contentText}
+                            >
+                            Status:
+                        </Text>
+                        {
+                            route.params.status ?
+                            <Text
+                                style={styles.completeTextBoxStyle}
+                            >
+                            Completed
+                            </Text> :
+                            <Text
+                            style={styles.notCompleteTextBoxStyle}
+                            >
+                            Not yet completed
+                            </Text>
+                        }
+                    </View>
+                </View>
+                <View style={styles.detailContent}>
+                    <AntDesign style={styles.detailIcon} name="infocirlceo" size={45}  />
+                    <View style={styles.contentBody}>
+                        <Text 
+                            style={styles.contentText}
+                            >
+                            Public:
+                        </Text>
+                        {
+                            route.params.public ?
+                            <Text
+                                style={styles.notCompleteTextBoxStyle}
+                            >
+                            Yes
+                            </Text> :
+                            <Text
+                            style={styles.notCompleteTextBoxStyle}
+                            >
+                            No
+                            </Text>
+                        }
+                    </View>
+                </View>
             </SafeAreaView>
         </ScrollView>
     )
@@ -108,20 +122,45 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center'
     },
-
-    completionBoxStyle:{
+    title:{
+        fontSize: 16,
+        textTransform: 'capitalize',
+        color: '#34495e',
+        marginVertical: 5,
+        fontWeight: 'bold'
+    },
+    detailContent:{
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: '#fbc531',
+        marginBottom: 4,
+        borderRadius: 5,
+    },
+    detailIcon:{
+        color:"#2f3640",
+        marginRight: 15,
         marginTop: 10,
-        marginBottom: 10,
-        color:'grey',
-        fontWeight: 'bold',
+        marginLeft: 5,
+    },
+    contentBody:{
+        flex: 1,
+    },
+
+    contentText:{
+        fontSize: 14,
+        marginTop: 10,
+        marginBottom: 5,
+        color:'#34495e',
+        width: '80%'
     },
 
 
     completeTextBoxStyle:{
-        backgroundColor: 'white',
-        color:'grey',
-        padding:10,
-        width: '45%'
+        fontSize: 18,
+        color:'#10ac84',
+        alignItems: 'flex-start',
+        fontWeight: 'bold',
+        marginVertical: 5,
     },
 
     descriptionBoxStyle:{
@@ -134,18 +173,11 @@ const styles = StyleSheet.create({
     },
 
     notCompleteTextBoxStyle:{
-        marginTop: 10,
-        marginBottom: 10,
-        color:'grey',
+        fontSize: 18,
+        color:'#576574',
         alignItems: 'flex-start',
         fontWeight: 'bold',
+        marginVertical: 5,
     },
 
-    alertText:{
-        margin: 5,
-        color: '#ff7979',
-        fontSize: 12,
-        marginTop: 0,
-        fontWeight: 'bold'
-    }
 })

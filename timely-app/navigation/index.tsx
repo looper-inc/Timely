@@ -11,7 +11,6 @@ import SignInScreen from '../screens/SignInScreen'
 import SignUpScreen from '../screens/SignUpScreen'
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen'
 
-import firebase from "../fbconfig";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider.js"
 
