@@ -6,6 +6,7 @@ import * as React from 'react';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import PlanScreen from '../screens/PlanScreen';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import {
@@ -43,7 +44,7 @@ export default function BottomTabNavigator() {
         name="Plan"
         component={PlanNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="carryout" size={25} color={color} />,
         }}
       />
     </BottomTab.Navigator>

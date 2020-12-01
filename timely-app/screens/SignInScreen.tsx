@@ -236,7 +236,6 @@ const styles = StyleSheet.create({
       resizeMode: 'cover',
     },
     text: {
-      fontFamily: 'Roboto',
       fontSize: 28,
       marginBottom: 10,
       color: '#051d5f',
@@ -251,7 +250,6 @@ const styles = StyleSheet.create({
       fontSize: 18,
       fontWeight: '500',
       color: '#2e64e5',
-      fontFamily: 'Roboto',
     },
     alertText:{
       margin: 5,

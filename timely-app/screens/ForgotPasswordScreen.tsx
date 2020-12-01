@@ -99,14 +99,14 @@ const styles = StyleSheet.create({
         resizeMode: 'center'
     },
     topText: {
-        fontFamily: 'Roboto',
+        
         textAlign: 'center',
         fontSize: 18,
         color: '#000000',
         marginBottom: 25,
     },
     bottomText: {
-        fontFamily: 'Roboto',
+        
         textAlign: 'center',
         fontSize: 14,
         color: '#000000',

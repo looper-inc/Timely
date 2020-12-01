@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 
 import DatePicker from '@react-native-community/datetimepicker'
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { date } from 'yup';
+import { View } from './Themed';
 
 export default class DateTimePicker extends React.Component<{ initialDate: Date, onSubmit: Function }, { phase: Number, date: Date }>{
     constructor(props) {
@@ -51,13 +52,16 @@ export default class DateTimePicker extends React.Component<{ initialDate: Date,
     render() {
         return (
             <>
-                <TouchableOpacity onPress={() => {
+            
+                <TouchableOpacity 
+                    style={styles.editDate}
+                    onPress={() => {
                     this.setState({
                         phase: 2
                     })
                 }}>
-                    <Text> Click to edit</Text>
-                    <Text> {this.getFormattedDate(this.state.date)}</Text>
+                    <Text style={styles.textDate}> Click to Edit</Text>
+                    <Text style={styles.textDate}> {this.getFormattedDate(this.state.date)}</Text>
                 </TouchableOpacity>
                 { this.state.phase === 2
                     &&
@@ -77,7 +81,25 @@ export default class DateTimePicker extends React.Component<{ initialDate: Date,
                         onChange={this.handleChange}
                     />
                 }
+            
             </>
         )
     }
 }
+const styles = StyleSheet.create({
+    editDate: {
+        padding: 10,
+        alignSelf: 'center',
+        borderColor: '#0984e3',
+        borderRadius: 3,
+        borderWidth: 2,
+    },
+    textDate: {
+        color: '#0984e3',
+        fontSize: 16,
+        fontWeight: 'bold',
+        alignSelf: 'center',
+        paddingLeft: 10,
+        paddingRight: 10,
+    }
+})
