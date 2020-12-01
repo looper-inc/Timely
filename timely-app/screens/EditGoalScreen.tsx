@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
         color: '#fff',
-        fontFamily: 'Roboto',
+        
         paddingLeft: 10,
         paddingRight: 10,
     },

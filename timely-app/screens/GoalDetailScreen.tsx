@@ -105,7 +105,6 @@ export default GoalDetailScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f9fafd',
         padding: 10,
         marginTop: 0,
     },
@@ -125,7 +124,7 @@ const styles = StyleSheet.create({
     title:{
         fontSize: 16,
         textTransform: 'capitalize',
-        color: '#34495e',
+        color: '#c8d6e5',
         marginVertical: 5,
         fontWeight: 'bold'
     },

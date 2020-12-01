@@ -25,7 +25,7 @@ export const ListItem = ({
             ],
             { cancelable: false }
         );
-                            
+
     return (
 
         <View style={styles.list}>
@@ -40,9 +40,7 @@ export const ListItem = ({
                 <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
                 <View style={styles.contentText}>
                     <Text style={styles.title} numberOfLines={3}>{itemDetail.title}</Text>
-                    
                     {
-                        
                         itemDetail.status ?
                         <Text style={styles.status}>Completed</Text> :
                         <Text style={styles.statusNotComp}>Not yet completed</Text>
