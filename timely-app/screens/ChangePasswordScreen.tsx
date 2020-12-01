@@ -6,10 +6,11 @@ import * as React from 'react';
 import { StyleSheet, Button, TextInput, Alert,  SafeAreaView } from 'react-native';
 import { Text, View } from '../components/Themed';
 import FormButton from '../components/FormButton';
-import firebase from "../fbconfig";
 
 
-export default class ChangePasswordScreen extends React.Component <{ currentPassword: string, newPassword: any }> {
+import * as firebase from 'firebase';
+
+export default class ChangePasswordScreen extends React.Component <{ route: any, navigation: any }, { currentPassword: string, newPassword:string }> {
  
     constructor(props) {
         super(props);
@@ -25,25 +26,18 @@ export default class ChangePasswordScreen extends React.Component <{ currentPass
           return user.reauthenticateWithCredential(cred);
       }
 
-      onChangePasswordPress = () =>{
-          this.reauthenticate(this.state.currentPassword).then(() => {
-              var user = firebase.auth().currentUser;
-              
-              user.updatePassword(this.state.newPassword).then(() => {
-                  Alert.alert("Password  was changed.");
-              }).catch((error) => {
-                  Alert.alert(error.message);
-
-              });
-
-          }).catch((error) =>  {
-              Alert.alert(error.message);
-
-          });
+      onChangePasswordPress = () => {
+        this.reauthenticate(this.state.currentPassword).then(() => {
+          var user = firebase.auth().currentUser;
+          user.updatePassword(this.state.newPassword).then(() => {
+            Alert.alert("Password was changed");
+          }).catch((error) => { console.log(error.message); });
+        }).catch((error) => { console.log(error.message) });
       }
       render() {
 
     return(
+
         <SafeAreaView>
     
       < TextInput style= {styles.topText} value={this.state.currentPassword} 
@@ -56,14 +50,12 @@ export default class ChangePasswordScreen extends React.Component <{ currentPass
     <Button title="Change Password" onPress = {this.onChangePasswordPress} />
        
     </SafeAreaView>
+ 
       
       
      );
 }
 }
-  
-
-
    
 const styles = StyleSheet.create({
     container: {
