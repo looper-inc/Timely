@@ -7,6 +7,7 @@ export type BottomTabParamList = {
   TabOne: undefined;
   TabTwo: undefined;
   Plan: undefined;
+  Profile: undefined;
 };
 
 export type TabOneParamList = {
@@ -22,7 +23,16 @@ export type PlanParamList = {
   NewEvent: undefined;
 };
 
+export type ProfileParamList = {
+  ProfileScreen: undefined;
+}
+
 export type PlanSelectParamList = {
   Events: undefined;
   Goals: undefined;
 };
+
+export type FeedSelectParamList = {
+  Following: undefined;
+  Notifications: undefined;
+}
