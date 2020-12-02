@@ -6,7 +6,6 @@ import firebase from "../fbconfig";
 import { Text, View } from '../components/Themed';
 import { Formik } from 'formik';
 import ImagePicker from 'react-native-image-picker';
-import storage from '@react-native-firebase/storage';
 import * as Progress from 'react-native-progress';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AuthContext } from '../providers/AuthProvider';
@@ -14,14 +13,14 @@ import { AuthContext } from '../providers/AuthProvider';
 export const ProfileScreen = ({ navigation }) => {
 
     const db = firebase.firestore();
-    const {currentUser} = useContext(AuthContext);
+    const { currentUser } = useContext(AuthContext);
     const user = firebase.auth();
 
     return (
         <SafeAreaView style={styles.container}>
             <TouchableOpacity
-            style={styles.verticalButton}
-            onPress={() => navigation.navigate('SignUp')}>
+                style={styles.verticalButton}
+                onPress={() => navigation.navigate('SignUp')}>
                 <Image
                     source={require('../assets/images/cog.png')}
                     style={styles.cog}
@@ -29,8 +28,8 @@ export const ProfileScreen = ({ navigation }) => {
             </TouchableOpacity>
 
             <Image
-                source={ currentUser.profileImgURL }
-                style={ styles.profile_picture }
+                source={currentUser.profileImgURL}
+                style={styles.profile_picture}
             />
         </SafeAreaView>
     )
