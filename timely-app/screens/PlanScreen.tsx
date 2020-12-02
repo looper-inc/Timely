@@ -1,19 +1,15 @@
 import * as React from 'react';
 import { StyleSheet, Button, SafeAreaView } from 'react-native';
-
 import { Text, View } from '../components/Themed';
 import SelectPlan from './PlanScreen/SelectPlan';
 import YourEventsScreen from './YourEventsScreen';
 import GoalsScreen from './GoalsScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {
-  PlanSelectParamList
-} from '../types';
+import { PlanSelectParamList } from '../types';
 import NewEventButton from './PlanScreen/NewEventButton';
 
 const PlanSelectStack = createStackNavigator<PlanSelectParamList>();
-
 
 export default class PlanScreen extends React.Component<{ route: any, navigation: any }, { selected: string }> {
   constructor(props) {
