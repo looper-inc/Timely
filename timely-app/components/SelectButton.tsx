@@ -15,18 +15,17 @@ export default SelectButton;
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    marginTop: 10,
+    marginVertical: 5,
     width: "50%",
-    height: windowHeight / 15,
+    height: windowHeight / 18,
     backgroundColor: "#2e64e5",
-    padding: 10,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 3,
-    marginHorizontal: 2
+    marginHorizontal: 1
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     color: "#ffffff"
   }

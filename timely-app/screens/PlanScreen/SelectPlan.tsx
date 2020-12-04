@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     display: "flex",
     width: "100%",
-    paddingHorizontal: 3
+    paddingHorizontal: 4
   }
 });
 export default SelectPlan;
