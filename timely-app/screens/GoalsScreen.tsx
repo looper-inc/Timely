@@ -5,7 +5,6 @@ import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
 import ListItem from '../components/PlanScreen/ListItem';
 
-
 export const GoalsScreen = ({navigation}) => {
     const [goalList, setGoalList] = useState(null);
     const [limit, setLimit] = useState(7);

@@ -11,3 +11,7 @@ export const getFormattedDate = (date) => {
 export const createRandomString = () =>{
     return Math.random().toString(36).substr(2, 9);
 }
+
+export const upperCaseFirstLetter = (text) => {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}

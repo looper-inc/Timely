@@ -9,8 +9,7 @@ import {
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-const windowHeight = Dimensions.get('window').height;
-const windowWidth = Dimensions.get('window').width;
+import {windowHeight, windowWidth} from '../../utils/Dimensions';
 
 const Loader = props => {
   const {
