@@ -1,5 +1,5 @@
 import { StyleSheet, Alert, Image, SafeAreaView } from 'react-native';
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig";
@@ -16,11 +16,14 @@ export const ProfileScreen = ({ navigation }) => {
     const { currentUser } = useContext(AuthContext);
     const user = firebase.auth();
 
+    useEffect(() => {
+        console.log('user', currentUser)
+    }, [])
     return (
         <SafeAreaView style={styles.container}>
             <TouchableOpacity
                 style={styles.verticalButton}
-                onPress={() => navigation.navigate('SignUp')}>
+                onPress={() => navigation.navigate('Settings')}>
                 <Image
                     source={require('../assets/images/cog.png')}
                     style={styles.cog}
@@ -47,9 +50,8 @@ const styles = StyleSheet.create({
 
     },
     cog: {
-        marginTop: -250,
-        marginBottom: -100,
-        resizeMode: 'center'
+        width: 50,
+        height: 50,
     },
     profile_picture: {
 

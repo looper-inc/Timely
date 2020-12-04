@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { ProfileScreen } from '../screens/ProfileScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 import {
     ProfileParamList
@@ -16,6 +17,13 @@ export default function ProfileNavigator() {
                 component={ProfileScreen}
                 options={{
                     headerTitle: 'Profile',
+                }}
+            />
+            <ProfileStack.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{
+                    headerTitle: 'Settings',
                 }}
             />
         </ProfileStack.Navigator>

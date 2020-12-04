@@ -4,17 +4,10 @@ export type RootStackParamList = {
 };
 
 export type BottomTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
+  Friends: undefined;
+  Feed: undefined;
   Plan: undefined;
-};
-
-export type TabOneParamList = {
-  TabOneScreen: undefined;
-};
-
-export type TabTwoParamList = {
-  TabTwoScreen: undefined;
+  Profile: undefined;
 };
 
 export type PlanParamList = {
@@ -30,7 +23,8 @@ export type PlanSelectParamList = {
 export type ProfileParamList = {
   Profile: {
     uid: string
-  }
+  },
+  Settings: undefined,
 };
 export type FeedParamList = any;
 export type FriendsParamList = any;
