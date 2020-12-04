@@ -26,3 +26,11 @@ export type PlanSelectParamList = {
   Events: undefined;
   Goals: undefined;
 };
+
+export type ProfileParamList = {
+  Profile: {
+    uid: string
+  }
+};
+export type FeedParamList = any;
+export type FriendsParamList = any;
