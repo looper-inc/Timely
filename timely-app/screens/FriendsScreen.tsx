@@ -5,52 +5,61 @@ import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
 import FormButton from '../components/FormButton';
-import firebase from "../fbconfig"; 
+import firebase from "../fbconfig";
 import { SearchBar } from 'react-native-elements';
 
 const db = firebase.firestore();
 var searchResults = [];
 
-async function handleGet(search){
-  // TODO: Clear the search results list.
-  // searchResults = [];
-
-  const snapshot = await db.collection("profiles").orderBy("full_name").limit(20).get(search);
-
-  snapshot.forEach(doc => {
-    // console.log("Search val is: " + search);
-    if (search != "" && doc.get("full_name").includes(search)){
-      console.log(doc.get("first_name") + ' ' + doc.get("last_name") + ': ' + doc.id);
-
-      // TODO: Push to the search result list.
-      searchResults.push({
-        title: doc.get("first_name") + ' ' + doc.get("last_name"),
-        uid: doc.id,
-      });
-
-      console.log("searchResults: " + searchResults);
-
-      //TODO: Regenerate list when text in search bar changes
-      
-    }
-  });  
+type thisStates = {
+  search: string, searchResults: any[]
 }
 
-export default class FriendsScreen extends React.Component {
-  state = {
-    search: '',
-  };
+export default class FriendsScreen extends React.Component<{}, thisStates> {
+  constructor(props) {
+    super(props)
+    this.state = {
+      search: '',
+      searchResults: []
+    };
+    this.handleGet = this.handleGet.bind(this)
+  }
 
   // This is called when the search string changes.
   // The var `search` holds the search string.
   updateSearch = (search) => {
     this.setState({ search });
-    handleGet(search.toLowerCase());
+    this.handleGet(search.toLowerCase());
   };
+
+  async handleGet(search) {
+    // TODO: Clear the search results list.
+    // searchResults = [];
+
+    const snapshot = await db.collection("profiles").orderBy("full_name").limit(20).get(search);
+
+    snapshot.forEach(doc => {
+      // console.log("Search val is: " + search);
+      if (search != "" && doc.get("full_name").includes(search)) {
+        console.log(doc.get("first_name") + ' ' + doc.get("last_name") + ': ' + doc.id);
+
+        // TODO: Push to the search result list.
+        searchResults.push({
+          title: doc.get("first_name") + ' ' + doc.get("last_name"),
+          uid: doc.id,
+        });
+
+        console.log("searchResults: " + searchResults);
+
+        //TODO: Regenerate list when text in search bar changes
+
+      }
+    });
+  }
 
   render() {
     const { search } = this.state;
-  
+
     // console.log(searchResults);
     const renderItem = ({ item }) => (
       <Item title={item.title} />
