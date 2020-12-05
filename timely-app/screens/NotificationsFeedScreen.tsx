@@ -30,6 +30,8 @@ export const NotificationsFeedScreen = ({ navigation }) => {
   }, []);
 
   const retrieveData = async () => {
+    //set loading
+    setLoading(true);
     let initialQuery = await db
       .collection("notification")
       .doc(currentUser.uid)
@@ -39,9 +41,6 @@ export const NotificationsFeedScreen = ({ navigation }) => {
 
     initialQuery.onSnapshot(snapshot => {
       if (snapshot.size) {
-        //set loading
-        setLoading(true);
-
         let noti = [];
         snapshot.forEach(item => {
           //console.log(item.data());

@@ -43,19 +43,22 @@ export default class FeedScreen extends React.Component<
   handleBadge() {
     const { uid } = this.context.currentUser;
     const db = firebase.firestore();
-
-    return db
-      .collection("notification")
-      .doc(uid)
-      .collection("member_notify")
-      .get()
-      .then(snapshot => {
-        if (snapshot.size) {
-          this.setState({ badge: snapshot.size });
-        } else {
-          this.setState({ badge: 0 });
-        }
-      });
+    try {
+      return db
+        .collection("notification")
+        .doc(uid)
+        .collection("member_notify")
+        .get()
+        .then(snapshot => {
+          if (snapshot.size) {
+            this.setState({ badge: snapshot.size });
+          } else {
+            this.setState({ badge: 0 });
+          }
+        });
+    } catch (error) {
+      console.log("notification badges error", error);
+    }
   }
 
   render() {

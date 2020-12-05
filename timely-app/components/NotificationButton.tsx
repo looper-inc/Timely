@@ -10,11 +10,11 @@ const NotificationButton = ({ buttonTitle, ...rest }) => {
     <TouchableOpacity style={styles.buttonContainer} {...rest}>
       <Ionicons
         style={styles.iconNoti}
-        name="ios-notifications-outline"
+        name="ios-notifications"
         size={30}
         color="#f5f6fa"
       />
-      <View style={styles.notiContent}>
+      <View style={styles.badgeContent}>
         <Text style={styles.buttonText}>{buttonTitle}</Text>
       </View>
     </TouchableOpacity>
@@ -36,20 +36,22 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginHorizontal: 1
   },
-  notiContent: {
-    backgroundColor: "#ED4C67",
-    borderRadius: 25 / 2,
-    width: 25,
-    height: 25,
+  badgeContent: {
+    backgroundColor: "#e55039",
+    borderRadius: 22 / 2,
+    width: 22,
+    height: 22,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    marginLeft: -7,
+    marginTop: -12
   },
   buttonText: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#f5f6fa",
     fontWeight: "bold"
   },
   iconNoti: {
-    marginRight: 5
+    //marginRight: 5
   }
 });

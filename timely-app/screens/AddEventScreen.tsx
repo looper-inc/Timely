@@ -23,7 +23,7 @@ import DateTimePicker from "../components/DateTimePicker";
 import FriendListModal from "../components/Modal/FriendListModal";
 import Loader from "../components/Modal/Loader";
 
-export const AddEvent = ({ navigation }) => {
+export const AddEvent = ({ route, navigation }) => {
   // Access auth
   const { currentUser } = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
