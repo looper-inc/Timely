@@ -124,11 +124,11 @@ export const AddEvent = ({ navigation }) => {
                   friend_id: data.id
                 })
                 .then(() => {
-                  console.log("added members to event successfully");
+                  //console.log("added members to event successfully");
                   setIsDone(true);
                 });
+              setMessText("Added event successfully");
               setTimeout(() => {
-                setMessText("Added event successfully");
                 setLoading(false);
                 navigation.navigate("PlanScreen");
               }, 1500);

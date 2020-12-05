@@ -9,20 +9,29 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FollowingFeedScreen from "./FollowingFeedScreen";
 import NotificationsFeedScreen from "./NotificationsFeedScreen";
+import firebase from "../fbconfig";
+import { AuthContext } from "../providers/AuthProvider";
 
 const FeedSelectStack = createStackNavigator<FeedSelectParamList>();
 
 export default class FeedScreen extends React.Component<
   { route: any; navigation: any },
-  { selected: string }
+  { selected: string; badge: number }
 > {
   constructor(props) {
     super(props);
     this.state = {
-      selected: "Following"
+      selected: "Following",
+      badge: 0
     };
 
     this.handleSelect = this.handleSelect.bind(this);
+  }
+  // Access auth
+  static contextType = AuthContext;
+
+  componentDidMount() {
+    this.handleBadge();
   }
 
   handleSelect(selected) {
@@ -31,10 +40,28 @@ export default class FeedScreen extends React.Component<
     });
   }
 
+  handleBadge() {
+    const { uid } = this.context.currentUser;
+    const db = firebase.firestore();
+
+    return db
+      .collection("notification")
+      .doc(uid)
+      .collection("member_notify")
+      .get()
+      .then(snapshot => {
+        if (snapshot.size) {
+          this.setState({ badge: snapshot.size });
+        } else {
+          this.setState({ badge: 0 });
+        }
+      });
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <SelectFeed onSelect={this.handleSelect} />
+        <SelectFeed onSelect={this.handleSelect} badge={this.state.badge} />
         <FeedSelectStack.Navigator>
           <FeedSelectStack.Screen
             name="Following"

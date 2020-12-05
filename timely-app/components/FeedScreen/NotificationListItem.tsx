@@ -23,7 +23,7 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
         upperCaseFirstLetter(itemDetail.info_from.last_name);
       message = fullname + " has invited you to join an event: ";
     } else {
-      message = itemDetail.email_from + " have invited you to join an event: ";
+      message = itemDetail.email_from + " has invited you to join an event: ";
     }
   }
 
@@ -37,7 +37,7 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
           />
         ) : (
           <View style={styles.defaultPic}>
-            <AntDesign name="picture" size={35} color="#666" />
+            <AntDesign name="user" size={30} color="#666" />
           </View>
         )}
       </TouchableWithoutFeedback>
@@ -45,7 +45,7 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
         <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
           <View style={styles.contentText}>
             <Text style={styles.title} numberOfLines={3}>
-              {upperCaseFirstLetter(message)}
+              {message}
             </Text>
             <Text style={styles.titleEvent} numberOfLines={3}>
               {upperCaseFirstLetter(itemDetail.event_title)}
@@ -57,13 +57,13 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
             style={styles.acceptButton}
             onPress={() => console.log("accept invitation")}
           >
-            <AntDesign name="check" size={20} color="#10ac84" />
+            <AntDesign name="check" size={15} color="#10ac84" />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={() => console.log("cancel invitation")}
           >
-            <AntDesign name="close" size={20} color="#ee5253" />
+            <AntDesign name="close" size={15} color="#ee5253" />
           </TouchableOpacity>
         </View>
       </View>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#2c3e50",
     alignSelf: "flex-start",
     fontWeight: "bold",
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     marginTop: 2
   },
   titleEvent: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#2c3e50"
   },
   defaultPic: {
@@ -112,7 +112,8 @@ const styles = StyleSheet.create({
   },
   contentText: {
     alignSelf: "flex-start",
-    margin: 1
+    margin: 1,
+    width: "85%"
   },
   buttonSetting: {
     flex: 1,
@@ -122,12 +123,12 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     padding: 5,
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     justifyContent: "center",
     alignSelf: "center",
     alignItems: "center",
-    borderRadius: 40 / 2,
+    borderRadius: 35 / 2,
     borderColor: "#10ac84",
     borderWidth: 2,
     marginVertical: 5,
@@ -135,12 +136,12 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     padding: 5,
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     justifyContent: "center",
     alignSelf: "center",
     alignItems: "center",
-    borderRadius: 40 / 2,
+    borderRadius: 35 / 2,
     borderColor: "#ee5253",
     borderWidth: 2,
     marginVertical: 5,

@@ -7,9 +7,10 @@ import {
   Dimensions
 } from "react-native";
 import SelectButton from "../../components/SelectButton";
+import NotificationButton from "../../components/NotificationButton";
 
 const windowHeight = Dimensions.get("window").height;
-const SelectFeed = ({ onSelect }) => {
+const SelectFeed = ({ onSelect, badge }) => {
   return (
     <View style={styles.container}>
       <SelectButton
@@ -18,8 +19,8 @@ const SelectFeed = ({ onSelect }) => {
           onSelect("Following");
         }}
       />
-      <SelectButton
-        buttonTitle="Notifications"
+      <NotificationButton
+        buttonTitle={badge}
         onPress={() => onSelect("Notifications")}
       />
     </View>
