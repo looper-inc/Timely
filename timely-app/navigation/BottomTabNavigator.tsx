@@ -1,24 +1,25 @@
-import { Ionicons } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
-import * as React from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
+import * as React from "react";
 
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
-import PlanScreen from '../screens/PlanScreen';
-import ProfileScreen from '../screens/ProfileScreen'
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import TabOneScreen from '../screens/TabOneScreen';8
-
-import TabTwoScreen from '../screens/TabTwoScreen';
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
+import PlanScreen from "../screens/PlanScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import TabOneScreen from "../screens/TabOneScreen";
+8;
+import TabTwoScreen from "../screens/TabTwoScreen";
+import FeedNavigator from "./FeedNavigator";
 import {
   BottomTabParamList,
   TabOneParamList,
   TabTwoParamList,
   PlanParamList,
   ProfileParamList
-} from '../types';
-import PlanNavigator from './PlanNavigator';
+} from "../types";
+import PlanNavigator from "./PlanNavigator";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -28,26 +29,33 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName="Plan"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
+      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
+    >
       <BottomTab.Screen
         name="TabOne"
         component={TabOneNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="ios-code" color={color} />
+          )
         }}
       />
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoNavigator}
+        name="Feed"
+        component={FeedNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="home" size={25} color={color} />
+          )
         }}
       />
       <BottomTab.Screen
         name="Plan"
         component={PlanNavigator}
         options={{
-          tabBarIcon: ({ color }) => <AntDesign name="carryout" size={25} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="carryout" size={25} color={color} />
+          )
         }}
       />
 
@@ -55,10 +63,11 @@ export default function BottomTabNavigator() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color }) => <AntDesign name="carryout" size={25} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="carryout" size={25} color={color} />
+          )
         }}
       />
-
     </BottomTab.Navigator>
   );
 }
@@ -79,7 +88,7 @@ function TabOneNavigator() {
       <TabOneStack.Screen
         name="TabOneScreen"
         component={TabOneScreen}
-        options={{ headerTitle: 'Tab One Title' }}
+        options={{ headerTitle: "Tab One Title" }}
       />
     </TabOneStack.Navigator>
   );
@@ -93,9 +102,8 @@ function TabTwoNavigator() {
       <TabTwoStack.Screen
         name="TabTwoScreen"
         component={TabTwoScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
+        options={{ headerTitle: "Tab Two Title" }}
       />
     </TabTwoStack.Navigator>
   );
 }
-

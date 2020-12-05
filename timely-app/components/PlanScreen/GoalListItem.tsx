@@ -4,6 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Text } from '../Themed';
 import {windowHeight, windowWidth} from '../../utils/Dimensions';
 import { TouchableOpacity} from 'react-native-gesture-handler'
+import {upperCaseFirstLetter} from '../../utils/utils';
 
 export const ListItem = ({
                             onPressDetail, 
@@ -39,7 +40,7 @@ export const ListItem = ({
             <View style={styles.content}>
                 <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
                 <View style={styles.contentText}>
-                    <Text style={styles.title} numberOfLines={3}>{itemDetail.title}</Text>
+                    <Text style={styles.title} numberOfLines={3}>{upperCaseFirstLetter(itemDetail.title)}</Text>
                     {
                         itemDetail.status ?
                         <Text style={styles.status}>Completed</Text> :
@@ -79,7 +80,6 @@ const styles = StyleSheet.create({
       fontSize: 13,
       color: '#2c3e50',
       alignSelf: 'flex-start',
-      textTransform: 'capitalize',
       fontWeight: 'bold',
       height:'60%',
       marginBottom: 3,
