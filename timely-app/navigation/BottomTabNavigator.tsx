@@ -77,11 +77,11 @@ const TabTwoStack = createStackNavigator<TabTwoParamList>();
 function TabTwoNavigator() {
   return (
     <TabTwoStack.Navigator>
-      <TabTwoStack.Screen
+      {/*<TabTwoStack.Screen
         name="FriendsScreen"
         component={TabTwoScreen}
         options={{ headerTitle: 'Friends', headerTitleAlign: 'center'}}
-      />
+      />*/}
     </TabTwoStack.Navigator>
   );
 }

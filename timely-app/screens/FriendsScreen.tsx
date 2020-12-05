@@ -12,29 +12,35 @@ const db = firebase.firestore();
 var searchResults = [];
 
 type thisStates = {
-  search: string, searchResults: any[]
+  search: string,
+  searchResults: any[],
+  lastTyped: Date
 }
 
 export default class FriendsScreen extends React.Component<{}, thisStates> {
-  constructor(props) {
+
+  timeout: any = null;
+  constructor(props: any) {
     super(props)
     this.state = {
       search: '',
+      lastTyped: new Date(),
       searchResults: []
     };
+    this.timeout = 0;
     this.handleGet = this.handleGet.bind(this)
+    this.onChangeText = this.onChangeText.bind(this)
   }
 
-  // This is called when the search string changes.
-  // The var `search` holds the search string.
-  updateSearch = (search) => {
+  async onChangeText(search: string) {
     this.setState({ search });
-    this.handleGet(search.toLowerCase());
-  };
+    if (this.timeout) clearTimeout(this.timeout);
+    this.timeout = setTimeout(async () => {
+      await this.handleGet(search.toLowerCase())
+    }, 300);
+  }
 
-  async handleGet(search) {
-    // TODO: Clear the search results list.
-    // searchResults = [];
+  async handleGet(search: any) {
 
     const snapshot = await db.collection("profiles").orderBy("full_name").limit(20).get(search);
 
@@ -44,38 +50,37 @@ export default class FriendsScreen extends React.Component<{}, thisStates> {
         console.log(doc.get("first_name") + ' ' + doc.get("last_name") + ': ' + doc.id);
 
         // TODO: Push to the search result list.
+        const searchResults: any[] = []
         searchResults.push({
           title: doc.get("first_name") + ' ' + doc.get("last_name"),
           uid: doc.id,
         });
 
+        this.setState({ searchResults })
         console.log("searchResults: " + searchResults);
-
-        //TODO: Regenerate list when text in search bar changes
-
       }
     });
   }
+  // console.log(searchResults);
+  renderItem = ({ item }) => (
+    <Item title={item.title} />
+  );
 
   render() {
     const { search } = this.state;
 
-    // console.log(searchResults);
-    const renderItem = ({ item }) => (
-      <Item title={item.title} />
-    );
 
     return (
       <View>
         <SearchBar
           placeholder="Search"
-          onChangeText={this.updateSearch}
+          onChangeText={this.onChangeText}
           value={search}
         />
         <FlatList
           data={searchResults}
           // data={testArr}
-          renderItem={renderItem}
+          renderItem={this.renderItem}
         />
       </View>
     );
