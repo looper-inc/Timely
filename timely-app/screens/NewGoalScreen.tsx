@@ -11,7 +11,7 @@ import * as Yup from 'yup';
 import {Formik} from 'formik'
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
-import Loader from '../components/Loader';
+import Loader from '../components/Modal/Loader';
 import {windowHeight, windowWidth} from '../utils/Dimensions';
 import {createRandomString} from '../utils/utils';
 
