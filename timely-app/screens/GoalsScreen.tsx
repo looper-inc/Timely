@@ -65,6 +65,7 @@ export const GoalsScreen = ({ navigation }) => {
       }
     });
   };
+  
   const retrieveMoreData = async () => {
     let initialQuery = await db
       .collection("goals")

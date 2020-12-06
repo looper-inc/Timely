@@ -9,7 +9,6 @@ import EventListItem from "../components/PlanScreen/EventListItem"
 
 export const followingFeedScreen = ({navigation}) => {
     const [eventsList, setEventsList] = useState(null);
-    const[limit, setLimit] = useState(7);
     const [isFetching, setIsFetching] = useState(false);
     const [loading, setLoading] = useState();
     const { currentUser } = useContext(AuthContext);
@@ -19,70 +18,54 @@ export const followingFeedScreen = ({navigation}) => {
 
     useEffect(() => {
         try {
-            retrieveData();
+            retrieveEvents();
         }
         catch (error) {
             console.log('retrieveData error: ' + error);
         }
     }, []);
 
-    const retrieveData = async () => {
-        
-        let initialQuery = await db.collection('events')
-        .doc(currentUser.uid)
-        .collection('list').orderBy('start',"desc").limit(limit);
+    const retrieveEvents = async () => {
 
+        let initialQuery = await db.collection('profiles')
+            .doc(currentUser.uid)
+            .collection('friend_list');
+
+        let userList = [currentUser.uid];
+        
         initialQuery.onSnapshot((snapshot) => {
-            if(snapshot.size){
+            if(snapshot.size) {
                 setLoading(true);
 
-                let eventList = [];
-                snapshot.forEach(item => {
-                    eventList.push({...item.data(), id: item.id});
-                });
-
-                setTimeout(() => {
-                    setEventsList(eventList);
-                    setLoading(false);
-        
-                }, 500);
-
-            } else {
-                setLoading(false);
-            }
-        });
-    }
-    
-    const retrieveFriendsEvents = async () => {
-        let initialQuery = await db.collection('profile')
-        .doc(currentUser.uid)
-        .collection('friend_list').limit(limit);
-
-        initialQuery.onSnapshot((snapshot) => {
-            if(snapshot.size){
-
-                setIsFetching(true);
-                let moreEvents = [...eventsList];
                 snapshot.forEach(friend => {
-
-                    let friendEvents = db.collection('events')
-                    .doc(friend.uid)
-                    .collection('list').orderBy('start',"desc").limit(limit).where("public","==",true);
-
-                    friendEvents.onSnapshot((innerSnapshot) => {
-                        if(innerSnapshot.size){
-                            setIsFetching(true);
-                            innerSnapshot.forEach(innerItem => {
-                                moreEvents.push({...innerItem.data(), id: innerItem.id});
-                            });
-                        }
-                    });
-                });
+                    userList.push({...friend.data().friend_id})
+                })
             } else {
-                console.log('no more row to fetch')
-                setIsFetching(false);
+                console.log('no more rows to fetch')
+                setIsFetching(false)
             }
-        });
+        })
+        
+        let eventsList = [];
+
+        userList.forEach(user => {
+            let tempEvents = db.collection('events')
+                .doc(user)
+                .collection('list')
+                .where('public','==',true);
+            
+            tempEvents.onSnapshot((snapshot) => {
+                if(snapshot.size) {
+                    setIsFetching(true);
+                    snapshot.forEach(event => {
+                        eventsList.push({...event.data(), id: event.id});
+                    })
+                } else {
+                    console.log('no more rows to fetch')
+                    setIsFetching(false);
+                }   
+            })
+        })
     }
 
     const handleDetail = (itemDetail) => {
@@ -107,9 +90,6 @@ export const followingFeedScreen = ({navigation}) => {
                         onPressDetail={handleDetail}
                         onPressViewDetail = {handleViewDetail}
                 />}
-                onEndReached = {() =>
-                    retrieveFriendsEvents()
-                }
                 onEndReachedThreshold = {0.1}
             />
             {isFetching && <ActivityIndicator size="large" color ="#0097e6" />}
