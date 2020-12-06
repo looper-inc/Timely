@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   View,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import { Text } from "../components/Themed";
 import React, { useState, useEffect, useContext } from "react";
@@ -102,7 +102,7 @@ export const EventsScreen = ({ navigation }) => {
   };
 
   const handleEditEvent = itemDetail => {
-    //navigation.navigate("EditEvent", itemDetail);
+    navigation.navigate("EditEvent", itemDetail);
   };
 
   const handleViewDetail = itemDetail => {
