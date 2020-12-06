@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import * as React from 'react';
 import {useState, useEffect, useContext} from 'react'
 import { StyleSheet, Alert, Text, ActivityIndicator } from "react-native";
@@ -6,7 +5,7 @@ import { AuthContext } from "../providers/AuthProvider";
 import firebase from "../fbconfig"
 import { SafeAreaView } from 'react-navigation';
 import { FlatList } from 'react-native-gesture-handler';
-import ListItem from '../components/PlanScreen/ListItem';
+import EventListItem from "../components/PlanScreen/EventListItem"
 
 export const followingFeedScreen = ({navigation}) => {
     const [eventsList, setEventsList] = useState(null);
@@ -47,8 +46,6 @@ export const followingFeedScreen = ({navigation}) => {
                     setLoading(false);
         
                 }, 500);
-                
-                setLastVisited(last);
 
             } else {
                 setLoading(false);
@@ -57,20 +54,20 @@ export const followingFeedScreen = ({navigation}) => {
     }
     
     const retrieveFriendsEvents = async () => {
-        let initialQuery = await db.collection('friends_list')
+        let initialQuery = await db.collection('profile')
         .doc(currentUser.uid)
-        .collection('list').orderBy('start',"desc").limit(limit);
+        .collection('friend_list').limit(limit);
 
         initialQuery.onSnapshot((snapshot) => {
             if(snapshot.size){
 
                 setIsFetching(true);
                 let moreEvents = [...eventsList];
-                snapshot.forEach(item => {
+                snapshot.forEach(friend => {
 
-                    let friendEvents = await db.collection('events')
-                    .doc(item)
-                    .collection('list').orderBy('start',"desc").limit(limit);
+                    let friendEvents = db.collection('events')
+                    .doc(friend.uid)
+                    .collection('list').orderBy('start',"desc").limit(limit).where("public","==",true);
 
                     friendEvents.onSnapshot((innerSnapshot) => {
                         if(innerSnapshot.size){
@@ -104,10 +101,11 @@ export const followingFeedScreen = ({navigation}) => {
                 <>
                 <FlatList
                 data = {eventsList}
-                renderItem = {({item}) => <ListItem
-                    itemDetail={item}
-                    onPressDetail={handleDetail}
-                    onPressViewDetail = {handleViewDetail}
+                renderItem = {({item}) => 
+                    <EventListItem
+                        itemDetail={item}
+                        onPressDetail={handleDetail}
+                        onPressViewDetail = {handleViewDetail}
                 />}
                 onEndReached = {() =>
                     retrieveFriendsEvents()
@@ -123,85 +121,6 @@ export const followingFeedScreen = ({navigation}) => {
             }
         </SafeAreaView>
     );
-
-=======
-import * as React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import { StyleSheet, Alert, Text } from "react-native";
-import { AuthContext } from "../providers/AuthProvider";
-import firebase from "../fbconfig";
-import EventBlock from "../components/EventBlock";
-import { SafeAreaView } from "react-navigation";
-import { FlatList } from "react-native-gesture-handler";
-
-export default class FollowingFeedScreen extends React.Component<
-  {},
-  { following_events_list: Array<Object> }
-> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      following_events_list: []
-    };
-  }
-
-  // Access auth
-  static contextType = AuthContext;
-
-  componentDidMount() {
-    //this.getFollowingEvents()
-  }
-
-  getFollowingEvents() {
-    const { uid } = this.context.currentUser;
-    const db = firebase.firestore();
-    const { following_uids } = db
-      .collection("friends")
-      .doc(uid)
-      .collection("list")
-      .get();
-
-    // Getting correct document
-    return (
-      db
-        .collection("events")
-        .doc(following_uids)
-        .collection("list")
-        .get()
-        .then(docs => {
-          const following_events_list = [];
-          docs.forEach(doc => {
-            events_list.push(doc.data());
-          });
-          this.setState({ following_events_list }, () => {
-            console.log(this.state);
-          });
-        })
-        // Handle errors
-        .catch(function(err) {
-          Alert.alert("OOPS!", err.message, [{ text: "close" }]);
-          console.log(err);
-        })
-    );
-  }
-
-  renderItem = ({ item }) => {
-    return <EventBlock event={item} />;
-  };
-
-  render() {
-    return (
-      <SafeAreaView style={StyleSheet.container}>
-        <FlatList
-          style={{ width: "100%" }}
-          data={this.state.following_events_list}
-          renderItem={this.renderItem}
-          keyExtractor={event => event[0]}
-        />
-      </SafeAreaView>
-    );
-  }
->>>>>>> main
 }
 
 
@@ -210,15 +129,12 @@ export default class FollowingFeedScreen extends React.Component<
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center"
+    justifyContent: "center"
   },
   title: {
     fontSize: 20,
     fontWeight: "bold"
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%"
   }
 });
+
+export default followingFeedScreen;

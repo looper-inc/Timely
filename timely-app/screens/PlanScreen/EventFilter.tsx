@@ -2,7 +2,6 @@ import { StyleSheet, SafeAreaView, View, TouchableOpacity } from "react-native";
 import { Text } from "../../components/Themed";
 import React, { useState, useEffect, useContext } from "react";
 import { ButtonGroup } from "react-native-elements";
-import { switchCase } from "@babel/types";
 
 const EventFilter = ({ onPressAll, onPressByYou, onPressByOther }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
