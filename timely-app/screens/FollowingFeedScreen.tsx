@@ -5,7 +5,7 @@ import { AuthContext } from "../providers/AuthProvider";
 import firebase from "../fbconfig"
 import { SafeAreaView } from 'react-navigation';
 import { FlatList } from 'react-native-gesture-handler';
-import EventListItem from "../components/PlanScreen/EventListItem"
+import EventListItem from "../components/FeedScreen/EventListItem"
 
 export const followingFeedScreen = ({navigation}) => {
     const [eventsList, setEventsList] = useState(null);
@@ -38,32 +38,37 @@ export const followingFeedScreen = ({navigation}) => {
                 setLoading(true);
 
                 snapshot.forEach(friend => {
-                    userList.push({...friend.data().friend_id})
+                    let fid = friend.data().friend_id;
+                    userList.push(fid)
                 })
+
             } else {
-                console.log('no more rows to fetch')
+                console.log('no more rows to feetch')
                 setIsFetching(false)
             }
-        })
-        
-        let eventsList = [];
-
-        userList.forEach(user => {
-            let tempEvents = db.collection('events')
-                .doc(user)
-                .collection('list')
-                .where('public','==',true);
-            
-            tempEvents.onSnapshot((snapshot) => {
-                if(snapshot.size) {
-                    setIsFetching(true);
-                    snapshot.forEach(event => {
-                        eventsList.push({...event.data(), id: event.id});
-                    })
-                } else {
-                    console.log('no more rows to fetch')
-                    setIsFetching(false);
-                }   
+            let eventsList = [];
+    
+            userList.forEach(user => {
+                let tempEvents = db.collection('events')
+                    .doc(user)
+                    .collection('list')
+                    .where('public','==',true);
+                
+                tempEvents.onSnapshot((snap) => {
+                    if(snap.size) {
+                        setIsFetching(true);
+                        snap.forEach(event => {
+                            eventsList.push({...event.data(), id: event.id});
+                        })
+                        setTimeout(() => {
+                            setEventsList(eventsList)
+                            setLoading(false)
+                        }, 120);
+                    } else {
+                        console.log('no more rows to fetch')
+                        setIsFetching(false);
+                    } 
+                })
             })
         })
     }
