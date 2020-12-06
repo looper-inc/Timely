@@ -42,6 +42,7 @@ export default class FriendsScreen extends React.Component<{}, thisStates> {
 
   async handleGet(search: any) {
 
+    const db = firebase.firestore()
     const snapshot = await db.collection("profiles").orderBy("full_name").limit(20).get(search);
 
     snapshot.forEach(doc => {
