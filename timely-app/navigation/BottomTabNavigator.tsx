@@ -9,9 +9,10 @@ import PlanScreen from "../screens/PlanScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import TabOneScreen from "../screens/TabOneScreen";
-8;
 import TabTwoScreen from "../screens/TabTwoScreen";
 import FeedNavigator from "./FeedNavigator";
+import ProfileNavigator from './ProfileNavigator';
+
 import {
   BottomTabParamList,
   TabOneParamList,
@@ -36,7 +37,7 @@ export default function BottomTabNavigator() {
         component={TabOneNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+            <AntDesign name="team" size={25} color={color} />
           )
         }}
       />
@@ -61,10 +62,10 @@ export default function BottomTabNavigator() {
 
       <BottomTab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <AntDesign name="carryout" size={25} color={color} />
+            <AntDesign name="user" size={25} color={color} />
           )
         }}
       />

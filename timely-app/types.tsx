@@ -24,9 +24,11 @@ export type PlanParamList = {
 };
 
 export type ProfileParamList = {
-  ProfileScreen: undefined;
-}
-
+  Profile: {
+    uid: string
+  },
+  Settings: undefined,
+};
 export type PlanSelectParamList = {
   Events: undefined;
   Goals: undefined;
