@@ -5,6 +5,7 @@ import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig"; 
+import JoinEvent from "./JoinEvent"
 export default function TabOneScreen() {
 
   function handleSignOut(){
@@ -17,7 +18,13 @@ export default function TabOneScreen() {
       <FormButton
           buttonTitle="Test Sign Out" onPress={handleSignOut}
         />
+      <FormButton
+      //arbitary id, passed in by event or feed screen when function call
+          buttonTitle="Join Event" onPress={() => {JoinEvent('rfrrAqOrVcgjBQKBYmlXB9ZqgMJ2','TEyBcX1WrMsnoL5DujUE')
+        console.log('pressed Join Event')}}
+      />
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      
       <EditScreenInfo path="/screens/TabOneScreen.js" />
     </View>
   );
