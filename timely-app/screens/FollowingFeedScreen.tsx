@@ -5,7 +5,7 @@ import { AuthContext } from "../providers/AuthProvider";
 import firebase from "../fbconfig"
 import { SafeAreaView } from 'react-navigation';
 import { FlatList } from 'react-native-gesture-handler';
-import ListItem from '../components/PlanScreen/ListItem';
+//import ListItem from '../components/PlanScreen/ListItem';
 
 export const followingFeedScreen = ({navigation}) => {
     const [eventsList, setEventsList] = useState(null);
@@ -65,7 +65,7 @@ export const followingFeedScreen = ({navigation}) => {
 
                 setIsFetching(true);
                 let moreEvents = [...eventsList];
-                snapshot.forEach(item => {
+                snapshot.forEach(async item => {
 
                     let friendEvents = await db.collection('events')
                     .doc(item)
@@ -143,3 +143,5 @@ const styles = StyleSheet.create({
     width: "80%"
   }
 });
+
+export default followingFeedScreen;
