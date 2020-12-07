@@ -33,12 +33,13 @@ export const AddEvent = ({ route, navigation }) => {
   const [messText, setMessText] = useState();
 
   const displayModal = show => {
+    console.log("final picked member", inviteFriends);
     setModalVisible(show);
   };
 
   //this one will get friend list who have been invited
   const retrieveFriendInvitation = friend => {
-    console.log(friend);
+    //console.log(friend);
     let list;
     if (inviteFriends) {
       list = [...inviteFriends];
@@ -52,13 +53,13 @@ export const AddEvent = ({ route, navigation }) => {
     setInviteFriend(list);
   };
 
-  const cancelInvitation = item => {
+  const cancelInvitation = member => {
     if (inviteFriends) {
       // make a copy
       let friendData = JSON.parse(JSON.stringify(inviteFriends));
       friendData.forEach((data, idx) => {
-        if (item.id === data.id) {
-          console.log("remove " + item.id + " from invitation");
+        if (member.id === data.id) {
+          console.log("remove " + member.id + " from invitation");
           friendData.splice(idx, 1);
         }
       });
@@ -159,7 +160,7 @@ export const AddEvent = ({ route, navigation }) => {
         </View>
         <TouchableOpacity
           style={styles.memberDelete}
-          onPress={() => cancelInvitation(member.id)}
+          onPress={() => cancelInvitation(member)}
         >
           <AntDesign name="deleteuser" size={25} color="#f9fafd" />
         </TouchableOpacity>
