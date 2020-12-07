@@ -92,15 +92,14 @@ export const ProfileScreen = ({ navigation }) => {
     const pass = currentUser.email
 
     return (
-<div>
 <SafeAreaView style={styles.container}>
         {image && 
           <Image
             source={{ uri: image }}
             style={styles.defaultPic}
           />}
-            <h3>Name: {name}</h3>
-            <h3>Email: {email}</h3>
+            <Text>Name: {name}</Text>
+            <Text>Email: {email}</Text>
             <TouchableOpacity
       style={styles.buttonContainer}>
       <Text style={styles.buttonText}>View Password</Text>
@@ -113,6 +112,5 @@ export const ProfileScreen = ({ navigation }) => {
         buttonTitle="Sign Out" onPress={handleSignOut}
       />
         </SafeAreaView>
-        </div>
     )
 }
