@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { FlatList, StyleSheet, StatusBar } from 'react-native';
 
@@ -10,64 +9,76 @@ import firebase from "../fbconfig";
 import { SearchBar } from 'react-native-elements';
 
 const db = firebase.firestore();
-var searchResults = [];
 
-async function handleGet(search) {
-    // TODO: Clear the search results list.
-    // searchResults = [];
-
-    const snapshot = await db.collection("profiles").orderBy("full_name").limit(20).get(search);
-
-    snapshot.forEach(doc => {
-        // console.log("Search val is: " + search);
-        if (search != "" && doc.get("full_name").includes(search)) {
-            console.log(doc.get("first_name") + ' ' + doc.get("last_name") + ': ' + doc.id);
-
-            // TODO: Push to the search result list.
-            searchResults.push({
-                title: doc.get("first_name") + ' ' + doc.get("last_name"),
-                uid: doc.id,
-            });
-
-            console.log("searchResults: " + searchResults);
-
-            //TODO: Regenerate list when text in search bar changes
-
-        }
-    });
+type thisStates = {
+    search: string,
+    searchResults: any[],
+    lastTyped: Date
 }
 
-export default class FriendsScreen extends React.Component {
-    state = {
-        search: '',
-    };
+export default class FriendsScreen extends React.Component<{}, thisStates> {
 
-    // This is called when the search string changes.
-    // The var `search` holds the search string.
-    updateSearch = (search) => {
+    timeout: any = null;
+    db: any = firebase.firestore()
+    constructor(props: any) {
+        super(props)
+        this.state = {
+            search: '',
+            lastTyped: new Date(),
+            searchResults: []
+        };
+        this.timeout = 0;
+        this.handleGet = this.handleGet.bind(this)
+        this.onChangeText = this.onChangeText.bind(this)
+    }
+
+    async onChangeText(search: string) {
         this.setState({ search });
-        handleGet(search.toLowerCase());
-    };
+        if (this.timeout) clearTimeout(this.timeout);
+        this.timeout = setTimeout(async () => {
+            await this.handleGet(search.toLowerCase())
+        }, 1000);
+    }
+
+    async handleGet(search: any) {
+        try {
+            const snapshot = await this.db.collection("profiles").where('email', '==', search).limit(20).get();
+
+            const searchResults: any[] = []
+            snapshot.forEach(doc => {
+                // console.log("Search val is: " + search);
+
+                // TODO: Push to the search result list.
+                searchResults.push({
+                    title: doc.data().email,
+                    uid: doc.id,
+                });
+
+            });
+            this.setState({ searchResults }, () => console.log(searchResults))
+        }
+        catch (err) { console.log(err) }
+    }
+    // console.log(searchResults);
+    renderItem = ({ item }) => (
+        <Item title={item.title} />
+    );
 
     render() {
         const { search } = this.state;
 
-        // console.log(searchResults);
-        const renderItem = ({ item }) => (
-            <Item title={item.title} />
-        );
 
         return (
             <View>
                 <SearchBar
                     placeholder="Search"
-                    onChangeText={this.updateSearch}
+                    onChangeText={this.onChangeText}
                     value={search}
                 />
                 <FlatList
-                    data={searchResults}
+                    data={this.state.searchResults}
                     // data={testArr}
-                    renderItem={renderItem}
+                    renderItem={this.renderItem}
                 />
             </View>
         );
