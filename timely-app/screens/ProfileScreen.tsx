@@ -10,6 +10,7 @@ import { AuthContext } from "../providers/AuthProvider.js";
 import { Text, View } from '../components/Themed';
 import FormButton from '../components/FormButton';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import placeholder from '../assets/images/proplaceholder.jpg'
 
 const db = firebase.firestore();
 const fStorage = firebase.storage();
@@ -89,7 +90,7 @@ const ProfileScreen = ({ navigation }) => {
     function handleSignOut() {
         firebase.auth().signOut();
     }
-    const image = currentUser.profileImgURL
+    const image = currentUser.profileImgURL? currentUser.profileImgURL: placeholder
     const email = currentUser.email
     const bio = currentUser.bio
     const name = currentUser.displayName? currentUser.displayName : "Not yet set"
