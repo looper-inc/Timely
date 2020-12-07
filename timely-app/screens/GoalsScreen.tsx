@@ -126,13 +126,8 @@ export const GoalsScreen = ({ navigation }) => {
       .collection("list")
       .doc(itemDetail.id)
       .delete()
-<<<<<<< HEAD
       .then(function() {
         console.log("Goal successfully deleted!");
-=======
-      .then(function () {
-        console.log("Document successfully deleted!");
->>>>>>> fd18
       })
       .catch(function (error) {
         console.error("Error removing document: ", error);
