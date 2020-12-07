@@ -7,9 +7,6 @@ import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import PlanScreen from "../screens/PlanScreen";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import TabOneScreen from "../screens/TabOneScreen";
-8;
-import TabTwoScreen from "../screens/TabTwoScreen";
 import FeedNavigator from "./FeedNavigator";
 import {
   BottomTabParamList,
@@ -19,6 +16,7 @@ import {
   ProfileParamList
 } from "../types";
 import PlanNavigator from "./PlanNavigator";
+import ProfileNavigator from "./ProfileNavigator";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -60,7 +58,7 @@ export default function BottomTabNavigator() {
 
       <BottomTab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileNavigator}
         options={{
           tabBarIcon: ({ color }) => (
             <AntDesign name="carryout" size={25} color={color} />
