@@ -16,11 +16,8 @@ import {
   ProfileParamList
 } from "../types";
 import PlanNavigator from "./PlanNavigator";
-<<<<<<< HEAD
 import ProfileNavigator from "./ProfileNavigator";
-=======
 import FriendsNavigator from "./FriendsNavigator";
->>>>>>> fd18
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
