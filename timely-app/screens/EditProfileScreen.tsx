@@ -11,7 +11,6 @@ import ImagePicker from 'react-native-image-picker';
 import * as Progress from 'react-native-progress';
 
 import FormInput from '../components/FormInput';
-import FormButton from '../components/FormButton';
 
 import * as firebase from 'firebase';
 
