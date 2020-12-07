@@ -73,9 +73,11 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 12,
         fontWeight: "bold",
-        color: "#ffffff"
+        color: "#ffffff",
+        backgroundColor: "#4fc3f7"
       },
       button1: {
+        backgroundColor:"4fc3f7"
       },
     alertText: {
         margin: 5,

@@ -187,7 +187,8 @@ export const SignInScreen = ({navigation}) => {
             <Text style={styles.alertText}>{errors.password}</Text>
           }
 
-          <FormButton
+          <FormButton 
+            backgroundColor="4fc3f7"
             buttonTitle="Sign In" 
             onPress={handleSubmit} 
             disabled={!(isValid)}
@@ -199,8 +200,8 @@ export const SignInScreen = ({navigation}) => {
         <GoogleButton
             buttonTitle="Sign In with Google"
             btnType="google"
-            color="#de4d41"
-            backgroundColor="#f5e7ea"
+            color="#ffffff"
+            backgroundColor="#9b99ff"
             onPress={handleSignInWithGoogleAsync}
         />
   
@@ -224,7 +225,7 @@ export default SignInScreen;
 
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: '#f9fafd',
+      backgroundColor: '#000000',
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
     navButtonText: {
       fontSize: 18,
       fontWeight: '500',
-      color: '#2e64e5',
+      color: '#ffffff',
     },
     alertText:{
       margin: 5,
@@ -261,5 +262,11 @@ const styles = StyleSheet.create({
     forgotButton: {
       marginVertical: 10,
       fontSize: 13,
+    },
+    SignInbutton: {
+       backgroundColor: '#4fc3f7',
+       borderColor: 'red',
+       borderWidth: 5,
+       borderRadius: 15       
     }
   });

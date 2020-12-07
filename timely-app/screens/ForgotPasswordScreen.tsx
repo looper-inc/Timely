@@ -88,7 +88,7 @@ export default ForgotPasswordScreen;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#f9fafd',
+        backgroundColor: '#000000',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
