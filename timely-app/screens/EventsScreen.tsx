@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   View,
   Alert,
-  TouchableOpacity,
+  TouchableOpacity
 } from "react-native";
 import { Text } from "../components/Themed";
 import React, { useState, useEffect, useContext } from "react";
@@ -23,7 +23,6 @@ export const EventsScreen = ({ navigation }) => {
   const { currentUser } = useContext(AuthContext);
 
   const db = firebase.firestore();
-  const fStorage = firebase.storage();
 
   useEffect(() => {
     try {

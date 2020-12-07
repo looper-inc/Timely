@@ -75,13 +75,16 @@ const FriendListModal = props => {
                     if (member.id === friend.id) {
                       //console.log("isFriendSelected");
                       friend_list[index]["isFriendSelected"] = true;
+                      if (member.member) {
+                        friend_list[index]["isMemberFromDB"] = true;
+                      }
                     }
                   });
                 });
               } else {
                 setIsMembersEmpty(true);
               }
-              //console.log(friend_list);
+              console.log(friend_list);
               setFriendListData(friend_list);
               setIsFetching(false);
             }, 800);
@@ -118,7 +121,7 @@ const FriendListModal = props => {
                     <FriendListItem
                       member={item}
                       addMember={addMembers}
-                      onPressCancelInvation={sendCancelToModal}
+                      onPressCancelInvitation={sendCancelToModal}
                       checkMembersData={isMembersEmpty}
                       //extraData={friendListData}
                     />
