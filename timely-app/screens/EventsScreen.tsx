@@ -3,15 +3,19 @@ import {
   SafeAreaView,
   FlatList,
   ActivityIndicator,
-  Text,
+  View,
+  Alert,
+  TouchableOpacity
 } from "react-native";
+import { Text } from "../components/Themed";
 import React, { useState, useEffect, useContext } from "react";
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
-import GoalListItem from "../components/PlanScreen/GoalListItem";
+import EventListItem from "../components/PlanScreen/EventListItem";
+import EventFilter from "./PlanScreen/EventFilter";
 
-export const GoalsScreen = ({ navigation }) => {
-  const [goalList, setGoalList] = useState(null);
+export const EventsScreen = ({ navigation }) => {
+  const [eventList, setEventList] = useState(null);
   const [limit, setLimit] = useState(7);
   const [isFetching, setIsFetching] = useState(false);
   const [lastVisited, setLastVisited] = useState();
@@ -31,7 +35,7 @@ export const GoalsScreen = ({ navigation }) => {
 
   const retrieveData = async () => {
     let initialQuery = await db
-      .collection("goals")
+      .collection("events")
       .doc(currentUser.uid)
       .collection("list")
       .orderBy("created", "desc")
@@ -42,14 +46,14 @@ export const GoalsScreen = ({ navigation }) => {
         //set loading
         setLoading(true);
 
-        let goals = [];
+        let events = [];
         snapshot.forEach(item => {
-          goals.push({ ...item.data(), id: item.id });
+          events.push({ ...item.data(), id: item.id });
         });
-        //console.log(goals);
-        //set goals data to state
+        //console.log events);
+        //set events data to state
         setTimeout(() => {
-          setGoalList(goals);
+          setEventList(events);
           setLoading(false);
         }, 500);
         //Cloud Firestore: Last Visible Document
@@ -63,10 +67,9 @@ export const GoalsScreen = ({ navigation }) => {
       }
     });
   };
-
   const retrieveMoreData = async () => {
     let initialQuery = await db
-      .collection("goals")
+      .collection("events")
       .doc(currentUser.uid)
       .collection("list")
       .orderBy("created", "desc")
@@ -77,15 +80,15 @@ export const GoalsScreen = ({ navigation }) => {
       if (snapshot.size) {
         //set loading
         setIsFetching(true);
-        let moreGoals = [...goalList];
+        let moreEvents = [...eventList];
         snapshot.forEach(item => {
           //console.log(item.data())
-          moreGoals.push({ ...item.data(), id: item.id });
+          moreEvents.push({ ...item.data(), id: item.id });
         });
-        //console.log(moreGoals);
+        //console.log(moreEvents);
         setTimeout(() => {
-          //set goals data to state
-          setGoalList(moreGoals);
+          //set events data to state
+          setEventList(moreEvents);
           setIsFetching(false);
         }, 500);
 
@@ -98,51 +101,43 @@ export const GoalsScreen = ({ navigation }) => {
     });
   };
 
-  const handleDetail = itemDetail => {
-    navigation.navigate("EditGoal", itemDetail);
+  const handleEditEvent = itemDetail => {
+    //navigation.navigate("EditEvent", itemDetail);
   };
 
   const handleViewDetail = itemDetail => {
-    navigation.navigate("GoalDetail", itemDetail);
+    //navigation.navigate("EventDetail", itemDetail);
   };
 
   const handleRemoveGoal = itemDetail => {
-    if (itemDetail.picUrl) {
-      fStorage
-        .refFromURL(itemDetail.picUrl)
-        .delete()
-        .then(() => {
-          console.log("Old pic has been deleted!");
-        })
-        .catch(function(error) {
-          //setLoading(false)
-          console.log("Delete picture: Uh-oh, an error occurred! " + error);
-        });
-    }
-
-    db.collection("goals")
-      .doc(currentUser.uid)
-      .collection("list")
-      .doc(itemDetail.id)
-      .delete()
-      .then(function() {
-        console.log("Document successfully deleted!");
-      })
-      .catch(function(error) {
-        console.error("Error removing document: ", error);
-      });
+    // db.collection("events")
+    //   .doc(currentUser.uid)
+    //   .collection("list")
+    //   .doc(itemDetail.id)
+    //   .delete()
+    //   .then(function() {
+    //     console.log("Document successfully deleted!");
+    //   })
+    //   .catch(function(error) {
+    //     console.error("Error removing document: ", error);
+    //   });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {goalList ? (
+      <EventFilter
+        onPressAll={() => console.log("all pressed")}
+        onPressByYou={() => console.log("by you pressed")}
+        onPressByOther={() => console.log("by other pressed")}
+      />
+      {eventList ? (
         <>
           <FlatList
-            data={goalList}
+            data={eventList}
             renderItem={({ item }) => (
-              <GoalListItem
+              <EventListItem
                 itemDetail={item}
-                onPressDetail={handleDetail}
+                onPressDetail={handleEditEvent}
                 onPressVewDetail={handleViewDetail}
                 onPressRemoveGoal={handleRemoveGoal}
               />
@@ -155,8 +150,8 @@ export const GoalsScreen = ({ navigation }) => {
       ) : (
         <>
           {loading && <ActivityIndicator size="large" color="#0097e6" />}
-          {!goalList && !loading && (
-            <Text style={styles.noDataText}>No Goals Available.</Text>
+          {!eventList && !loading && (
+            <Text style={styles.noDataText}>No Events Available.</Text>
           )}
         </>
       )}
@@ -178,4 +173,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default GoalsScreen;
+export default EventsScreen;

@@ -56,6 +56,7 @@ export const ForgotPasswordScreen = ({ navigation }) => {
                 }) => (
                         <>
                             <FormInput
+                                nOfLines="1"
                                 labelValue={values.email}
                                 onChangeText={handleChange('email')}
                                 placeholderText="Email"

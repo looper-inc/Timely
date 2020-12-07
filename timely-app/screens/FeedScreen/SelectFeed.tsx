@@ -7,18 +7,22 @@ import {
   Dimensions
 } from "react-native";
 import SelectButton from "../../components/SelectButton";
+import NotificationButton from "../../components/NotificationButton";
 
 const windowHeight = Dimensions.get("window").height;
-const SelectPlan = ({ onSelect }) => {
+const SelectFeed = ({ onSelect, badge }) => {
   return (
     <View style={styles.container}>
       <SelectButton
-        buttonTitle="Events"
+        buttonTitle="Following"
         onPress={() => {
-          onSelect("Events");
+          onSelect("Following");
         }}
       />
-      <SelectButton buttonTitle="Goals" onPress={() => onSelect("Goals")} />
+      <NotificationButton
+        buttonTitle={badge}
+        onPress={() => onSelect("Notifications")}
+      />
     </View>
   );
 };
@@ -31,4 +35,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4
   }
 });
-export default SelectPlan;
+export default SelectFeed;
