@@ -6,7 +6,6 @@ import * as React from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import PlanScreen from "../screens/PlanScreen";
-import ProfileScreen from "../screens/ProfileScreen";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import TabOneScreen from "../screens/TabOneScreen";
 8;
@@ -71,7 +70,6 @@ export default function BottomTabNavigator() {
     </BottomTab.Navigator>
   );
 }
-
 // You can explore the built-in icon families and icons on the web at:
 // https://icons.expo.fyi/
 function TabBarIcon(props: { name: string; color: string }) {
