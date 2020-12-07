@@ -37,16 +37,6 @@ const EventFilter = ({ onPressAll, onPressByYou, onPressByOther }) => {
 
   return (
     <View style={styles.filterContent}>
-      {/* <Text>Event Filter:</Text>
-      <TouchableOpacity style={styles.allButton} onPress={onPressAll}>
-        <Text style={styles.filterText}>All</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.byYouButton} onPress={onPressByYou}>
-        <Text style={styles.filterText}>Own by you</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.byOtherButton} onPress={onPressByOther}>
-        <Text style={styles.filterText}>Own by other</Text>
-      </TouchableOpacity> */}
       <Text style={styles.filterText}>Event Filter:</Text>
       <ButtonGroup
         onPress={selectedIndex => updateIndex(selectedIndex)}
@@ -63,9 +53,7 @@ export default EventFilter;
 
 const styles = StyleSheet.create({
   filterContent: {
-    //flexDirection: "row",
-    //backgroundColor: "#3c6382",
-    alignContent: "center"
+    alignItems: "flex-start"
   },
   buttonContainer: {
     height: 30,
