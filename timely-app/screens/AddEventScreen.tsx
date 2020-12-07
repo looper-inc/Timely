@@ -33,7 +33,6 @@ export const AddEvent = ({ route, navigation }) => {
   const [messText, setMessText] = useState();
 
   const displayModal = show => {
-    console.log("final picked member", inviteFriends);
     setModalVisible(show);
   };
 

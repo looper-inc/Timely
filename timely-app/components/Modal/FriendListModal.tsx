@@ -84,7 +84,7 @@ const FriendListModal = props => {
               } else {
                 setIsMembersEmpty(true);
               }
-              console.log(friend_list);
+              //console.log(friend_list);
               setFriendListData(friend_list);
               setIsFetching(false);
             }, 800);
