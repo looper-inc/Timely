@@ -102,7 +102,7 @@ export const EventsScreen = ({ navigation }) => {
   };
 
   const handleEditEvent = itemDetail => {
-    //navigation.navigate("EditEvent", itemDetail);
+    navigation.navigate("EditEvent", itemDetail);
     //console.log("Document successfully deleted!");
   };
 
@@ -111,7 +111,6 @@ export const EventsScreen = ({ navigation }) => {
   };
 
   const handleRemoveGoal = itemDetail => {
-   
     db.collection("events")
       .doc(currentUser.uid)
       .collection("list")
@@ -123,7 +122,6 @@ export const EventsScreen = ({ navigation }) => {
       .catch(function(error) {
         console.error("Error removing document: ", error);
       });
-      
   };
 
   return (
@@ -164,7 +162,7 @@ export const EventsScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   noDataText: {
     fontSize: 16,
