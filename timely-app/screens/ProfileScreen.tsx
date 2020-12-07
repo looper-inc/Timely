@@ -18,7 +18,7 @@ const fStorage = firebase.storage();
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#f9fafd',
+        backgroundColor: '#000000',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     },
     dispText: {
         fontSize: 18,
-        color: "#222222",
+        color: "#fefefe",
         margin: 20
       },
     buttonText: {
