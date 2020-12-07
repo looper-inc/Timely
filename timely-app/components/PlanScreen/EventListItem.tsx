@@ -20,7 +20,7 @@ export const EventListItem = ({
   onPressDetail,
   itemDetail,
   onPressVewDetail,
-  onPressRemoveGoal
+  onPressRemoveEvent
 }) => {
   const createDeleteAlert = () =>
     Alert.alert(
@@ -32,7 +32,7 @@ export const EventListItem = ({
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
-        { text: "DELETE", onPress: () => console.log("Delete event Pressed") }
+        { text: "DELETE", onPress: () => onPressRemoveEvent(itemDetail) }
       ],
       { cancelable: false }
     );

@@ -107,6 +107,7 @@ export const GoalsScreen = ({ navigation }) => {
   };
 
   const handleRemoveGoal = itemDetail => {
+    console.log("check if here");
     if (itemDetail.picUrl) {
       fStorage
         .refFromURL(itemDetail.picUrl)
@@ -126,7 +127,7 @@ export const GoalsScreen = ({ navigation }) => {
       .doc(itemDetail.id)
       .delete()
       .then(function() {
-        console.log("Document successfully deleted!");
+        console.log("Goal successfully deleted!");
       })
       .catch(function(error) {
         console.error("Error removing document: ", error);

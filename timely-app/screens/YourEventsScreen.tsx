@@ -8,7 +8,7 @@ import firebase from "../fbconfig";
 import { events12 } from '../constants/DummyData'
 import { AuthContext } from '../providers/AuthProvider';
 
-export default class YourEventsScreen extends React.Component<{}, { events_list: Array<Object> }>{
+export default class YourEventsScreen extends React.Component<{}, { events_list: any[] }>{
   constructor(props) {
     super(props)
     this.state = {
@@ -33,13 +33,13 @@ export default class YourEventsScreen extends React.Component<{}, { events_list:
     // Getting correct document in events collection
     return db.collection('events').doc(uid).collection('list').get()
       .then(docs => {
-        const events_list = []
-        docs.forEach(doc => {
-          events_list.push(doc.data())
+        const events_list: any[] = []
+        docs.forEach((doc) => {
+
+          events_list.push({ ...doc.data(), id: doc.id })
         })
         this.setState(
           { events_list },
-          () => { console.log(this.state) }
         )
       })
       // Handle errors
@@ -54,7 +54,7 @@ export default class YourEventsScreen extends React.Component<{}, { events_list:
   }
 
   renderItem = ({ item }) => {
-    return <EventBlock event={item} />
+    return <EventBlock event={item} key={item.id} />
   }
 
   render() {

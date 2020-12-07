@@ -1,4 +1,4 @@
-import {
+/*import {
     SafeAreaView, Switch, StyleSheet, ScrollView, View,
     Text, TextInput, TouchableOpacity, Image, Platform, Dimensions
 } from 'react-native'
@@ -22,7 +22,7 @@ export default class ProfileScreen extends React.Component<{}> {
             return <NewEventButton selected={this.state.selected} {...props} />;
           }
         });
-        this.handleSelect = this.handleSelect.bind(this);*/
+        this.handleSelect = this.handleSelect.bind(this);
     }
     componentWillMount() {
         const retrieveData = async () => {
@@ -41,7 +41,7 @@ export default class ProfileScreen extends React.Component<{}> {
                     let profile = snapshot;
                     /*snapshot.forEach(item => {
                         goals.push({ ...item.data(), id: item.id });
-                    });*/
+                    });
                     this.setState({gotData: true, profile: profile});
                     //console.log(goals);
                     //set goals data to state
@@ -157,7 +157,7 @@ export default class ProfileScreen extends React.Component<{}> {
                         </View>
                     </SafeAreaView>
                 </ScrollView>
-                            */<div>{this.state.profile}</div>)
+                            <div>{this.state.profile}</div>)
         )
     }
 }
@@ -241,3 +241,80 @@ const styles = StyleSheet.create({
     },
 
 })
+*/
+import { StyleSheet, Alert, Image, SafeAreaView } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react'
+import FormInput from '../components/FormInput';
+import FormButton from '../components/FormButton';
+import firebase from "../fbconfig";
+import { Text, View } from '../components/Themed';
+import { Formik } from 'formik';
+import ImagePicker from 'react-native-image-picker';
+import * as Progress from 'react-native-progress';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { AuthContext } from '../providers/AuthProvider';
+
+export const ProfileScreen = ({ navigation }) => {
+
+    const db = firebase.firestore();
+    const { currentUser } = useContext(AuthContext);
+    const user = firebase.auth();
+
+    useEffect(() => {
+        console.log('user', currentUser)
+    }, [])
+    return (
+        <SafeAreaView style={styles.container}>
+            <TouchableOpacity
+                style={styles.verticalButton}
+                onPress={() => navigation.navigate('Settings')}>
+                <Image
+                    source={require('../assets/images/cog.png')}
+                    style={styles.cog}
+                />
+            </TouchableOpacity>
+
+            <Image
+                source={currentUser.profileImgURL}
+                style={styles.profile_picture}
+            />
+        </SafeAreaView>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#f9fafd',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20
+    },
+    verticalButton: {
+
+    },
+    cog: {
+        width: 50,
+        height: 50,
+    },
+    profile_picture: {
+
+    },
+    bottomText: {
+        fontFamily: 'Roboto',
+        textAlign: 'center',
+        fontSize: 14,
+        color: '#000000',
+        marginBottom: 25,
+    },
+    textInput: {
+
+    },
+    alertText: {
+        margin: 5,
+        color: '#ff7979',
+        fontSize: 12,
+        marginTop: 0,
+        fontWeight: 'bold'
+    }
+});
