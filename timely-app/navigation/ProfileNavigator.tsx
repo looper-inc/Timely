@@ -1,8 +1,8 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
-import { ProfileScreen } from '../screens/ProfileScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import { EditProfileScreen } from '../screens/EditProfileScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 import {
     ProfileParamList

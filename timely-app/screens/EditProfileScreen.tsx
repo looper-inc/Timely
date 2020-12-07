@@ -14,7 +14,7 @@ import FormInput from '../components/FormInput';
 
 import * as firebase from 'firebase';
 
-export default class EditProfile extends React.Component <{ route: any, navigation: any }, { currentPassword: string, newPassword:string }> {
+export default class EditProfileScreen extends React.Component <{ route: any, navigation: any }, { currentPassword: string, newPassword:string }> {
  
     constructor(props) {
         super(props);

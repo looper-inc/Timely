@@ -75,8 +75,7 @@ const styles = StyleSheet.create({
     }
 });
 
-
-export const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = ({ navigation }) => {
 
     const db = firebase.firestore();
     const { currentUser } = useContext(AuthContext);
@@ -110,3 +109,5 @@ export const ProfileScreen = ({ navigation }) => {
         </SafeAreaView>
     )
 }
+
+export default ProfileScreen;

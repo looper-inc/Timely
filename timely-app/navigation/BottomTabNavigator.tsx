@@ -34,7 +34,7 @@ export default function BottomTabNavigator() {
         component={FriendsNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="team" color={color} />
+            <AntDesign name="team" size={25} color={color} />
           )
         }}
       />
