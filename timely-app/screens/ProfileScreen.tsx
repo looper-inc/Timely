@@ -102,7 +102,6 @@ export const ProfileScreen = ({ navigation }) => {
 
             <FormButton
         buttonTitle="Change Password" onPress={()=>{
-            
         }}
       />
     <FormButton

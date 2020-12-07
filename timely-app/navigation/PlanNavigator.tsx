@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import AddEvent from '../screens/AddEventScreen';
+import EditEvent from '../screens/EditEventScreen';
 import NewGoal from '../screens/NewGoalScreen';
 import PlanScreen from '../screens/PlanScreen';
 import EditGoal from '../screens/EditGoalScreen';
@@ -28,6 +29,14 @@ export default function PlanNavigator() {
                     headerTitle: 'New Event',
                 }}
             />
+            <PlanStack.Screen
+                name="EditEvent"
+                component={EditEvent}
+                options={{
+                    headerTitle: 'Edit Event',
+                }}
+            />
+
             <PlanStack.Screen
                 name="NewGoal"
                 component={NewGoal}
