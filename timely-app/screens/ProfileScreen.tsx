@@ -120,15 +120,10 @@ const ProfileScreen = ({ navigation }) => {
           />}
             <Text style={styles.dispText}>Name: {name}</Text>
             <Text style={styles.dispText}>Email: {email}</Text>
-<<<<<<< HEAD
             <Text style={styles.dispText}>Bio: {profile.bio}</Text>
             <FormButton buttonTitle="Change Password" onPress={()=>{navigation.navigate("EditProfile")}}/>
             <FormButton buttonTitle="Sign Out" onPress={handleSignOut}/>
-=======
-            <Text style={styles.dispText}>Bio: {bio}</Text>
-            <FormButton  buttonTitle="Change Password" onPress={()=>{navigation.navigate("EditProfile")}}/>
-            <FormButton  buttonTitle="Sign Out" onPress={handleSignOut}/>
->>>>>>> 988124c46adbb04257e7d39994d90abfa950d00d
+          
         </SafeAreaView>
     )
 }
