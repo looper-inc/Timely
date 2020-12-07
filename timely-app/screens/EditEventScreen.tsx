@@ -31,7 +31,13 @@ export const EditEventScreen = ({ route, navigation }) => {
   const [isDone, setIsDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [messText, setMessText] = useState();
+  const db = firebase.firestore();
 
+  const current_event_id = route.params.id;
+
+  useEffect(() => {
+    retrieveMembersFromDB(current_event_id);
+  }, []);
 
   const displayModal = show => {
     setModalVisible(show);
@@ -53,20 +59,125 @@ export const EditEventScreen = ({ route, navigation }) => {
     setInviteFriend(list);
   };
 
-  const cancelInvitation = id => {
+  const cancelInvitation = async item => {
     if (inviteFriends) {
-      // make a copy
-      let friendData = JSON.parse(JSON.stringify(inviteFriends));
-      friendData.forEach((data, idx) => {
-        if (id === data.id) {
-          console.log("remove " + id + " from invitation");
-          friendData.splice(idx, 1);
+      if (item.member) {
+        //deleting member who has been invited
+        try {
+          let initialQuery = await db
+            .collection("events")
+            .doc(currentUser.uid)
+            .collection("list")
+            .doc(current_event_id)
+            .collection("members");
+          initialQuery
+            .doc(item.member.id)
+            .delete()
+            .then(result => {
+              console.log("deleted member successfully");
+              updateMembersAfterRemoved(item.member.friend_id);
+            });
+          //deleting member_notify
+          let query = await db
+            .collection("notification")
+            .doc(item.id)
+            .collection("member_notify");
+          // looking for notifications which belong to current event
+          query
+            .where("event_id", "==", current_event_id)
+            .get()
+            .then(doc => {
+              if (doc.size) {
+                doc.forEach(item => {
+                  //console.log(item.data());
+                  query
+                    .doc(item.id)
+                    .delete()
+                    .then(result => {
+                      console.log(
+                        "deleted member_notify successfully: ",
+                        result.id
+                      );
+                    });
+                });
+              } else {
+                console.log("no notification to delete");
+              }
+            });
+        } catch (error) {
+          console.log("delete invitation from database error", error);
         }
-      });
-      //set to state again
-      setInviteFriend(friendData);
+      } else {
+        console.log("go there", item.id);
+        //after deleted members, should update state
+        updateMembersAfterRemoved(item.id);
+      }
     } else {
       console.log("friends invitation is empty!");
+    }
+  };
+
+  const updateMembersAfterRemoved = id => {
+    // make a copy
+    let friendData = JSON.parse(JSON.stringify(inviteFriends));
+    friendData.forEach((data, idx) => {
+      if (id === data.id) {
+        console.log("remove " + id + " from invitation");
+        friendData.splice(idx, 1);
+      }
+    });
+    //set to state again
+    setInviteFriend(friendData);
+  };
+
+  const createDeleteAlert = item =>
+    Alert.alert(
+      "Member Delete",
+      "Are you sure about this?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed", item),
+          style: "cancel"
+        },
+        { text: "DELETE", onPress: () => cancelInvitation(item) }
+      ],
+      { cancelable: false }
+    );
+
+  const retrieveMembersFromDB = async eventID => {
+    try {
+      let initialQuery = await db
+        .collection("events")
+        .doc(currentUser.uid)
+        .collection("list")
+        .doc(eventID)
+        .collection("members");
+      initialQuery.get().then(snapshot => {
+        let friend_list = [];
+        snapshot.forEach(item => {
+          return db
+            .collection("profiles")
+            .doc(item.data().friend_id)
+            .get()
+            .then(doc => {
+              //console.log({...doc.data(), id: doc.id})
+              friend_list.push({
+                ...doc.data(),
+                id: doc.id,
+                member: { ...item.data(), id: item.id }
+              });
+            });
+        });
+        setTimeout(() => {
+          //setLoading(false);
+          console.log(friend_list);
+
+          setInviteFriend(friend_list);
+        }, 500);
+      });
+    } catch (error) {
+      console.log("retrieve friends from database error", error);
     }
   };
 
@@ -83,68 +194,75 @@ export const EditEventScreen = ({ route, navigation }) => {
     const query = db
       .collection("events")
       .doc(uid)
-      .collection("list");
+      .collection("list")
+      .doc(current_event_id);
     // Setting events doc
     return (
       query
-        .add({
+        .update({
           ...values,
           event_status: "TBD",
           created: now,
-          timezone_offset: new Date().getTimezoneOffset()
+          timezone_offset: new Date().getTimezoneOffset(),
+          modifiedDate: Date.now()
         }) // Merge to not overwrite, but set to create if not exists
         // What to do after
         .then(doc => {
           if (inviteFriends) {
             setMessText("Adding members...");
             inviteFriends.forEach((data, idx) => {
-              const noti_data = {
-                created: now,
-                type: "inviteToEvent",
-                uid_from: currentUser.uid,
-                email_from: currentUser.email,
-                uid_to: data.id,
-                message: "",
-                event_id: doc.id,
-                event_title: values.title,
-                status: "pending"
-              };
-              db.collection("notification")
-                .doc(data.id)
-                .collection("member_notify")
-                .add(noti_data)
-                .then(() => {
-                  console.log("added notification successfully");
-                });
-              query
-                .doc(doc.id)
-                .collection("members")
-                .add({
+              //update new member only
+              if (!data.member) {
+                const noti_data = {
                   created: now,
-                  status: "pending",
-                  friend_id: data.id
-                })
-                .then(() => {
-                  //console.log("added members to event successfully");
-                  setIsDone(true);
-                });
-              setMessText("Updated event successfully");
-              setTimeout(() => {
-                setLoading(false);
-                navigation.navigate("PlanScreen");
-              }, 1500);
+                  type: "inviteToEvent",
+                  uid_from: currentUser.uid,
+                  email_from: currentUser.email,
+                  uid_to: data.id,
+                  message: "",
+                  event_id: current_event_id,
+                  event_title: values.title,
+                  status: "pending"
+                };
+                db.collection("notification")
+                  .doc(data.id)
+                  .collection("member_notify")
+                  .add(noti_data)
+                  .then(() => {
+                    console.log("added notification successfully");
+                  });
+
+                query
+                  .collection("members")
+                  .add({
+                    created: now,
+                    status: "pending",
+                    friend_id: data.id
+                  })
+                  .then(() => {
+                    //console.log("added members to event successfully");
+                    setIsDone(true);
+                  });
+              }
             });
           }
+          setIsDone(true);
+          setMessText("Updated event successfully");
+          setTimeout(() => {
+            setLoading(false);
+            navigation.navigate("PlanScreen");
+          }, 500);
         })
         // Handle errors
         .catch(function(err) {
           Alert.alert("OOPS!", err.message, [{ text: "close" }]);
+          setLoading(false);
           console.log(err);
         })
     );
   };
 
-  const memberList = member => {
+  const memberListItem = member => {
     let fullName;
     if (member.first_name && member.last_name) {
       fullName = member.first_name + " " + member.last_name;
@@ -157,9 +275,15 @@ export const EditEventScreen = ({ route, navigation }) => {
           )}
           <Text>{member.email}</Text>
         </View>
+
+        {member.member && (
+          <View style={styles.memberStatus}>
+            <Text style={styles.memberStatusText}>{member.member.status}</Text>
+          </View>
+        )}
         <TouchableOpacity
           style={styles.memberDelete}
-          onPress={() => cancelInvitation(member.id)}
+          onPress={() => createDeleteAlert(member)}
         >
           <AntDesign name="deleteuser" size={25} color="#f9fafd" />
         </TouchableOpacity>
@@ -276,15 +400,15 @@ export const EditEventScreen = ({ route, navigation }) => {
                   {inviteFriends && (
                     <FlatList
                       data={inviteFriends}
-                      renderItem={({ item }) => memberList(item)}
+                      renderItem={({ item }) => memberListItem(item)}
                     />
                   )}
                 </View>
 
                 <FormButton
-                  buttonTitle="Submit"
+                  buttonTitle="Update"
                   onPress={() => {
-                    if (!dirty) return Alert.alert("Please input values");
+                    //if (!dirty) return Alert.alert("Please input values");
                     if (!isValid) return Alert.alert("Invalid fields");
                     return handleSubmit(values);
                   }}
@@ -321,7 +445,6 @@ const styles = StyleSheet.create({
     margin: 5,
     borderRadius: 3,
     width: "40%",
-
     alignItems: "center"
   },
   inviteText: {
@@ -356,5 +479,20 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginVertical: 5,
     marginRight: 10
+  },
+  memberStatus: {
+    backgroundColor: "#273c75",
+    color: "#ecf0f1",
+    borderRadius: 3,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignSelf: "flex-start",
+    marginHorizontal: 10,
+    marginTop: 7
+  },
+  memberStatusText: {
+    fontSize: 10,
+    fontWeight: "bold",
+    alignSelf: "center"
   }
 });
