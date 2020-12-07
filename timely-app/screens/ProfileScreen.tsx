@@ -29,15 +29,17 @@ const styles = StyleSheet.create({
     },
     defaultPic: {
         backgroundColor: "#dcdde1",
-        height: windowHeight / 10,
-        width: windowHeight / 10,
+        height: windowHeight / 4,
+        width: windowHeight / 4,
         borderColor: "#ccc",
-        borderRadius: windowHeight / 10 / 2,
-        borderWidth: 1,
+        borderRadius: windowHeight / 4 / 2,
+        borderWidth: 0,
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        marginHorizontal: 20
+        marginHorizontal: 20,
+        marginTop:10,
+        marginBottom:50
       },
     cog: {
         width: 50,
@@ -64,14 +66,16 @@ const styles = StyleSheet.create({
 
     },
     dispText: {
-        fontSize: 14,
-        fontWeight: "bold",
-        color: "#000000"
+        fontSize: 18,
+        color: "#222222",
+        margin: 20
       },
     buttonText: {
         fontSize: 12,
         fontWeight: "bold",
         color: "#ffffff"
+      },
+      button1: {
       },
     alertText: {
         margin: 5,
@@ -116,9 +120,15 @@ const ProfileScreen = ({ navigation }) => {
           />}
             <Text style={styles.dispText}>Name: {name}</Text>
             <Text style={styles.dispText}>Email: {email}</Text>
+<<<<<<< HEAD
             <Text style={styles.dispText}>Bio: {profile.bio}</Text>
             <FormButton buttonTitle="Change Password" onPress={()=>{navigation.navigate("EditProfile")}}/>
             <FormButton buttonTitle="Sign Out" onPress={handleSignOut}/>
+=======
+            <Text style={styles.dispText}>Bio: {bio}</Text>
+            <FormButton  buttonTitle="Change Password" onPress={()=>{navigation.navigate("EditProfile")}}/>
+            <FormButton  buttonTitle="Sign Out" onPress={handleSignOut}/>
+>>>>>>> 988124c46adbb04257e7d39994d90abfa950d00d
         </SafeAreaView>
     )
 }

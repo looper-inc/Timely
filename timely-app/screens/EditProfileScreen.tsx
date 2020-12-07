@@ -34,6 +34,7 @@ export default class EditProfileScreen extends React.Component <{ route: any, na
         this.reauthenticate(this.state.currentPassword).then(() => {
           var user = firebase.auth().currentUser;
           user.updatePassword(this.state.newPassword).then(() => {
+            this.props.navigation.goBack()
             Alert.alert("Password was changed");
           }).catch((error) => { console.log(error.message); });
         }).catch((error) => { console.log(error.message) });
@@ -42,21 +43,17 @@ export default class EditProfileScreen extends React.Component <{ route: any, na
 
     return(
 
-        <SafeAreaView>
+    <SafeAreaView>
     
-      < TextInput style= {styles.topText} value={this.state.currentPassword} 
-         placeholder= "Current Password" secureTextEntry = {true} onChangeText= {(text) => { this.setState({currentPassword: text}) }} 
-    />
+        <TextInput style= {styles.topText} value={this.state.currentPassword} 
+             placeholder= "Current Password" secureTextEntry = {true} onChangeText= {(text) => { this.setState({currentPassword: text}) }} />
 
-    < TextInput style= {styles.topText} value={this.state.newPassword} 
-    placeholder= "New Password" secureTextEntry = {true} onChangeText= {(text) => { this.setState({newPassword: text}) }} />
+        <TextInput style= {styles.topText} value={this.state.newPassword} 
+            placeholder= "New Password" secureTextEntry = {true} onChangeText= {(text) => { this.setState({newPassword: text}) }} />
 
-    <Button title="Change Password" onPress = {this.onChangePasswordPress} />
-       
+        <FormButton  buttonTitle="Change Password" onPress={this.onChangePasswordPress}/>
+
     </SafeAreaView>
- 
-      
-      
      );
 }
 }
@@ -71,14 +68,12 @@ const styles = StyleSheet.create({
     },
 
     topText: {
-        fontFamily: 'Roboto',
         textAlign: 'center',
-        fontSize: 18,
+        fontSize: 24,
         color: '#000000',
-        marginBottom: 25,
+        margin: 25,
     },
     bottomText: {
-        fontFamily: 'Roboto',
         textAlign: 'center',
         fontSize: 14,
         color: '#000000',
