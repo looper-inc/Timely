@@ -19,13 +19,8 @@ import {
 export const EventListItem = ({
   onPressDetail,
   itemDetail,
-<<<<<<< HEAD
   onPressVewDetail,
   onPressRemoveEvent
-=======
-  onPressViewDetail,
-  onPressRemoveGoal
->>>>>>> fd18
 }) => {
   const createDeleteAlert = () =>
     Alert.alert(

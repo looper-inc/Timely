@@ -138,7 +138,7 @@ export const SignInScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
         <Image
-          source={require('../assets/images/logo_looper.png')}
+          source={require('../assets/images/logo.png')}
           style={styles.logo}
         />
         {/* <Text style={styles.text}>Timely</Text> */}
