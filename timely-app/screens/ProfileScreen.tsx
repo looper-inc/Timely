@@ -11,6 +11,7 @@ import { Text, View } from '../components/Themed';
 import FormButton from '../components/FormButton';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import placeholder from '../assets/images/proplaceholder.jpg'
+import EditProfileScreen from './EditProfileScreen';
 
 const db = firebase.firestore();
 const fStorage = firebase.storage();
@@ -105,13 +106,8 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={styles.dispText}>Name: {name}</Text>
             <Text style={styles.dispText}>Email: {email}</Text>
             <Text style={styles.dispText}>Bio: {bio}</Text>
-            <FormButton
-        buttonTitle="Change Password" onPress={()=>{
-        }}
-      />
-    <FormButton
-        buttonTitle="Sign Out" onPress={handleSignOut}
-      />
+            <FormButton buttonTitle="Change Password" onPress={()=>{navigation.navigate("EditProfile")}}/>
+            <FormButton buttonTitle="Sign Out" onPress={handleSignOut}/>
         </SafeAreaView>
     )
 }
