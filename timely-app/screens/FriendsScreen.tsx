@@ -61,7 +61,7 @@ export default class FriendsScreen extends React.Component<{}, thisStates> {
     }
     // console.log(searchResults);
     renderItem = ({ item }) => (
-        <Item title={item.title} />
+        <Item title={item.title} key={item.uid} />
     );
 
     render() {
