@@ -61,7 +61,7 @@ export default function BottomTabNavigator() {
         component={ProfileNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <AntDesign name="carryout" size={25} color={color} />
+            <AntDesign name="user" size={25} color={color} />
           )
         }}
       />
