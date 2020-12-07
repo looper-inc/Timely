@@ -18,7 +18,7 @@ let itemColor;
 const FriendListItem = ({
   member,
   addMember,
-  onPressCancelInvation,
+  onPressCancelInvitation,
   checkMembersData
 }) => {
   const [isSelected, setIsSelected] = useState(false);
@@ -46,8 +46,6 @@ const FriendListItem = ({
       //console.log("Friend selected? ", isSelected);
       setItemColor(styles.selected);
     } else {
-      //cancel a invitation
-      onPressCancelInvation(member.id);
       //console.log("Friend selected? ", isSelected);
       setItemColor(styles.memberList);
     }
@@ -71,25 +69,39 @@ const FriendListItem = ({
         )}
         <Text style={styles.contentText}>{member.email}</Text>
       </View>
+      {//check if member data got from db
+      !member.isMemberFromDB ? (
+        <>
+          {!isSelected ? (
+            <TouchableOpacity
+              style={styles.memberSelect}
+              onPress={() => {
+                isFriendSelected(true);
+                //this func is retrieveFriendInvitation in AddEventScreen
+                addMember(member);
+              }}
+            >
+              <AntDesign name="plus" size={25} color="#718093" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.memberSelected}
+              onPress={() => {
+                isFriendSelected(false);
+                console.log("cancel member", member);
 
-      {!isSelected ? (
-        <TouchableOpacity
-          style={styles.memberSelect}
-          onPress={() => {
-            isFriendSelected(true);
-            //this func is retrieveFriendInvitation in AddEventScreen
-            addMember(member);
-          }}
-        >
-          <AntDesign name="plus" size={25} color="#718093" />
-        </TouchableOpacity>
+                //cancel a invitation
+                onPressCancelInvitation(member);
+              }}
+            >
+              <AntDesign name="check" size={25} color="#f5f6fa" />
+            </TouchableOpacity>
+          )}
+        </>
       ) : (
-        <TouchableOpacity
-          style={styles.memberSelected}
-          onPress={() => isFriendSelected(false)}
-        >
-          <AntDesign name="check" size={25} color="#f5f6fa" />
-        </TouchableOpacity>
+        <View style={styles.memberInvited}>
+          <Text style={styles.memberInvitedText}>invited</Text>
+        </View>
       )}
     </View>
   );
@@ -150,6 +162,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginVertical: 5,
     marginRight: 10
+  },
+  memberInvited: {
+    backgroundColor: "#273c75",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5
+  },
+  memberInvitedText: {
+    color: "#dcdde1"
   },
   defaultPic: {
     backgroundColor: "#dcdde1",
