@@ -16,7 +16,11 @@ import {
   ProfileParamList
 } from "../types";
 import PlanNavigator from "./PlanNavigator";
+<<<<<<< HEAD
 import ProfileNavigator from "./ProfileNavigator";
+=======
+import FriendsNavigator from "./FriendsNavigator";
+>>>>>>> fd18
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -31,6 +35,15 @@ export default function BottomTabNavigator() {
       <BottomTab.Screen
         name="TabOne"
         component={TabOneNavigator}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="ios-code" color={color} />
+          )
+        }}
+      />
+      <BottomTab.Screen
+        name="Friends"
+        component={FriendsNavigator}
         options={{
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="ios-code" color={color} />

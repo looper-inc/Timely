@@ -1,15 +1,15 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import FeedScreen from "../screens/FeedScreen";
-import { PlanParamList } from "../types";
+import { FeedParamList } from "../types";
 
-const FeedStack = createStackNavigator<PlanParamList>();
+const FeedStack = createStackNavigator<FeedParamList>();
 
 export default function FeedNavigator() {
   return (
     <FeedStack.Navigator>
       <FeedStack.Screen
-        name="FeedScreen"
+        name="Feed"
         component={FeedScreen}
         options={{
           headerTitle: "Feed"

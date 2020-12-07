@@ -32,6 +32,7 @@ export type FeedSelectParamList = {
   Following: undefined;
   Notifications: undefined;
 }
+<<<<<<< HEAD
 export type ProfileParamList = {
   Profile: {
     uid: string
@@ -40,3 +41,13 @@ export type ProfileParamList = {
 };
 export type FeedParamList = any;
 export type FriendsParamList = any;
+=======
+
+export type FriendsParamList = {
+  Friends: undefined;
+}
+
+export type FeedParamList = {
+  Feed: undefined;
+}
+>>>>>>> fd18
