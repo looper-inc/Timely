@@ -89,30 +89,25 @@ export const ProfileScreen = ({ navigation }) => {
     const image = null
     const email = currentUser.email
     const name = currentUser.displayName? currentUser.displayName : "Not yet set"
-    const pass = currentUser.email
 
     return (
-<div>
 <SafeAreaView style={styles.container}>
         {image && 
           <Image
             source={{ uri: image }}
             style={styles.defaultPic}
           />}
-            <h3>Name: {name}</h3>
-            <h3>Email: {email}</h3>
-            <TouchableOpacity
-      style={styles.buttonContainer}>
-      <Text style={styles.buttonText}>View Password</Text>
-    </TouchableOpacity>
-    <TouchableOpacity
-      style={styles.buttonContainer}>
-      <Text style={styles.buttonText}>Sign Out</Text>
-    </TouchableOpacity>
+            <Text>Name: {name}</Text>
+            <Text>Email: {email}</Text>
+
+            <FormButton
+        buttonTitle="Change Password" onPress={()=>{
+            
+        }}
+      />
     <FormButton
         buttonTitle="Sign Out" onPress={handleSignOut}
       />
         </SafeAreaView>
-        </div>
     )
 }
