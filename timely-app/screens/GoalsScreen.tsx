@@ -3,9 +3,7 @@ import {
   SafeAreaView,
   FlatList,
   ActivityIndicator,
-  View,
   Text,
-  Alert
 } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import firebase from "../fbconfig";
@@ -65,6 +63,7 @@ export const GoalsScreen = ({ navigation }) => {
       }
     });
   };
+
   const retrieveMoreData = async () => {
     let initialQuery = await db
       .collection("goals")

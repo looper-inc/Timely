@@ -5,11 +5,10 @@ import { AuthContext } from "../providers/AuthProvider";
 import firebase from "../fbconfig"
 import { SafeAreaView } from 'react-navigation';
 import { FlatList } from 'react-native-gesture-handler';
-//import ListItem from '../components/PlanScreen/ListItem';
+import EventListItem from "../components/FeedScreen/EventListItem"
 
 export const followingFeedScreen = ({navigation}) => {
     const [eventsList, setEventsList] = useState(null);
-    const[limit, setLimit] = useState(7);
     const [isFetching, setIsFetching] = useState(false);
     const [loading, setLoading] = useState();
     const { currentUser } = useContext(AuthContext);
@@ -19,72 +18,59 @@ export const followingFeedScreen = ({navigation}) => {
 
     useEffect(() => {
         try {
-            retrieveData();
+            retrieveEvents();
         }
         catch (error) {
             console.log('retrieveData error: ' + error);
         }
     }, []);
 
-    const retrieveData = async () => {
-        
-        let initialQuery = await db.collection('events')
-        .doc(currentUser.uid)
-        .collection('list').orderBy('start',"desc").limit(limit);
+    const retrieveEvents = async () => {
 
+        let initialQuery = await db.collection('profiles')
+            .doc(currentUser.uid)
+            .collection('friend_list');
+
+        let userList = [currentUser.uid];
+        
         initialQuery.onSnapshot((snapshot) => {
-            if(snapshot.size){
+            if(snapshot.size) {
                 setLoading(true);
 
-                let eventList = [];
-                snapshot.forEach(item => {
-                    eventList.push({...item.data(), id: item.id});
-                });
-
-                setTimeout(() => {
-                    setEventsList(eventList);
-                    setLoading(false);
-        
-                }, 500);
-                
-                setLastVisited(last);
+                snapshot.forEach(friend => {
+                    let fid = friend.data().friend_id;
+                    userList.push(fid)
+                })
 
             } else {
-                setLoading(false);
+                console.log('no more rows to feetch')
+                setIsFetching(false)
             }
-        });
-    }
+            let eventsList = [];
     
-    const retrieveFriendsEvents = async () => {
-        let initialQuery = await db.collection('friends_list')
-        .doc(currentUser.uid)
-        .collection('list').orderBy('start',"desc").limit(limit);
-
-        initialQuery.onSnapshot((snapshot) => {
-            if(snapshot.size){
-
-                setIsFetching(true);
-                let moreEvents = [...eventsList];
-                snapshot.forEach(async item => {
-
-                    let friendEvents = await db.collection('events')
-                    .doc(item)
-                    .collection('list').orderBy('start',"desc").limit(limit);
-
-                    friendEvents.onSnapshot((innerSnapshot) => {
-                        if(innerSnapshot.size){
-                            setIsFetching(true);
-                            innerSnapshot.forEach(innerItem => {
-                                moreEvents.push({...innerItem.data(), id: innerItem.id});
-                            });
-                        }
-                    });
-                });
-            } else {
-                console.log('no more row to fetch')
-                setIsFetching(false);
-            }
-        });
+            userList.forEach(user => {
+                let tempEvents = db.collection('events')
+                    .doc(user)
+                    .collection('list')
+                    .where('public','==',true);
+                
+                tempEvents.onSnapshot((snap) => {
+                    if(snap.size) {
+                        setIsFetching(true);
+                        snap.forEach(event => {
+                            eventsList.push({...event.data(), id: event.id});
+                        })
+                        setTimeout(() => {
+                            setEventsList(eventsList)
+                            setLoading(false)
+                        }, 120);
+                    } else {
+                        console.log('no more rows to fetch')
+                        setIsFetching(false);
+                    } 
+                })
+            })
+        })
     }
 
     const handleDetail = (itemDetail) => {
@@ -103,14 +89,12 @@ export const followingFeedScreen = ({navigation}) => {
                 <>
                 <FlatList
                 data = {eventsList}
-                renderItem = {({item}) => <ListItem
-                    itemDetail={item}
-                    onPressDetail={handleDetail}
-                    onPressViewDetail = {handleViewDetail}
+                renderItem = {({item}) => 
+                    <EventListItem
+                        itemDetail={item}
+                        onPressDetail={handleDetail}
+                        onPressViewDetail = {handleViewDetail}
                 />}
-                onEndReached = {() =>
-                    retrieveFriendsEvents()
-                }
                 onEndReachedThreshold = {0.1}
             />
             {isFetching && <ActivityIndicator size="large" color ="#0097e6" />}
@@ -122,7 +106,6 @@ export const followingFeedScreen = ({navigation}) => {
             }
         </SafeAreaView>
     );
-
 }
 
 
@@ -131,16 +114,11 @@ export const followingFeedScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center"
+    justifyContent: "center"
   },
   title: {
     fontSize: 20,
     fontWeight: "bold"
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%"
   }
 });
 
