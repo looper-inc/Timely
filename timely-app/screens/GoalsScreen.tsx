@@ -114,7 +114,7 @@ export const GoalsScreen = ({ navigation }) => {
         .then(() => {
           console.log("Old pic has been deleted!");
         })
-        .catch(function(error) {
+        .catch(function (error) {
           //setLoading(false)
           console.log("Delete picture: Uh-oh, an error occurred! " + error);
         });
@@ -125,10 +125,10 @@ export const GoalsScreen = ({ navigation }) => {
       .collection("list")
       .doc(itemDetail.id)
       .delete()
-      .then(function() {
+      .then(function () {
         console.log("Document successfully deleted!");
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.error("Error removing document: ", error);
       });
   };
@@ -153,13 +153,13 @@ export const GoalsScreen = ({ navigation }) => {
           {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
         </>
       ) : (
-        <>
-          {loading && <ActivityIndicator size="large" color="#0097e6" />}
-          {!goalList && !loading && (
-            <Text style={styles.noDataText}>No Goals Available.</Text>
-          )}
-        </>
-      )}
+          <>
+            {loading && <ActivityIndicator size="large" color="#0097e6" />}
+            {!goalList && !loading && (
+              <Text style={styles.noDataText}>No Goals Available.</Text>
+            )}
+          </>
+        )}
     </SafeAreaView>
   );
 };

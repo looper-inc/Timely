@@ -36,3 +36,11 @@ export type FeedSelectParamList = {
   Following: undefined;
   Notifications: undefined;
 }
+
+export type FriendsParamList = {
+  Friends: undefined;
+}
+
+export type FeedParamList = {
+  Feed: undefined;
+}
