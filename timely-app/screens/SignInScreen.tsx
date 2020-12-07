@@ -98,7 +98,7 @@ export const SignInScreen = ({navigation}) => {
                       console.log("google provider error:", error);
                   });
             } else {
-              console.log('User already signed-in Firebase.');
+              console.log('User already signed in to Firebase.');
             }
       }
 
@@ -128,7 +128,7 @@ export const SignInScreen = ({navigation}) => {
     // With Yup validationSchema
     const signInValidationSchema = Yup.object().shape({
       email: Yup.string()
-          .email("Please enter valid email")
+          .email("Please enter a valid email address.")
           .required('Email Address is Required'),
       password: Yup
       .string()
