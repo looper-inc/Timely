@@ -61,6 +61,11 @@ const styles = StyleSheet.create({
     textInput: {
 
     },
+    dispText: {
+        fontSize: 14,
+        fontWeight: "bold",
+        color: "#000000"
+      },
     buttonText: {
         fontSize: 12,
         fontWeight: "bold",
@@ -83,8 +88,7 @@ const ProfileScreen = ({ navigation }) => {
     console.log('user', currentUser)
     function handleSignOut() {
         firebase.auth().signOut();
-      }
-    
+    }
     const image = currentUser.profileImgURL
     const email = currentUser.email
     const bio = currentUser.bio
@@ -97,9 +101,9 @@ const ProfileScreen = ({ navigation }) => {
             source={{ uri: image }}
             style={styles.defaultPic}
           />}
-            <Text>Name: {name}</Text>
-            <Text>Email: {email}</Text>
-            <Text>Bio: {bio}</Text>
+            <Text style={styles.dispText}>Name: {name}</Text>
+            <Text style={styles.dispText}>Email: {email}</Text>
+            <Text style={styles.dispText}>Bio: {bio}</Text>
             <FormButton
         buttonTitle="Change Password" onPress={()=>{
         }}
