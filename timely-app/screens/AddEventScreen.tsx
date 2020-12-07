@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
@@ -53,13 +52,13 @@ export const AddEvent = ({ route, navigation }) => {
     setInviteFriend(list);
   };
 
-  const cancelInvitation = id => {
+  const cancelInvitation = item => {
     if (inviteFriends) {
       // make a copy
       let friendData = JSON.parse(JSON.stringify(inviteFriends));
       friendData.forEach((data, idx) => {
-        if (id === data.id) {
-          console.log("remove " + id + " from invitation");
+        if (item.id === data.id) {
+          console.log("remove " + item.id + " from invitation");
           friendData.splice(idx, 1);
         }
       });
@@ -128,17 +127,18 @@ export const AddEvent = ({ route, navigation }) => {
                   //console.log("added members to event successfully");
                   setIsDone(true);
                 });
+              setMessText("Added event successfully");
+              setTimeout(() => {
+                setLoading(false);
+                navigation.navigate("PlanScreen");
+              }, 1500);
             });
           }
-          setMessText("Added event successfully");
-          setTimeout(() => {
-            setLoading(false);
-            navigation.navigate("PlanScreen");
-          }, 1000);
         })
         // Handle errors
         .catch(function(err) {
           Alert.alert("OOPS!", err.message, [{ text: "close" }]);
+          setLoading(false);
           console.log(err);
         })
     );
