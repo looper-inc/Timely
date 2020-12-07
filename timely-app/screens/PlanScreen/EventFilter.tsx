@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   filterContent: {
     //flexDirection: "row",
     //backgroundColor: "#3c6382",
-    alignContent: "center"
+    alignContent: "flex-start"
   },
   buttonContainer: {
     height: 30,

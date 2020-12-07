@@ -103,6 +103,7 @@ export const EventsScreen = ({ navigation }) => {
 
   const handleEditEvent = itemDetail => {
     //navigation.navigate("EditEvent", itemDetail);
+    //console.log("Document successfully deleted!");
   };
 
   const handleViewDetail = itemDetail => {
@@ -110,17 +111,19 @@ export const EventsScreen = ({ navigation }) => {
   };
 
   const handleRemoveGoal = itemDetail => {
-    // db.collection("events")
-    //   .doc(currentUser.uid)
-    //   .collection("list")
-    //   .doc(itemDetail.id)
-    //   .delete()
-    //   .then(function() {
-    //     console.log("Document successfully deleted!");
-    //   })
-    //   .catch(function(error) {
-    //     console.error("Error removing document: ", error);
-    //   });
+   
+    db.collection("events")
+      .doc(currentUser.uid)
+      .collection("list")
+      .doc(itemDetail.id)
+      .delete()
+      .then(function() {
+        console.log("Document successfully deleted!");
+      })
+      .catch(function(error) {
+        console.error("Error removing document: ", error);
+      });
+      
   };
 
   return (
@@ -139,7 +142,7 @@ export const EventsScreen = ({ navigation }) => {
                 itemDetail={item}
                 onPressDetail={handleEditEvent}
                 onPressVewDetail={handleViewDetail}
-                onPressRemoveGoal={handleRemoveGoal}
+                onPressRemoveEvent={handleRemoveGoal}
               />
             )}
             onEndReached={() => retrieveMoreData()}
@@ -162,7 +165,6 @@ export const EventsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //justifyContent: "center"
   },
   noDataText: {
     fontSize: 16,

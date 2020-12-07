@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
@@ -127,13 +128,13 @@ export const AddEvent = ({ route, navigation }) => {
                   //console.log("added members to event successfully");
                   setIsDone(true);
                 });
-              setMessText("Added event successfully");
-              setTimeout(() => {
-                setLoading(false);
-                navigation.navigate("PlanScreen");
-              }, 1500);
             });
           }
+          setMessText("Added event successfully");
+          setTimeout(() => {
+            setLoading(false);
+            navigation.navigate("PlanScreen");
+          }, 1000);
         })
         // Handle errors
         .catch(function(err) {
