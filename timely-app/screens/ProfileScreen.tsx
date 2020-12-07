@@ -14,6 +14,42 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 const db = firebase.firestore();
 const fStorage = firebase.storage();
 
+
+const ProfileScreen = ({ navigation }) => {
+
+    const db = firebase.firestore();
+    const { currentUser } = useContext(AuthContext);
+    const user = firebase.auth();
+    console.log('user', currentUser)
+    function handleSignOut() {
+        firebase.auth().signOut();
+    }
+
+    const image = null
+    const email = currentUser.email
+    const name = currentUser.displayName ? currentUser.displayName : "Not yet set"
+
+    return (
+        <SafeAreaView style={styles.container}>
+            {image &&
+                <Image
+                    source={{ uri: image }}
+                    style={styles.defaultPic}
+                />}
+            <Text>Name: {name}</Text>
+            <Text>Email: {email}</Text>
+
+            <FormButton
+                buttonTitle="Change Password" onPress={() => {
+                }}
+            />
+            <FormButton
+                buttonTitle="Sign Out" onPress={handleSignOut}
+            />
+        </SafeAreaView>
+    )
+}
+
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#f9fafd',
@@ -36,7 +72,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         alignSelf: "center",
         marginHorizontal: 20
-      },
+    },
     cog: {
         width: 50,
         height: 50,
@@ -50,7 +86,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 3
-      },
+    },
     bottomText: {
         fontFamily: 'Roboto',
         textAlign: 'center',
@@ -65,7 +101,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "bold",
         color: "#ffffff"
-      },
+    },
     alertText: {
         margin: 5,
         color: '#ff7979',
@@ -74,40 +110,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     }
 });
-
-const ProfileScreen = ({ navigation }) => {
-
-    const db = firebase.firestore();
-    const { currentUser } = useContext(AuthContext);
-    const user = firebase.auth();
-    console.log('user', currentUser)
-    function handleSignOut() {
-        firebase.auth().signOut();
-      }
-    
-    const image = null
-    const email = currentUser.email
-    const name = currentUser.displayName? currentUser.displayName : "Not yet set"
-
-    return (
-<SafeAreaView style={styles.container}>
-        {image && 
-          <Image
-            source={{ uri: image }}
-            style={styles.defaultPic}
-          />}
-            <Text>Name: {name}</Text>
-            <Text>Email: {email}</Text>
-
-            <FormButton
-        buttonTitle="Change Password" onPress={()=>{
-        }}
-      />
-    <FormButton
-        buttonTitle="Sign Out" onPress={handleSignOut}
-      />
-        </SafeAreaView>
-    )
-}
-
 export default ProfileScreen;
