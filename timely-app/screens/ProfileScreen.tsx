@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#4fc3f7"
       },
       button1: {
-        backgroundColor:"4fc3f7"
+        backgroundColor:""
       },
     alertText: {
         margin: 5,

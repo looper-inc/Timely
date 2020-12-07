@@ -166,8 +166,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   noDataText: {
-    fontSize: 16,
-    color: "#f5f6fa",
+    fontSize: 14,
+    color: "#9e9e9e",
     textTransform: "capitalize",
     fontWeight: "bold",
     alignSelf: "center"

@@ -14,9 +14,9 @@ const NewEventButton = props => {
   const buttonTitle = () => {
     switch (props.selected) {
       case "Events":
-        return "+ New Event";
+        return "New Event";
       case "Goals":
-        return "+ New Goal";
+        return "New Goal";
     }
   };
   return (
@@ -34,7 +34,7 @@ export default NewEventButton;
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    backgroundColor: "#2e64e5",
+    backgroundColor: "#4fc3f7",
     padding: 10,
     alignItems: "center",
     justifyContent: "center",

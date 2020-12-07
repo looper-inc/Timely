@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     width: "80%"
   },
   inviteButton: {
-    backgroundColor: "#20bf6b",
+    backgroundColor: "#9e9e9e",
     margin: 5,
     borderRadius: 3,
     width: "40%",

@@ -188,7 +188,6 @@ export const SignInScreen = ({navigation}) => {
           }
 
           <FormButton 
-            backgroundColor="4fc3f7"
             buttonTitle="Sign In" 
             onPress={handleSubmit} 
             disabled={!(isValid)}
