@@ -87,11 +87,22 @@ const ProfileScreen = ({ navigation }) => {
     const db = firebase.firestore();
     const { currentUser } = useContext(AuthContext);
     const user = firebase.auth();
+    const [profile, setProfile] = useState<any>({})
     console.log('user', currentUser)
     function handleSignOut() {
         firebase.auth().signOut();
     }
-    const image = currentUser.profileImgURL? currentUser.profileImgURL: placeholder
+
+
+    useEffect(() => { 
+          db.collection('profiles').doc(currentUser.uid).get().then(snapshot => {
+          const profile = snapshot.data();
+          setProfile(profile)
+          })
+        }, [])
+    
+
+    const image = currentUser.profileImgURL ? currentUser.profileImgURL: placeholder
     const email = currentUser.email
     const bio = currentUser.bio
     const name = currentUser.displayName? currentUser.displayName : "Not yet set"
@@ -100,12 +111,12 @@ const ProfileScreen = ({ navigation }) => {
 <SafeAreaView style={styles.container}>
         {image && 
           <Image
-            source={{ uri: image }}
+            source={{ uri: profile.profileImgURL }}
             style={styles.defaultPic}
           />}
             <Text style={styles.dispText}>Name: {name}</Text>
             <Text style={styles.dispText}>Email: {email}</Text>
-            <Text style={styles.dispText}>Bio: {bio}</Text>
+            <Text style={styles.dispText}>Bio: {profile.bio}</Text>
             <FormButton buttonTitle="Change Password" onPress={()=>{navigation.navigate("EditProfile")}}/>
             <FormButton buttonTitle="Sign Out" onPress={handleSignOut}/>
         </SafeAreaView>
