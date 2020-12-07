@@ -85,8 +85,9 @@ const ProfileScreen = ({ navigation }) => {
         firebase.auth().signOut();
       }
     
-    const image = null
+    const image = currentUser.profileImgURL
     const email = currentUser.email
+    const bio = currentUser.bio
     const name = currentUser.displayName? currentUser.displayName : "Not yet set"
 
     return (
@@ -98,7 +99,7 @@ const ProfileScreen = ({ navigation }) => {
           />}
             <Text>Name: {name}</Text>
             <Text>Email: {email}</Text>
-
+            <Text>Bio: {bio}</Text>
             <FormButton
         buttonTitle="Change Password" onPress={()=>{
         }}
