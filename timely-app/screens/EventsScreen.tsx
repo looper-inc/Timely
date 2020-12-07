@@ -102,12 +102,7 @@ export const EventsScreen = ({ navigation }) => {
   };
 
   const handleEditEvent = itemDetail => {
-<<<<<<< HEAD
-    //navigation.navigate("EditEvent", itemDetail);
-    //console.log("Document successfully deleted!");
-=======
     navigation.navigate("EditEvent", itemDetail);
->>>>>>> seon/EditEvent#9
   };
 
   const handleViewDetail = itemDetail => {
