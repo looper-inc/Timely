@@ -19,7 +19,7 @@ import {
 export const EventListItem = ({
   onPressDetail,
   itemDetail,
-  onPressVewDetail,
+  onPressViewDetail,
   onPressRemoveEvent
 }) => {
   const createDeleteAlert = () =>
@@ -40,7 +40,7 @@ export const EventListItem = ({
   return (
     <View style={styles.list}>
       <View style={styles.content}>
-        <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
+        <TouchableWithoutFeedback onPress={() => onPressViewDetail(itemDetail)}>
           <View style={styles.contentText}>
             <View style={styles.ownContent}>
               <Text style={styles.ownText}>Own by you</Text>

@@ -21,30 +21,49 @@ const JoinEvent = async (friend_id, event_id) => {
         if(hasJoined){ 
             console.log("You already Joined")
             // Need to pop up a window
+            //tag, ract component, alert, modal
         } else {
             //add my id to the partisapant list
             // NOTE: if you need to change the format of partisapant id,
             // content in the .add need to be changed with
+           
             db.collection('events').doc(friend_id)
                 .collection('list').doc(event_id).collection('members')
-                .add({friend_id: user.uid});
+                .add({friend_id: user.uid, status: "pending"});
             //get partisapant list
             members = await db.collection('events').doc(friend_id)
                 .collection('list').doc(event_id).collection('members').get()
             const membersId = members.docs.map(doc => doc.data())
-            //get amd write event
+            //get event
             db.collection('events').doc(friend_id)
                 .collection('list').doc(event_id).get().then((doc) => {
                 var data
                 data = doc.data()
-                db.collection('events').doc(user.uid).
-                collection('list').add(data).then((dataRef) => {
-                    //console.log("this is a log1" + membersId)
-                    membersId.forEach(element => {
-                        db.collection('events').doc(user.uid).collection('list')
-                        .doc(dataRef.id).collection('members').add(element)
-                        //console.log("this is a log2" + element)
-                    });
+                // create and push notification
+                const noti_data = {
+                    created: Date.now(),
+                    type: "inviteToEvent",
+                    uid_from: user.uid,
+                    email_from: user.email,
+                    uid_to: friend_id,
+                    message: "",
+                    event_id: event_id,
+                    event_title: data.title,
+                    status: "pending"
+                  };
+                db.collection("notification").doc(data.id)
+                  .collection("member_notify").add(noti_data)
+                  .then(() => {
+                    console.log("added notification successfully");
+                  });
+
+                // //write event
+                // db.collection('events').doc(user.uid).
+                // collection('list').add(data).then((dataRef) => {
+                //     membersId.forEach(element => {
+                //         db.collection('events').doc(user.uid).collection('list')
+                //         .doc(dataRef.id).collection('members').add(element)
+                //     });
                 
                 });                        
             })
