@@ -17,6 +17,7 @@ import {
 } from "../types";
 import PlanNavigator from "./PlanNavigator";
 import ProfileNavigator from "./ProfileNavigator";
+import FriendsNavigator from "./FriendsNavigator";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -29,11 +30,11 @@ export default function BottomTabNavigator() {
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
     >
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneNavigator}
+        name="Friends"
+        component={FriendsNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+            <AntDesign name="team" size={25} color={color} />
           )
         }}
       />
@@ -61,7 +62,7 @@ export default function BottomTabNavigator() {
         component={ProfileNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <AntDesign name="carryout" size={25} color={color} />
+            <AntDesign name="user" size={25} color={color} />
           )
         }}
       />

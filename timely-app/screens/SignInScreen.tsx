@@ -98,7 +98,7 @@ export const SignInScreen = ({navigation}) => {
                       console.log("google provider error:", error);
                   });
             } else {
-              console.log('User already signed-in Firebase.');
+              console.log('User already signed in to Firebase.');
             }
       }
 
@@ -128,7 +128,7 @@ export const SignInScreen = ({navigation}) => {
     // With Yup validationSchema
     const signInValidationSchema = Yup.object().shape({
       email: Yup.string()
-          .email("Please enter valid email")
+          .email("Please enter a valid email address.")
           .required('Email Address is Required'),
       password: Yup
       .string()
@@ -138,7 +138,7 @@ export const SignInScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
         <Image
-          source={require('../assets/images/logo_looper.png')}
+          source={require('../assets/images/logo.png')}
           style={styles.logo}
         />
         {/* <Text style={styles.text}>Timely</Text> */}
