@@ -94,7 +94,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
         <>
           {loading && <ActivityIndicator size="large" color="#0097e6" />}
           {!notificationList && !loading && (
-            <Text style={styles.noDataText}>No any notification.</Text>
+            <Text style={styles.noDataText}>No notifications</Text>
           )}
         </>
       )}
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     fontSize: 16,
-    color: "#f5f6fa",
+    color: "#9e9e9e",
     textTransform: "capitalize",
     fontWeight: "bold",
     alignSelf: "center"
