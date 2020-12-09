@@ -11,6 +11,7 @@ import FollowingFeedScreen from "./FollowingFeedScreen";
 import NotificationsFeedScreen from "./NotificationsFeedScreen";
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider";
+import FormButton from "../components/FormButton"
 
 const FeedSelectStack = createStackNavigator<FeedSelectParamList>();
 
