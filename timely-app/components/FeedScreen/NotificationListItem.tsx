@@ -40,7 +40,7 @@ export const NotificationListItem = ({
       break;
     case "confirmation":
       acceptedEvent = true;
-      message = itemDetail.message;
+      message = getUserName(itemDetail) + itemDetail.message;
       break;
     default:
       break;

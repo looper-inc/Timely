@@ -220,7 +220,7 @@ export const EditEventScreen = ({ route, navigation }) => {
                     status: "pending",
                     friend_id: data.id
                   })
-                  .then(() => {
+                  .then(member => {
                     //console.log("added members to event successfully");
                     const noti_data = {
                       created: now,
@@ -231,7 +231,8 @@ export const EditEventScreen = ({ route, navigation }) => {
                       message: "",
                       event_id: current_event_id,
                       event_title: values.title,
-                      status: "pending"
+                      status: "pending",
+                      member_id: member.id
                     };
                     db.collection("notification")
                       .doc(data.id)

@@ -75,6 +75,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
       }
     });
   };
+
   const handleAcceptedEvent = async noti => {
     console.log(noti);
     await db
@@ -90,7 +91,8 @@ export const NotificationsFeedScreen = ({ navigation }) => {
         db.collection("events")
           .doc(noti.uid_to)
           .collection("group_list")
-          .add({
+          .doc(noti.event_id)
+          .set({
             created: Date.now(),
             event_id: noti.event_id
           })
@@ -108,7 +110,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
               })
               .then(() => {
                 //send other notification to owner to confirm
-                const mes = getUserName(noti) + " has joined your event: ";
+                const mes = " has joined your event: ";
                 const confirmation = {
                   created: Date.now(),
                   type: "confirmation",
@@ -118,7 +120,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
                   message: mes,
                   event_id: noti.event_id,
                   event_title: noti.event_title,
-                  status: "done",
+                  status: "pending",
                   member_id: noti.member_id
                 };
                 db.collection("notification")
@@ -127,6 +129,12 @@ export const NotificationsFeedScreen = ({ navigation }) => {
                   .add(confirmation);
               });
           });
+      })
+      .then(result => {
+        console.log("update member is ok");
+      })
+      .catch(error => {
+        console.log("add member error", error);
       });
   };
 

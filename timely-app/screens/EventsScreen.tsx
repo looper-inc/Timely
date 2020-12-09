@@ -55,7 +55,7 @@ export const EventsScreen = ({ navigation }) => {
               .where("status", "==", "joined")
               .onSnapshot(snapshot => {
                 //console.log("membercount", snapshot.size);
-                //member_c = snapshot.size;
+                //setMemberCount(snapshot.size);
                 events.push({
                   ...item.data(),
                   id: item.id,
@@ -165,7 +165,7 @@ export const EventsScreen = ({ navigation }) => {
               <EventListItem
                 itemDetail={item}
                 onPressDetail={handleEditEvent}
-                onPressVewDetail={handleViewDetail}
+                onPressViewDetail={handleViewDetail}
                 onPressRemoveEvent={handleRemoveGoal}
               />
             )}
