@@ -69,6 +69,7 @@ export const followingFeedScreen = ({ navigation }) => {
     }
 
     const handleViewDetail = (itemDetail) => {
+        console.log('lol')
         navigation.navigate('EventDetail', itemDetail);
     }
 
@@ -81,7 +82,7 @@ export const followingFeedScreen = ({ navigation }) => {
                         <EventListItem
                             itemDetail={item}
                             onPressDetail={handleDetail}
-                            onPressViewDetail={handleViewDetail}
+                            onPressVewDetail={handleViewDetail}
                         />}
                     onEndReachedThreshold={0.1}
                 />

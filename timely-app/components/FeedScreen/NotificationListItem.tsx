@@ -14,17 +14,49 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { upperCaseFirstLetter } from "../../utils/utils";
 
 export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
-  let message;
+
+  const identity: string =
+    (itemDetail.info_from.first_name || itemDetail.info_from.last_name)
+      ?
+      upperCaseFirstLetter(itemDetail.info_from.first_name) +
+      " " +
+      upperCaseFirstLetter(itemDetail.info_from.last_name)
+      : itemDetail.email_from
+
+  let message: string = '';
   if (itemDetail.type === "inviteToEvent") {
-    if (itemDetail.info_from.first_name || itemDetail.info_from.last_name) {
-      const fullname =
-        upperCaseFirstLetter(itemDetail.info_from.first_name) +
-        " " +
-        upperCaseFirstLetter(itemDetail.info_from.last_name);
-      message = fullname + " has invited you to join an event: ";
-    } else {
-      message = itemDetail.email_from + " has invited you to join an event: ";
+    message = identity + " has invited you to join an event: ";
+  }
+
+  if (itemDetail.type === "friendRequest") {
+    message = identity + " sent you a friend request: ";
+  }
+
+  function yesNoButton() {
+    // If notification needs a decision, add here to display yes no button
+    const decisionTypes = [
+      "friendRequest",
+      "inviteToEvent"
+    ]
+    if (decisionTypes.includes(itemDetail.type)) {
+      return (
+        <>
+          <TouchableOpacity
+            style={styles.acceptButton}
+            onPress={() => console.log("accept invitation")}
+          >
+            <AntDesign name="check" size={15} color="#10ac84" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => console.log("cancel invitation")}
+          >
+            <AntDesign name="close" size={15} color="#ee5253" />
+          </TouchableOpacity>
+        </>
+      )
     }
+    else return null
   }
 
   return (
@@ -36,10 +68,10 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
             style={styles.defaultPic}
           />
         ) : (
-          <View style={styles.defaultPic}>
-            <AntDesign name="user" size={30} color="#666" />
-          </View>
-        )}
+            <View style={styles.defaultPic}>
+              <AntDesign name="user" size={30} color="#666" />
+            </View>
+          )}
       </TouchableWithoutFeedback>
       <View style={styles.content}>
         <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
@@ -53,18 +85,7 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
           </View>
         </TouchableWithoutFeedback>
         <View style={styles.buttonSetting}>
-          <TouchableOpacity
-            style={styles.acceptButton}
-            onPress={() => console.log("accept invitation")}
-          >
-            <AntDesign name="check" size={15} color="#10ac84" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={() => console.log("cancel invitation")}
-          >
-            <AntDesign name="close" size={15} color="#ee5253" />
-          </TouchableOpacity>
+          {yesNoButton()}
         </View>
       </View>
     </View>

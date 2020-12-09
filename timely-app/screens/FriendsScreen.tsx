@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, StyleSheet, StatusBar } from 'react-native';
+import { FlatList, StyleSheet, StatusBar, ActivityIndicator } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
@@ -7,16 +7,19 @@ import { Text, View } from '../components/Themed';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig";
 import { SearchBar } from 'react-native-elements';
+import FriendBlock from '../components/FriendsScreen/FriendBlock';
+import Navigation from '../navigation';
 
 const db = firebase.firestore();
 
 type thisStates = {
     search: string,
     searchResults: any[],
-    lastTyped: Date
+    lastTyped: Date,
+    loading: boolean
 }
 
-export default class FriendsScreen extends React.Component<{}, thisStates> {
+export default class FriendsScreen extends React.Component<{ navigation: any }, thisStates> {
 
     timeout: any = null;
     db: any = firebase.firestore()
@@ -25,7 +28,8 @@ export default class FriendsScreen extends React.Component<{}, thisStates> {
         this.state = {
             search: '',
             lastTyped: new Date(),
-            searchResults: []
+            searchResults: [],
+            loading: false
         };
         this.timeout = 0;
         this.handleGet = this.handleGet.bind(this)
@@ -34,10 +38,13 @@ export default class FriendsScreen extends React.Component<{}, thisStates> {
 
     async onChangeText(search: string) {
         this.setState({ search });
-        if (this.timeout) clearTimeout(this.timeout);
-        this.timeout = setTimeout(async () => {
-            await this.handleGet(search.toLowerCase())
-        }, 1000);
+        if (search.length) {
+            this.setState({ loading: true })
+            if (this.timeout) clearTimeout(this.timeout);
+            this.timeout = setTimeout(async () => {
+                await this.handleGet(search.toLowerCase())
+            }, 1000);
+        }
     }
 
     async handleGet(search: any) {
@@ -55,18 +62,23 @@ export default class FriendsScreen extends React.Component<{}, thisStates> {
                 });
 
             });
-            this.setState({ searchResults }, () => console.log(searchResults))
+            this.setState({ searchResults, loading: false }, () => console.log(searchResults))
         }
         catch (err) { console.log(err) }
     }
     // console.log(searchResults);
     renderItem = ({ item }) => (
-        <Item title={item.title} />
+        <FriendBlock
+            item={item} key={item.uid}
+            onPress={(user1: any) => {
+                this.props.navigation.push('ViewProfile', { uid: user1.uid })
+                console.log(user1)
+            }}
+        />
     );
 
     render() {
-        const { search } = this.state;
-
+        const { search, loading, searchResults } = this.state;
 
         return (
             <View>
@@ -75,34 +87,19 @@ export default class FriendsScreen extends React.Component<{}, thisStates> {
                     onChangeText={this.onChangeText}
                     value={search}
                 />
-                <FlatList
-                    data={this.state.searchResults}
-                    // data={testArr}
-                    renderItem={this.renderItem}
-                />
+                { loading ?
+                    <ActivityIndicator size="large" color="#0097e6" />
+                    :
+                    <FlatList
+                        data={searchResults}
+                        // data={testArr}
+                        renderItem={this.renderItem}
+                    />
+                }
+                {!!search.length && !searchResults.length && !loading &&
+                    <Text>Empty</Text>
+                }
             </View>
         );
     }
 }
-
-const Item = ({ title }) => (
-    <View style={styles.item}>
-        <Text style={styles.title}>{title}</Text>
-    </View>
-);
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        marginTop: StatusBar.currentHeight || 0,
-    },
-    item: {
-        backgroundColor: '#f9c2ff',
-        padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 16,
-    },
-    title: {
-        fontSize: 32,
-    },
-});

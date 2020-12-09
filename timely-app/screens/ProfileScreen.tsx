@@ -10,47 +10,7 @@ import { AuthContext } from "../providers/AuthProvider.js";
 import { Text, View } from '../components/Themed';
 import FormButton from '../components/FormButton';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import placeholder from '../assets/images/proplaceholder.jpg'
 import EditProfileScreen from './EditProfileScreen';
-
-const db = firebase.firestore();
-const fStorage = firebase.storage();
-
-
-const ProfileScreen = ({ navigation }) => {
-
-    const db = firebase.firestore();
-    const { currentUser } = useContext(AuthContext);
-    const user = firebase.auth();
-    console.log('user', currentUser)
-    function handleSignOut() {
-        firebase.auth().signOut();
-    }
-
-    const image = null
-    const email = currentUser.email
-    const name = currentUser.displayName ? currentUser.displayName : "Not yet set"
-
-    return (
-        <SafeAreaView style={styles.container}>
-            {image &&
-                <Image
-                    source={{ uri: image }}
-                    style={styles.defaultPic}
-                />}
-            <Text>Name: {name}</Text>
-            <Text>Email: {email}</Text>
-
-            <FormButton
-                buttonTitle="Change Password" onPress={() => {
-                }}
-            />
-            <FormButton
-                buttonTitle="Sign Out" onPress={handleSignOut}
-            />
-        </SafeAreaView>
-    )
-}
 
 const styles = StyleSheet.create({
     container: {
@@ -74,9 +34,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         alignSelf: "center",
         marginHorizontal: 20,
-        marginTop:10,
-        marginBottom:50
-      },
+        marginTop: 10,
+        marginBottom: 50
+    },
     cog: {
         width: 50,
         height: 50,
@@ -105,14 +65,14 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: "#fefefe",
         margin: 20
-      },
+    },
     buttonText: {
         fontSize: 12,
         fontWeight: "bold",
         color: "#ffffff"
-      },
-      button1: {
-      },
+    },
+    button1: {
+    },
     alertText: {
         margin: 5,
         color: '#ff7979',
@@ -128,38 +88,36 @@ const ProfileScreen = ({ navigation }) => {
     const { currentUser } = useContext(AuthContext);
     const user = firebase.auth();
     const [profile, setProfile] = useState<any>({})
-    console.log('user', currentUser)
     function handleSignOut() {
         firebase.auth().signOut();
     }
 
 
-    useEffect(() => { 
-          db.collection('profiles').doc(currentUser.uid).get().then(snapshot => {
-          const profile = snapshot.data();
-          setProfile(profile)
-          })
-        }, [])
-    
+    useEffect(() => {
+        db.collection('profiles').doc(currentUser.uid).get().then(snapshot => {
+            const profile = snapshot.data();
+            setProfile(profile)
+        })
+    }, [])
 
-    const image = currentUser.profileImgURL ? currentUser.profileImgURL: placeholder
+
+    const image = currentUser.profileImgURL ? { uri: currentUser.profileImgURL } : require('../assets/images/proplaceholder.jpg')
     const email = currentUser.email
-    const bio = currentUser.bio
-    const name = currentUser.displayName? currentUser.displayName : "Not yet set"
+    const name = currentUser.displayName ? currentUser.displayName : "Not yet set"
 
     return (
-<SafeAreaView style={styles.container}>
-        {image && 
-          <Image
-            source={{ uri: profile.profileImgURL }}
-            style={styles.defaultPic}
-          />}
+        <SafeAreaView style={styles.container}>
+            {image &&
+                <Image
+                    source={image}
+                    style={styles.defaultPic}
+                />}
             <Text style={styles.dispText}>Name: {name}</Text>
             <Text style={styles.dispText}>Email: {email}</Text>
             <Text style={styles.dispText}>Bio: {profile.bio}</Text>
-            <FormButton buttonTitle="Change Password" onPress={()=>{navigation.navigate("EditProfile")}}/>
-            <FormButton buttonTitle="Sign Out" onPress={handleSignOut}/>
-          
+            <FormButton buttonTitle="Change Password" onPress={() => { navigation.navigate("EditProfile") }} />
+            <FormButton buttonTitle="Sign Out" onPress={handleSignOut} />
+
         </SafeAreaView>
     )
 }

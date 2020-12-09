@@ -21,7 +21,7 @@ export const EventListItem = ({
   itemDetail,
   onPressVewDetail,
   onPressRemoveEvent
-}) => {
+}: any) => {
   const createDeleteAlert = () =>
     Alert.alert(
       "Event Delete",
@@ -40,7 +40,7 @@ export const EventListItem = ({
   return (
     <View style={styles.list}>
       <View style={styles.content}>
-        <TouchableWithoutFeedback onPress={() => onPressViewDetail(itemDetail)}>
+        <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
           <View style={styles.contentText}>
             <View style={styles.ownContent}>
               <Text style={styles.ownText}>Own by you</Text>
