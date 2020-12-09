@@ -20,7 +20,7 @@ export const EventsScreen = ({ navigation }) => {
   const [isFetching, setIsFetching] = useState(false);
   const [lastVisited, setLastVisited] = useState();
   const [loading, setLoading] = useState();
-  const [memberCount, setMemberCount] = useState(0);
+  const [memberCount, setMemberCount] = useState();
   const { currentUser } = useContext(AuthContext);
 
   const db = firebase.firestore();
@@ -48,14 +48,13 @@ export const EventsScreen = ({ navigation }) => {
           setLoading(true);
 
           let events = [];
+          let count = [];
           snapshot.forEach(item => {
             initialQuery
               .doc(item.id)
               .collection("members")
               .where("status", "==", "joined")
               .onSnapshot(snapshot => {
-                //console.log("membercount", snapshot.size);
-                //setMemberCount(snapshot.size);
                 events.push({
                   ...item.data(),
                   id: item.id,
@@ -65,8 +64,15 @@ export const EventsScreen = ({ navigation }) => {
           });
 
           //console.log events);
+          //console.log("count", count);
           //set events data to state
           setTimeout(() => {
+            // events.forEach((item, idx) => {
+            //   if (item.id === count[idx].id) {
+            //     events[idx]["member_count"] = count[idx].member_count;
+            //   }
+            // });
+            //setMemberCount(count);
             setEventList(events);
             setLoading(false);
           }, 500);
