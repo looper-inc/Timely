@@ -6,25 +6,41 @@ import {
   Alert,
   TouchableWithoutFeedback
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Text } from "../Themed";
 import { windowHeight, windowWidth } from "../../utils/Dimensions";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { upperCaseFirstLetter } from "../../utils/utils";
 
-export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
+export const NotificationListItem = ({
+  itemDetail,
+  onPressVewDetail,
+  handleAcceptedEvent,
+  getUserName
+}) => {
   let message;
-  if (itemDetail.type === "inviteToEvent") {
-    if (itemDetail.info_from.first_name || itemDetail.info_from.last_name) {
-      const fullname =
-        upperCaseFirstLetter(itemDetail.info_from.first_name) +
-        " " +
-        upperCaseFirstLetter(itemDetail.info_from.last_name);
-      message = fullname + " has invited you to join an event: ";
-    } else {
-      message = itemDetail.email_from + " has invited you to join an event: ";
-    }
+  //const [acceptedEvent, setAcceptedEvent] = useState(false);
+  let acceptedEvent;
+  switch (itemDetail.type) {
+    case "inviteToEvent":
+      const name = getUserName(itemDetail);
+      message = name + " has invited you to join an event: ";
+      break;
+    case "joinEvent":
+      break;
+    case "acceptedEvent":
+      acceptedEvent = true;
+      message = itemDetail.message;
+      break;
+    case "declinedEvent":
+      break;
+    case "confirmation":
+      acceptedEvent = true;
+      message = itemDetail.message;
+      break;
+    default:
+      break;
   }
 
   return (
@@ -44,7 +60,7 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
       <View style={styles.content}>
         <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
           <View style={styles.contentText}>
-            <Text style={styles.title} numberOfLines={3}>
+            <Text style={styles.title} numberOfLines={2}>
               {message}
             </Text>
             <Text style={styles.titleEvent} numberOfLines={3}>
@@ -53,18 +69,35 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
           </View>
         </TouchableWithoutFeedback>
         <View style={styles.buttonSetting}>
-          <TouchableOpacity
-            style={styles.acceptButton}
-            onPress={() => console.log("accept invitation")}
-          >
-            <AntDesign name="check" size={15} color="#10ac84" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={() => console.log("cancel invitation")}
-          >
-            <AntDesign name="close" size={15} color="#ee5253" />
-          </TouchableOpacity>
+          {!acceptedEvent ? (
+            <>
+              <TouchableOpacity
+                style={styles.acceptButton}
+                onPress={() => handleAcceptedEvent(itemDetail)}
+              >
+                <Text style={styles.acceptText}>
+                  <AntDesign name="check" size={11} color="#10ac84" /> Accept
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => console.log("cancel invitation")}
+              >
+                <Text style={styles.cancelText}>
+                  <AntDesign name="close" size={11} color="#ee5253" /> Decline
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => console.log("done invitation")}
+            >
+              <Text style={styles.cancelText}>
+                <AntDesign name="close" size={11} color="#ee5253" /> Done
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -79,7 +112,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 5,
     marginRight: 5,
-    borderRadius: 3
+    borderRadius: 3,
+    paddingVertical: 5
   },
 
   title: {
@@ -104,48 +138,54 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
-    marginHorizontal: 20
+    marginHorizontal: 15
   },
   content: {
+    flex: 1,
     paddingLeft: 4,
     margin: 1
   },
   contentText: {
-    alignSelf: "flex-start",
-    margin: 1,
-    width: "85%"
+    //margin: 1,
+    //backgroundColor: "#4cd137"
   },
   buttonSetting: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    paddingTop: 5
+    //backgroundColor: "#e1b12c"
+  },
+  acceptText: {
+    color: "#10ac84",
+    fontSize: 10
+  },
+  cancelText: {
+    color: "#ee5253",
+    fontSize: 10
   },
   acceptButton: {
-    padding: 5,
-    width: 35,
-    height: 35,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     justifyContent: "center",
     alignSelf: "center",
     alignItems: "center",
-    borderRadius: 35 / 2,
+    borderRadius: 5,
     borderColor: "#10ac84",
-    borderWidth: 2,
-    marginVertical: 5,
-    marginHorizontal: 20
+    borderWidth: 1,
+    marginHorizontal: 10
   },
   cancelButton: {
-    padding: 5,
-    width: 35,
-    height: 35,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     justifyContent: "center",
     alignSelf: "center",
     alignItems: "center",
-    borderRadius: 35 / 2,
+    borderRadius: 5,
     borderColor: "#ee5253",
-    borderWidth: 2,
-    marginVertical: 5,
-    marginHorizontal: 20
+    borderWidth: 1,
+    marginHorizontal: 10
   },
   titleComplete: {
     fontSize: 10,

@@ -213,25 +213,6 @@ export const EditEventScreen = ({ route, navigation }) => {
             inviteFriends.forEach((data, idx) => {
               //update new member only
               if (!data.member) {
-                const noti_data = {
-                  created: now,
-                  type: "inviteToEvent",
-                  uid_from: currentUser.uid,
-                  email_from: currentUser.email,
-                  uid_to: data.id,
-                  message: "",
-                  event_id: current_event_id,
-                  event_title: values.title,
-                  status: "pending"
-                };
-                db.collection("notification")
-                  .doc(data.id)
-                  .collection("member_notify")
-                  .add(noti_data)
-                  .then(() => {
-                    console.log("added notification successfully");
-                  });
-
                 query
                   .collection("members")
                   .add({
@@ -241,7 +222,24 @@ export const EditEventScreen = ({ route, navigation }) => {
                   })
                   .then(() => {
                     //console.log("added members to event successfully");
-                    setIsDone(true);
+                    const noti_data = {
+                      created: now,
+                      type: "inviteToEvent",
+                      uid_from: currentUser.uid,
+                      email_from: currentUser.email,
+                      uid_to: data.id,
+                      message: "",
+                      event_id: current_event_id,
+                      event_title: values.title,
+                      status: "pending"
+                    };
+                    db.collection("notification")
+                      .doc(data.id)
+                      .collection("member_notify")
+                      .add(noti_data)
+                      .then(() => {
+                        console.log("added notification successfully");
+                      });
                   });
               }
             });

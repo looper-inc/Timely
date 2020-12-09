@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
@@ -98,24 +97,6 @@ export const AddEvent = ({ route, navigation }) => {
           if (inviteFriends) {
             setMessText("Adding members...");
             inviteFriends.forEach((data, idx) => {
-              const noti_data = {
-                created: now,
-                type: "inviteToEvent",
-                uid_from: currentUser.uid,
-                email_from: currentUser.email,
-                uid_to: data.id,
-                message: "",
-                event_id: doc.id,
-                event_title: values.title,
-                status: "pending"
-              };
-              db.collection("notification")
-                .doc(data.id)
-                .collection("member_notify")
-                .add(noti_data)
-                .then(() => {
-                  console.log("added notification successfully");
-                });
               query
                 .doc(doc.id)
                 .collection("members")
@@ -124,8 +105,27 @@ export const AddEvent = ({ route, navigation }) => {
                   status: "pending",
                   friend_id: data.id
                 })
-                .then(() => {
+                .then(member => {
                   //console.log("added members to event successfully");
+                  const noti_data = {
+                    created: now,
+                    type: "inviteToEvent",
+                    uid_from: currentUser.uid,
+                    email_from: currentUser.email,
+                    uid_to: data.id,
+                    message: "",
+                    event_id: doc.id,
+                    event_title: values.title,
+                    status: "pending",
+                    member_id: member.id
+                  };
+                  db.collection("notification")
+                    .doc(data.id)
+                    .collection("member_notify")
+                    .add(noti_data)
+                    .then(() => {
+                      console.log("added notification successfully");
+                    });
                   setIsDone(true);
                 });
             });

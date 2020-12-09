@@ -11,6 +11,7 @@ import React, { useState, useEffect, useContext } from "react";
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
 import NotificationListItem from "../components/FeedScreen/NotificationListItem";
+import { upperCaseFirstLetter } from "../utils/utils";
 
 export const NotificationsFeedScreen = ({ navigation }) => {
   const [notificationList, setNotificationList] = useState(null);
@@ -74,6 +75,74 @@ export const NotificationsFeedScreen = ({ navigation }) => {
       }
     });
   };
+  const handleAcceptedEvent = async noti => {
+    console.log(noti);
+    await db
+      .collection("events")
+      .doc(noti.uid_from)
+      .collection("list")
+      .doc(noti.event_id)
+      .collection("members")
+      .doc(noti.member_id)
+      .update({ status: "joined" })
+      .then(() => {
+        //add group event id into events collection for who is invited
+        db.collection("events")
+          .doc(noti.uid_to)
+          .collection("group_list")
+          .add({
+            created: Date.now(),
+            event_id: noti.event_id
+          })
+          .then(() => {
+            console.log("add group event successfully");
+          });
+
+        //update current notification
+        db.collection("notification")
+          .doc(currentUser.uid)
+          .collection("member_notify")
+          .doc(noti.id)
+          .update({
+            type: "acceptedEvent",
+            message: "You've now joined " + getUserName(noti) + " event:",
+            status: "done"
+          })
+          .then(() => {
+            //send other notification to owner to confirm
+            const mes = getUserName(noti) + " has joined your event: ";
+            const confirmation = {
+              created: Date.now(),
+              type: "confirmation",
+              uid_from: currentUser.uid,
+              email_from: currentUser.email,
+              uid_to: noti.uid_from,
+              message: mes,
+              event_id: noti.event_id,
+              event_title: noti.event_title,
+              status: "done",
+              member_id: noti.member_id
+            };
+            db.collection("notification")
+              .doc(noti.uid_from)
+              .collection("member_notify")
+              .add(confirmation);
+          });
+      });
+  };
+  const getUserName = info => {
+    let name;
+    if (info.info_from.first_name || info.info_from.last_name) {
+      const fullname =
+        upperCaseFirstLetter(info.info_from.first_name) +
+        " " +
+        upperCaseFirstLetter(info.info_from.last_name);
+      name = fullname;
+    } else {
+      name = info.info_from.email;
+    }
+    return name;
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,6 +154,8 @@ export const NotificationsFeedScreen = ({ navigation }) => {
               <NotificationListItem
                 itemDetail={item}
                 onPressVewDetail={() => console.log("detail click")}
+                handleAcceptedEvent={handleAcceptedEvent}
+                getUserName={getUserName}
               />
             )}
           />

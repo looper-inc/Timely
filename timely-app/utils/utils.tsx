@@ -16,7 +16,10 @@ export const getFormattedDateString = date => {
     month: "short",
     day: "numeric"
   };
-  return event.toLocaleDateString("en-US", options);
+  const day = date.getDate();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  return "" + month + "/" + day + "/" + year;
 };
 
 export const createRandomString = () => {
