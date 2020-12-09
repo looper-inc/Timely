@@ -48,7 +48,9 @@ export const EventListItem = ({
             <Text style={styles.title} numberOfLines={3}>
               {upperCaseFirstLetter(itemDetail.title)}
             </Text>
-            <Text style={styles.memberText}>Members: 0</Text>
+            <Text style={styles.memberText}>
+              Members: {itemDetail.member_count}
+            </Text>
             <View style={styles.dateContent}>
               <Text style={styles.titleStart}>
                 Start By:{"  "}

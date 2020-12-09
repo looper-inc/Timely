@@ -57,7 +57,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
               });
             });
         });
-        console.log(noti);
+        //console.log(noti);
 
         //set goals data to state
         setTimeout(() => {
@@ -96,24 +96,62 @@ export const NotificationsFeedScreen = ({ navigation }) => {
           })
           .then(() => {
             console.log("add group event successfully");
+            //update current notification
+            db.collection("notification")
+              .doc(currentUser.uid)
+              .collection("member_notify")
+              .doc(noti.id)
+              .update({
+                type: "acceptedEvent",
+                message: "You've now joined " + getUserName(noti) + " event:",
+                status: "done"
+              })
+              .then(() => {
+                //send other notification to owner to confirm
+                const mes = getUserName(noti) + " has joined your event: ";
+                const confirmation = {
+                  created: Date.now(),
+                  type: "confirmation",
+                  uid_from: currentUser.uid,
+                  email_from: currentUser.email,
+                  uid_to: noti.uid_from,
+                  message: mes,
+                  event_id: noti.event_id,
+                  event_title: noti.event_title,
+                  status: "done",
+                  member_id: noti.member_id
+                };
+                db.collection("notification")
+                  .doc(noti.uid_from)
+                  .collection("member_notify")
+                  .add(confirmation);
+              });
           });
+      });
+  };
 
-        //update current notification
+  const handleDeclinedEvent = async noti => {
+    await db
+      .collection("events")
+      .doc(noti.uid_from)
+      .collection("list")
+      .doc(noti.event_id)
+      .collection("members")
+      .doc(noti.member_id)
+      .delete()
+      .then(() => {
+        //delete current notification
         db.collection("notification")
           .doc(currentUser.uid)
           .collection("member_notify")
           .doc(noti.id)
-          .update({
-            type: "acceptedEvent",
-            message: "You've now joined " + getUserName(noti) + " event:",
-            status: "done"
-          })
+          .delete()
           .then(() => {
-            //send other notification to owner to confirm
-            const mes = getUserName(noti) + " has joined your event: ";
+            //send declined notification to owner
+            const mes = getUserName(noti) + " has declined your invitation: ";
             const confirmation = {
               created: Date.now(),
-              type: "confirmation",
+              type: "declinedEvent",
               uid_from: currentUser.uid,
               email_from: currentUser.email,
               uid_to: noti.uid_from,
@@ -130,6 +168,19 @@ export const NotificationsFeedScreen = ({ navigation }) => {
           });
       });
   };
+
+  const handleDone = async noti => {
+    await db;
+    db.collection("notification")
+      .doc(currentUser.uid)
+      .collection("member_notify")
+      .doc(noti.id)
+      .delete()
+      .then(() => {
+        console.log("deleted notification successfully");
+      });
+  };
+
   const getUserName = info => {
     let name;
     if (info.info_from.first_name || info.info_from.last_name) {
@@ -156,6 +207,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
                 onPressVewDetail={() => console.log("detail click")}
                 handleAcceptedEvent={handleAcceptedEvent}
                 getUserName={getUserName}
+                handleDone={handleDone}
               />
             )}
           />

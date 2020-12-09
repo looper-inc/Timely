@@ -20,6 +20,7 @@ export const EventsScreen = ({ navigation }) => {
   const [isFetching, setIsFetching] = useState(false);
   const [lastVisited, setLastVisited] = useState();
   const [loading, setLoading] = useState();
+  const [memberCount, setMemberCount] = useState(0);
   const { currentUser } = useContext(AuthContext);
 
   const db = firebase.firestore();
@@ -36,68 +37,95 @@ export const EventsScreen = ({ navigation }) => {
     let initialQuery = await db
       .collection("events")
       .doc(currentUser.uid)
-      .collection("list")
+      .collection("list");
+
+    initialQuery
       .orderBy("created", "desc")
-      .limit(limit);
+      .limit(limit)
+      .onSnapshot(snapshot => {
+        if (snapshot.size) {
+          //set loading
+          setLoading(true);
 
-    initialQuery.onSnapshot(snapshot => {
-      if (snapshot.size) {
-        //set loading
-        setLoading(true);
+          let events = [];
+          snapshot.forEach(item => {
+            initialQuery
+              .doc(item.id)
+              .collection("members")
+              .where("status", "==", "joined")
+              .onSnapshot(snapshot => {
+                //console.log("membercount", snapshot.size);
+                //member_c = snapshot.size;
+                events.push({
+                  ...item.data(),
+                  id: item.id,
+                  member_count: snapshot.size
+                });
+              });
+          });
 
-        let events = [];
-        snapshot.forEach(item => {
-          events.push({ ...item.data(), id: item.id });
-        });
-        //console.log events);
-        //set events data to state
-        setTimeout(() => {
-          setEventList(events);
+          //console.log events);
+          //set events data to state
+          setTimeout(() => {
+            setEventList(events);
+            setLoading(false);
+          }, 500);
+          //Cloud Firestore: Last Visible Document
+          //Document ID To Start From For Proceeding Queries
+          let last = snapshot.docs[snapshot.docs.length - 1];
+          //console.log('visited: ' + last);
+          setLastVisited(last);
+          //setLoading(false)
+        } else {
           setLoading(false);
-        }, 500);
-        //Cloud Firestore: Last Visible Document
-        //Document ID To Start From For Proceeding Queries
-        let last = snapshot.docs[snapshot.docs.length - 1];
-        //console.log('visited: ' + last);
-        setLastVisited(last);
-        //setLoading(false)
-      } else {
-        setLoading(false);
-      }
-    });
+        }
+      });
   };
   const retrieveMoreData = async () => {
     let initialQuery = await db
       .collection("events")
       .doc(currentUser.uid)
-      .collection("list")
+      .collection("list");
+
+    initialQuery
       .orderBy("created", "desc")
       .startAfter(lastVisited)
-      .limit(limit);
+      .limit(limit)
+      .onSnapshot(snapshot => {
+        if (snapshot.size) {
+          //set loading
+          setIsFetching(true);
 
-    initialQuery.onSnapshot(snapshot => {
-      if (snapshot.size) {
-        //set loading
-        setIsFetching(true);
-        let moreEvents = [...eventList];
-        snapshot.forEach(item => {
-          //console.log(item.data())
-          moreEvents.push({ ...item.data(), id: item.id });
-        });
-        //console.log(moreEvents);
-        setTimeout(() => {
-          //set events data to state
-          setEventList(moreEvents);
+          let moreEvents = [...eventList];
+          snapshot.forEach(item => {
+            //console.log(item.data())
+            initialQuery
+              .doc(item.id)
+              .collection("members")
+              .where("status", "==", "joined")
+              .onSnapshot(snapshot => {
+                moreEvents.push({
+                  ...item.data(),
+                  id: item.id,
+                  member_count: snapshot.size
+                });
+              });
+          });
+
+          //console.log(moreEvents);
+          setTimeout(() => {
+            //set events data to state
+            setEventList(moreEvents);
+            setIsFetching(false);
+          }, 500);
+
+          let last = snapshot.docs[snapshot.docs.length - 1];
+          setLastVisited(last);
+        } else {
+          console.log("no more row to fetch");
           setIsFetching(false);
-        }, 500);
-
-        let last = snapshot.docs[snapshot.docs.length - 1];
-        setLastVisited(last);
-      } else {
-        console.log("no more row to fetch");
-        setIsFetching(false);
-      }
-    });
+        }
+      });
   };
 
   const handleEditEvent = itemDetail => {
@@ -109,7 +137,6 @@ export const EventsScreen = ({ navigation }) => {
   };
 
   const handleRemoveGoal = itemDetail => {
-   
     db.collection("events")
       .doc(currentUser.uid)
       .collection("list")
@@ -121,7 +148,6 @@ export const EventsScreen = ({ navigation }) => {
       .catch(function(error) {
         console.error("Error removing document: ", error);
       });
-      
   };
 
   return (
@@ -162,7 +188,7 @@ export const EventsScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   noDataText: {
     fontSize: 16,

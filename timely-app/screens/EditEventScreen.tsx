@@ -108,7 +108,7 @@ export const EditEventScreen = ({ route, navigation }) => {
           console.log("delete invitation from database error", error);
         }
       } else {
-        console.log("go there", item.id);
+        //console.log("go there", item.id);
         //after deleted members, should update state
         updateMembersAfterRemoved(item.id);
       }

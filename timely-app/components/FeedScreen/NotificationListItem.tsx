@@ -17,7 +17,8 @@ export const NotificationListItem = ({
   itemDetail,
   onPressVewDetail,
   handleAcceptedEvent,
-  getUserName
+  getUserName,
+  handleDone
 }) => {
   let message;
   //const [acceptedEvent, setAcceptedEvent] = useState(false);
@@ -34,6 +35,8 @@ export const NotificationListItem = ({
       message = itemDetail.message;
       break;
     case "declinedEvent":
+      acceptedEvent = true;
+      message = itemDetail.message;
       break;
     case "confirmation":
       acceptedEvent = true;
@@ -91,7 +94,7 @@ export const NotificationListItem = ({
           ) : (
             <TouchableOpacity
               style={styles.cancelButton}
-              onPress={() => console.log("done invitation")}
+              onPress={() => handleDone(itemDetail)}
             >
               <Text style={styles.cancelText}>
                 <AntDesign name="close" size={11} color="#ee5253" /> Done
