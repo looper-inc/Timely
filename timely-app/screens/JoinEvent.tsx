@@ -1,4 +1,12 @@
 import firebase from "../fbconfig";
+import {
+    StyleSheet,
+    SafeAreaView,
+    View,
+    Image,
+    Alert,
+    TouchableWithoutFeedback
+  } from "react-native";
 
 const JoinEvent = async (friend_id, event_id) => {
     var db
@@ -21,6 +29,7 @@ const JoinEvent = async (friend_id, event_id) => {
         if(hasJoined){ 
             console.log("You already Joined")
             // Need to pop up a window
+            Alert.alert("You are already in, have fun!")
             //tag, ract component, alert, modal
         } else {
             //add my id to the partisapant list
@@ -56,7 +65,8 @@ const JoinEvent = async (friend_id, event_id) => {
                   .then(() => {
                     console.log("added notification successfully");
                   });
-
+                
+                Alert.alert("Join Request Send", "waiting for owner's response")
                 // //write event
                 // db.collection('events').doc(user.uid).
                 // collection('list').add(data).then((dataRef) => {
