@@ -54,7 +54,9 @@ export const followingFeedScreen = ({ navigation }) => {
                 tempEvents.onSnapshot((snap) => {
                     if (snap.size) {
                         snap.forEach(event => {
-                            eventsList.push({ ...event.data(), id: event.id });
+                            var a = eventsList.push({ ...event.data(), id: event.id, user_id: user });
+                            //console.log(eventsList[a-1].id)
+                            //console.log(eventsList[a-1].user_id)
                         })
                         setEventsList(eventsList)
                         setIsFetching(false);

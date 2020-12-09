@@ -14,6 +14,7 @@ import {
   upperCaseFirstLetter,
   getFormattedDateString
 } from "../../utils/utils";
+import joinEvent from "../../screens/JoinEvent"
 
 export const EventListItem = ({
   onPressDetail,
@@ -57,6 +58,17 @@ export const EventListItem = ({
             </View>
           </View>
         </TouchableWithoutFeedback>
+        <View style={styles.buttonSetting}>
+          <TouchableOpacity
+            style={styles.joinEventButton}
+            onPress={() => {
+              console.log("pressed joinEvent")
+              joinEvent(itemDetail.user_id,itemDetail.id)
+            }}
+          >
+            <Text>Join</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -151,6 +163,15 @@ const styles = StyleSheet.create({
     color: "#34495e",
     fontWeight: "bold",
     marginLeft: 10
+  },
+  joinEventButton: {
+    backgroundColor: "#20bf6b",
+    width: 50,
+    height: 38,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 3,
+    marginBottom: 4
   }
 });
 

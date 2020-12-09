@@ -26,7 +26,6 @@ const JoinEvent = async (friend_id, event_id) => {
             //add my id to the partisapant list
             // NOTE: if you need to change the format of partisapant id,
             // content in the .add need to be changed with
-           
             db.collection('events').doc(friend_id)
                 .collection('list').doc(event_id).collection('members')
                 .add({friend_id: user.uid, status: "pending"});
@@ -51,7 +50,8 @@ const JoinEvent = async (friend_id, event_id) => {
                     event_title: data.title,
                     status: "pending"
                   };
-                db.collection("notification").doc(data.id)
+
+                db.collection("notification").doc(friend_id)
                   .collection("member_notify").add(noti_data)
                   .then(() => {
                     console.log("added notification successfully");
@@ -65,7 +65,7 @@ const JoinEvent = async (friend_id, event_id) => {
                 //         .doc(dataRef.id).collection('members').add(element)
                 //     });
                 
-                });                        
+                // });                        
             })
         }
 
