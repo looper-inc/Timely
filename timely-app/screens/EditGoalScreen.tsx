@@ -156,6 +156,8 @@ export const EditGoalScreen = ({route, navigation}) => {
                         }, 1500);
                     });
             }, 2500);
+            
+
             }else{
                 setMessText('Updating goal...')
                 setTimeout(() => {
@@ -187,11 +189,11 @@ export const EditGoalScreen = ({route, navigation}) => {
     /****** VALIDATION using Formik and Yup ******/
     const endDate = route.params.end.toDate();
     const initialValues = {
-        title: route.params.title,
-        description: route.params.description,
-        end: endDate,
-        status: route.params.status,
-        public: route.params.public,
+        title:          route.params.title,
+        description:    route.params.description,
+        end:            endDate,
+        status:         route.params.status,
+        public:         route.params.public,
       }
 
       // With Yup validationSchema

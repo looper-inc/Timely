@@ -8,16 +8,18 @@ import { AuthContext } from "../providers/AuthProvider.js"
 import { Image, View, Text, StyleSheet,  SafeAreaView, Platform, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
 import {windowHeight, windowWidth} from '../utils/Dimensions'
-
+import * as Yup from 'yup';
 import * as firebase from 'firebase';
 import { AntDesign } from '@expo/vector-icons';
 import { Formik } from 'formik';
 import FormButton from '../components/FormButton'
-import { TextInput } from 'react-native-gesture-handler';
+import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import Loader from '../components/Modal/Loader';
 import {createRandomString} from '../utils/utils'
+import FormInput from '../components/FormInput';
+import Navigation from '../navigation/index.js';
 
-export const EditProfileScreen = ({navigation}) => {
+export const EditProfileScreen = ({route, navigation}) => {
     const { currentUser } = useContext(AuthContext);
     const [image, setImage] = useState(null);
     const [progress, setProgress] = useState();
@@ -37,6 +39,8 @@ export const EditProfileScreen = ({navigation}) => {
                 }
             }
         }) ();
+
+        setImage(route.params.profileImgURL)
     }, []);
   
     const pickImage = async () => {
@@ -54,7 +58,7 @@ export const EditProfileScreen = ({navigation}) => {
         }
     };  
 
-    const handleUploadImage = async (values) => {
+    const handleEditProfile = async (values) => {
 
         //showing indicator
         setLoading(true);
@@ -110,37 +114,97 @@ export const EditProfileScreen = ({navigation}) => {
                         // Upload completed successfully, now we can get the download URL
                         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
                         console.log('File available at', downloadURL);
-                        setMessText('Updating Profile...')
-                        return db.collection('profiles').doc(currentUser.uid).update({ profileImgURL: downloadURL })   
+                        
+                        if(route.params.profileImgURL) {
+                            setMessText('Deleting old picture...')
+                            
+                            fStorage.refFromURL(route.params.profileImgURL).delete().then(() => {
+                                console.log('old pic deleted')
+                                setMessText('Old pic has been deleted!')
+                                setLoading(false)
 
+                            }).catch(function(error) {
+                                setMessText('Uh-oh, an error occurred!')
+                                setLoading(false)
+                                console.log('Delete picture: Uh-oh, an error occurred! ' + error)
+                            });
+                        }
 
-                        .then(()=>{
-                            setIsDone(true)
-                            console.log('Updated Profile Picture successfully!');
-                            setMessText('Updated Profile Picture successfully!')
                             setTimeout(() => {
-                                setLoading(false);
-                                navigation.navigate('ProfileScreen');
-                            }, 1500);
-                        })
-                        });
-                    });
-            }, 2500);
-            }else{
-                
-            }
+                                setMessText('Updating profile...')
+                                return db.collection('profiles')
+                                .doc(currentUser.uid)
+                                .update(
+                                    {
+                                        ...values,
+                                        modifiedDate: Date.now(),
+                                        profileImgURL: downloadURL
+                                    }
+                                ).then(() => {
+                                    setIsDone(true)
+                                    console.log('Updated Profile Successfully');
+                                    setMessText('Updated Profile Successfully')
+                                    setTimeout(() => {
+                                        setLoading(false);
+                                        navigation.navigate('ProfileScreen');
+                                    }, 1500);
+                                })
+                            });
 
-        } catch (error) {
-            console.log(error)
+                        }, 1500);
+                    });
+        }, 2500);
+
+                } else {
+                    setMessText('Updating profile...')
+                    setTimeout(() => {
+                        return db.collection('profiles')
+                                 .doc(currentUser.uid)
+                                 .update(
+                                     {
+                                         ...values,
+                                         modifiedDate: Date.now()
+                                     }
+                                 ).then(() => {
+                                     console.log('Updated Profile wihtout a picture successfully!')
+                                     setIsDone(true)
+                                     setMessText('Updated Profile Successfully!')
+                                     setTimeout(() => {
+                                         setLoading(false)
+                                         navigation.navigate('ProfileScreen');
+                                     }, 300);
+                                 })
+                    }, 500);
+                }
+            } catch (error) {
+                console.log(error)
+            }
         }
+
+    const initialValues = {
+        firstName:  route.params.firstName,
+        lastName:   route.params.lastName,
+        email:      route.params.email,
+        bio:        route.params.bio,
+        visibility: route.params.visibility
     }
 
+    const profileValidationSchema = Yup.object().shape({
+        
+    })
 
     return(
-        
+
+        <ScrollView>
         <SafeAreaView style={styles.container}>
+
+            
             {loading ? <Loader progress={progress} isDone={isDone} messText={messText}/> : null}
-            {image ? <Image source={{ uri: image }} style={styles.defaultPic} /> :
+            
+            {
+            image ? 
+                <Image 
+                    source={{ uri: image }} style={styles.profile_picture} /> :
                 <View style={styles.defaultPic}>
                     <AntDesign name="picture" size={40} color="#666" />
                 </View>
@@ -152,7 +216,8 @@ export const EditProfileScreen = ({navigation}) => {
 
             <Formik
             initialValues={initialValues}
-            onSubmit={(values) => { handleUploadImage(values) }}
+            validationSchema={profileValidationSchema}
+            onSubmit={(values) => { handleEditProfile(values) }}
             >
             {({
                 handleChange,
@@ -165,21 +230,59 @@ export const EditProfileScreen = ({navigation}) => {
                 touched
             }) => (
                 <>
-                <TextInput
-                    value={values.firstName}
+                <FormInput
+                    labelValue={values.firstName}
                     onChangeText={handleChange('firstName')}
-                    placeholder={values.firstName}
-                    placeholderTextColor="grey"
-                ></TextInput>
-
-            <FormButton buttonTitle="Edit Password" onPress={()=>{navigation.navigate("EditPassword")}}/>
-                </>
+                    placeholderText={'First Name: ' + values.firstName}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onBlur={handleBlur('firstName')}
+                />
+                <FormInput
+                    labelValue={values.lastName}
+                    onChangeText={handleChange('lastName')}
+                    placeholderText={'Last Name: ' + values.lastName}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onBlur={handleBlur('lastName')}
+                />
+                <FormInput
+                    labelValue={values.email}
+                    onChangeText={handleChange('email')}
+                    placeholderText={'Email: ' + values.email}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onBlur={handleBlur('email')}
+                />
+                <FormInput
+                    nOfLines={3}
+                    labelValue={values.bio}
+                    onChangeText={handleChange('bio')}
+                    placeholderText={'Bio: ' + values.bio}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onBlur={handleBlur('bio')}
+                />
+                
+                <FormButton
+                        buttonTitle="Update" 
+                        onPress={handleSubmit}
+                    />
+            </>
             )}
             </Formik>
 
+            
+            <TouchableOpacity style={styles.pButtonContainer} >
+                <Text style={styles.pButtonText}>Edit Password</Text>
+            </TouchableOpacity> 
+
         </SafeAreaView>
+        </ScrollView>
+
      );
 }
+
 export default EditProfileScreen;
    
 const styles = StyleSheet.create({
@@ -191,7 +294,6 @@ const styles = StyleSheet.create({
     },
 
     choosePicContainer:{
-        marginTop: 10,
         marginBottom: 10,
         height: windowHeight / 20,
         backgroundColor: '#0984e3',
@@ -204,7 +306,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
         color: '#fff',
-        
+        paddingTop: 5,
         paddingLeft: 10,
         paddingRight: 10,
     },
@@ -221,22 +323,51 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
 
-    topText: {
-        textAlign: 'center',
-        fontSize: 24,
-        color: '#000000',
-        margin: 25,
+    profile_picture: {
+      backgroundColor: "#dcdde1",
+      height: windowHeight / 4,
+      width: windowHeight / 4,
+      borderColor: "#ccc",
+      borderRadius: windowHeight / 4 / 2,
+      borderWidth: 0,
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "center",
+      marginHorizontal: 20,
+      marginTop:25,
+      marginBottom:15
     },
 
-    bottomText: {
-        textAlign: 'center',
-        fontSize: 14,
-        color: '#000000',
-        marginBottom: 25,
-    },
-    textInput: {
+    nameContainer: {
+        marginTop: 5,
+        marginBottom: 10,
+        width: '50%',
+        height: windowHeight / 15,
+        borderColor: '#ccc',
+        borderRadius: 3,
+        borderWidth: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+      },
 
-    },
+    pButtonContainer: {
+        marginTop: 10,
+        width: '100%',
+        height: windowHeight / 15,
+        backgroundColor: 'red',
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 3,
+      },
+
+    pButtonText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#ffffff',
+      },
+    
     alertText: {
         margin: 5,
         color: '#ff7979',

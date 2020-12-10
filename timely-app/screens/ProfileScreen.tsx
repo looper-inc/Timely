@@ -24,7 +24,6 @@ const ProfileScreen = ({ navigation }) => {
         firebase.auth().signOut();
     }
 
-
     useEffect(() => { 
           db.collection('profiles').doc(currentUser.uid).get().then(snapshot => {
           const profile = snapshot.data();
@@ -33,25 +32,33 @@ const ProfileScreen = ({ navigation }) => {
         }, [])
     
 
-    const image = currentUser.profileImgURL
+    const image = profile.profileImgURL
     const email = currentUser.email
-    const bio = currentUser.bio? currentUser.bio : "Not yet set"
-    const name = currentUser.displayName? currentUser.displayName : "Not yet set"
+    const bio = currentUser.bio? currentUser.bio : "Not bio yet"
+    const name = currentUser.displayName? currentUser.displayName : "Not name yet"
+    console.log(currentUser);
 
     return (
-<SafeAreaView style={styles.container}>
-        {image && 
+
+      <SafeAreaView style={styles.container}>
+    
+        <Text style={styles.nameText}>{name}</Text>
+        {
+          image ? 
           <Image
             source={{ uri: profile.profileImgURL }}
-            style={styles.defaultPic}
-          />}
-            <Text style={styles.dispText}>Name: {name}</Text>
-            <Text style={styles.dispText}>Email: {email}</Text>
-            <Text style={styles.dispText}>Bio: {profile.bio}</Text>
-            <FormButton buttonTitle="Edit Profile" onPress={()=>{navigation.navigate("EditProfile", profile)}}/>
-            <FormButton buttonTitle="Sign Out" onPress={handleSignOut}/>
+            style={styles.profile_picture}
+          /> : 
+          <View style={styles.profile_picture}>
+            <AntDesign name="picture" size={40} color="#666" />
+          </View>
+        }
+        <Text style={styles.emailText}>{email}</Text>
+        <Text style={styles.bioText}>{profile.bio}</Text>
+        <FormButton buttonTitle="Edit Profile" onPress={()=>{navigation.navigate("EditProfile", profile)}}/>
+        <FormButton buttonTitle="Sign Out" onPress={handleSignOut}/>
           
-        </SafeAreaView>
+      </SafeAreaView>
     )
 }
 
@@ -65,30 +72,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20
     },
-    verticalButton: {
 
+    nameText: {
+        fontSize: 36
     },
-    defaultPic: {
-        backgroundColor: "#dcdde1",
-        height: windowHeight / 4,
-        width: windowHeight / 4,
-        borderColor: "#ccc",
-        borderRadius: windowHeight / 4 / 2,
-        borderWidth: 0,
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-        marginHorizontal: 20,
-        marginTop:10,
-        marginBottom:50
-      },
-    cog: {
-        width: 50,
-        height: 50,
-    },
+
     profile_picture: {
-
+      backgroundColor: "#dcdde1",
+      height: windowHeight / 4,
+      width: windowHeight / 4,
+      borderColor: "#ccc",
+      borderRadius: windowHeight / 4 / 2,
+      borderWidth: 0,
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "center",
+      marginHorizontal: 20,
+      marginTop:25,
+      marginBottom:15
     },
+
+    emailText: {
+      fontSize: 18,
+      textDecorationLine: 'underline',
+      marginBottom: 25
+    },
+
+    bioText: {
+      fontSize: 18,
+      marginBottom: 25
+      
+    },
+
     buttonContainer: {
         backgroundColor: "#2e64e5",
         padding: 10,
