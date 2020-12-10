@@ -6,11 +6,14 @@ import {
   Alert,
   TouchableWithoutFeedback
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Text } from "../Themed";
 import { windowHeight, windowWidth } from "../../utils/Dimensions";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { AuthContext } from "../../providers/AuthProvider.js";
+
+import firebase from "../../fbconfig";
 import {
   upperCaseFirstLetter,
   getFormattedDateString
@@ -22,6 +25,31 @@ export const EventListItem = ({
   onPressViewDetail,
   onPressRemoveEvent
 }) => {
+  const { currentUser } = useContext(AuthContext);
+  const db = firebase.firestore();
+  const [memberCount, setMemberCount] = useState();
+  useEffect(() => {
+    try {
+      getMemberCount(itemDetail);
+    } catch (error) {
+      console.log("retrieve member count error: " + error);
+    }
+  }, []);
+
+  const getMemberCount = async event => {
+    await db
+      .collection("events")
+      .doc(currentUser.uid)
+      .collection("list")
+      .doc(event.id)
+      .collection("members")
+      .where("status", "==", "joined")
+      .onSnapshot(snapshot => {
+        //console.log("newcount: " + event.id, snapshot.size);
+        setMemberCount(snapshot.size);
+      });
+  };
+
   const createDeleteAlert = () =>
     Alert.alert(
       "Event Delete",
@@ -48,9 +76,7 @@ export const EventListItem = ({
             <Text style={styles.title} numberOfLines={3}>
               {upperCaseFirstLetter(itemDetail.title)}
             </Text>
-            <Text style={styles.memberText}>
-              Members: {itemDetail.member_count}
-            </Text>
+            <Text style={styles.memberText}>Members: {memberCount}</Text>
             <View style={styles.dateContent}>
               <Text style={styles.titleStart}>
                 Start By:{"  "}

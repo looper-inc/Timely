@@ -20,7 +20,7 @@ export const EventsScreen = ({ navigation }) => {
   const [isFetching, setIsFetching] = useState(false);
   const [lastVisited, setLastVisited] = useState();
   const [loading, setLoading] = useState();
-  const [memberCount, setMemberCount] = useState();
+  const [mergeMemberCount, setMergeMemberCount] = useState();
   const { currentUser } = useContext(AuthContext);
 
   const db = firebase.firestore();
@@ -50,29 +50,17 @@ export const EventsScreen = ({ navigation }) => {
           let events = [];
           let count = [];
           snapshot.forEach(item => {
-            initialQuery
-              .doc(item.id)
-              .collection("members")
-              .where("status", "==", "joined")
-              .onSnapshot(snapshot => {
-                events.push({
-                  ...item.data(),
-                  id: item.id,
-                  member_count: snapshot.size
-                });
-              });
+            events.push({
+              ...item.data(),
+              id: item.id
+            });
           });
 
           //console.log events);
-          //console.log("count", count);
           //set events data to state
           setTimeout(() => {
-            // events.forEach((item, idx) => {
-            //   if (item.id === count[idx].id) {
-            //     events[idx]["member_count"] = count[idx].member_count;
-            //   }
-            // });
-            //setMemberCount(count);
+            console.log(events);
+
             setEventList(events);
             setLoading(false);
           }, 500);
@@ -105,17 +93,11 @@ export const EventsScreen = ({ navigation }) => {
           let moreEvents = [...eventList];
           snapshot.forEach(item => {
             //console.log(item.data())
-            initialQuery
-              .doc(item.id)
-              .collection("members")
-              .where("status", "==", "joined")
-              .onSnapshot(snapshot => {
-                moreEvents.push({
-                  ...item.data(),
-                  id: item.id,
-                  member_count: snapshot.size
-                });
-              });
+            moreEvents.push({
+              ...item.data(),
+              id: item.id,
+              member_count: snapshot.size
+            });
           });
 
           //console.log(moreEvents);
@@ -153,6 +135,20 @@ export const EventsScreen = ({ navigation }) => {
       })
       .catch(function(error) {
         console.error("Error removing document: ", error);
+      });
+  };
+
+  const mergeMemberCountIntoEventList = async event => {
+    await db
+      .collection("events")
+      .doc(currentUser.uid)
+      .collection("list")
+      .doc(event.id)
+      .collection("members")
+      .where("status", "==", "joined")
+      .onSnapshot(snapshot => {
+        console.log("newcount: " + event.id, snapshot.size);
+        setMergeMemberCount(snapshot.size);
       });
   };
 
