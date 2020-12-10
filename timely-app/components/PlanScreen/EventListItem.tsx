@@ -166,7 +166,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 5,
     marginRight: 5,
-    borderRadius: 3
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: "#ced6e090"
   },
 
   title: {

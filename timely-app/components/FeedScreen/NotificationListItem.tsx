@@ -12,39 +12,181 @@ import { Text } from "../Themed";
 import { windowHeight, windowWidth } from "../../utils/Dimensions";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { upperCaseFirstLetter } from "../../utils/utils";
+import firebase from "../../fbconfig";
+import { AuthContext } from "../../providers/AuthProvider.js";
 
 export const NotificationListItem = ({
   itemDetail,
   onPressVewDetail,
-  handleAcceptedEvent,
   getUserName,
   handleDone
 }) => {
-  let message;
-  //const [acceptedEvent, setAcceptedEvent] = useState(false);
-  let acceptedEvent;
-  switch (itemDetail.type) {
-    case "inviteToEvent":
-      const name = getUserName(itemDetail);
-      message = name + " has invited you to join an event: ";
-      break;
-    case "joinEvent":
-      break;
-    case "acceptedEvent":
-      acceptedEvent = true;
-      message = itemDetail.message;
-      break;
-    case "declinedEvent":
-      acceptedEvent = true;
-      message = itemDetail.message;
-      break;
-    case "confirmation":
-      acceptedEvent = true;
-      message = getUserName(itemDetail) + itemDetail.message;
-      break;
-    default:
-      break;
-  }
+  const { currentUser } = useContext(AuthContext);
+  const db = firebase.firestore();
+  const [message, setMessage] = useState();
+  const [controlType, setControlType] = useState();
+
+  useEffect(() => {
+    //clean up useEffect
+    let isSubscribed = true;
+    if (isSubscribed) {
+      try {
+        defineTypeNotification(itemDetail.type);
+      } catch (error) {
+        console.log("retrieve member count error: " + error);
+      }
+    }
+    return () => (isSubscribed = false);
+  }, []);
+
+  const defineTypeNotification = type => {
+    switch (type) {
+      case "inviteToEvent":
+        const name = getUserName(itemDetail);
+        setMessage(name + " has invited you to join an event: ");
+        break;
+      case "joinEvent":
+        break;
+      case "acceptedEvent":
+        setControlType(true);
+        setMessage(itemDetail.message);
+        break;
+      case "declinedEvent":
+        setControlType(true);
+        setMessage(itemDetail.message);
+        break;
+      case "confirmation":
+        setControlType(true);
+        setMessage(getUserName(itemDetail) + itemDetail.message);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleAccepted = noti => {
+    //if this notification for accepting event
+    if (noti.event_id) {
+      handleAcceptedEvent(noti);
+    }
+
+    //handle for accepting friend request
+  };
+
+  const handleAcceptedEvent = async noti => {
+    console.log(noti);
+    await db
+      .collection("events")
+      .doc(noti.uid_from)
+      .collection("list")
+      .doc(noti.event_id)
+      .collection("members")
+      .doc(noti.member_id)
+      .update({ status: "joined" })
+      .then(() => {
+        //add group event id into events collection for who is invited
+        db.collection("events")
+          .doc(noti.uid_to)
+          .collection("group_list")
+          .doc(noti.event_id)
+          .set({
+            created: Date.now(),
+            event_id: noti.event_id,
+            uid_event_owner: noti.uid_from
+          })
+          .then(() => {
+            console.log("add group event successfully");
+            //update current notification
+            db.collection("notification")
+              .doc(currentUser.uid)
+              .collection("member_notify")
+              .doc(noti.id)
+              .update({
+                type: "acceptedEvent",
+                message: "You've now joined " + getUserName(noti) + " event:",
+                status: "done"
+              })
+              .then(() => {
+                //send other notification to owner to confirm
+                const mes = " has joined your event: ";
+                const confirmation = {
+                  created: Date.now(),
+                  type: "confirmation",
+                  uid_from: currentUser.uid,
+                  email_from: currentUser.email,
+                  uid_to: noti.uid_from,
+                  message: mes,
+                  event_id: noti.event_id,
+                  event_title: noti.event_title,
+                  status: "pending",
+                  member_id: noti.member_id
+                };
+                db.collection("notification")
+                  .doc(noti.uid_from)
+                  .collection("member_notify")
+                  .add(confirmation);
+              });
+          });
+      })
+      .then(result => {
+        console.log("update member is ok");
+      })
+      .catch(error => {
+        console.log("add member error", error);
+      });
+  };
+
+  const handleDeclined = noti => {
+    //if this notification for declining event
+    if (noti.event_id) {
+      handleDeclinedEvent(noti);
+    }
+
+    //handle for declining friend request
+  };
+  const handleDeclinedEvent = async noti => {
+    //console.log("decline", noti);
+
+    await db
+      .collection("events")
+      .doc(noti.uid_from)
+      .collection("list")
+      .doc(noti.event_id)
+      .collection("members")
+      .doc(noti.member_id)
+      .delete()
+      .then(() => {
+        console.log("deleted member successfully");
+
+        //delete current notification
+        db.collection("notification")
+          .doc(currentUser.uid)
+          .collection("member_notify")
+          .doc(noti.id)
+          .delete()
+          .then(() => {
+            //send declined notification to owner
+
+            const mes = getUserName(noti) + " has declined your invitation: ";
+            const confirmation = {
+              created: Date.now(),
+              type: "declinedEvent",
+              uid_from: currentUser.uid,
+              email_from: currentUser.email,
+              uid_to: noti.uid_from,
+              message: mes,
+              event_id: noti.event_id,
+              event_title: noti.event_title,
+              status: "done",
+              member_id: noti.member_id
+            };
+            db.collection("notification")
+              .doc(noti.uid_from)
+              .collection("member_notify")
+              .add(confirmation);
+          });
+      });
+  };
 
   return (
     <View style={styles.list}>
@@ -72,11 +214,11 @@ export const NotificationListItem = ({
           </View>
         </TouchableWithoutFeedback>
         <View style={styles.buttonSetting}>
-          {!acceptedEvent ? (
+          {!controlType ? (
             <>
               <TouchableOpacity
                 style={styles.acceptButton}
-                onPress={() => handleAcceptedEvent(itemDetail)}
+                onPress={() => handleAccepted(itemDetail)}
               >
                 <Text style={styles.acceptText}>
                   <AntDesign name="check" size={11} color="#10ac84" /> Accept
@@ -84,7 +226,7 @@ export const NotificationListItem = ({
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.cancelButton}
-                onPress={() => console.log("cancel invitation")}
+                onPress={() => handleDeclined(itemDetail)}
               >
                 <Text style={styles.cancelText}>
                   <AntDesign name="close" size={11} color="#ee5253" /> Decline
@@ -116,7 +258,9 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     borderRadius: 3,
-    paddingVertical: 5
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: "#ced6e090"
   },
 
   title: {
@@ -135,9 +279,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#dcdde1",
     height: windowHeight / 10,
     width: windowHeight / 10,
-    borderColor: "#ccc",
+    //borderColor: "#fff",
     borderRadius: windowHeight / 10 / 2,
-    borderWidth: 1,
+    //borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",

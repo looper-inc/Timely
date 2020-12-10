@@ -31,3 +31,12 @@ export const createRandomString = () => {
 export const upperCaseFirstLetter = text => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
+
+export const shuffleData = unshuffled => {
+  //let tmp = JSON.parse(JSON.stringify(unshuffled));
+  let shuffled = unshuffled
+    .map(a => ({ sort: Math.random(), value: a }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(a => a.value);
+  return shuffled;
+};

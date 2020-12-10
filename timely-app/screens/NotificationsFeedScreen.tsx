@@ -23,11 +23,15 @@ export const NotificationsFeedScreen = ({ navigation }) => {
   const db = firebase.firestore();
 
   useEffect(() => {
-    try {
-      retrieveData();
-    } catch (error) {
-      console.log("retrieveData error: " + error);
+    let isSubscribed = true;
+    if (isSubscribed) {
+      try {
+        retrieveData();
+      } catch (error) {
+        console.log("retrieveData error: " + error);
+      }
     }
+    return () => (isSubscribed = false);
   }, []);
 
   const retrieveData = async () => {
@@ -76,108 +80,6 @@ export const NotificationsFeedScreen = ({ navigation }) => {
     });
   };
 
-  const handleAcceptedEvent = async noti => {
-    console.log(noti);
-    await db
-      .collection("events")
-      .doc(noti.uid_from)
-      .collection("list")
-      .doc(noti.event_id)
-      .collection("members")
-      .doc(noti.member_id)
-      .update({ status: "joined" })
-      .then(() => {
-        //add group event id into events collection for who is invited
-        db.collection("events")
-          .doc(noti.uid_to)
-          .collection("group_list")
-          .doc(noti.event_id)
-          .set({
-            created: Date.now(),
-            event_id: noti.event_id,
-            uid_event_owner: noti.uid_from
-          })
-          .then(() => {
-            console.log("add group event successfully");
-            //update current notification
-            db.collection("notification")
-              .doc(currentUser.uid)
-              .collection("member_notify")
-              .doc(noti.id)
-              .update({
-                type: "acceptedEvent",
-                message: "You've now joined " + getUserName(noti) + " event:",
-                status: "done"
-              })
-              .then(() => {
-                //send other notification to owner to confirm
-                const mes = " has joined your event: ";
-                const confirmation = {
-                  created: Date.now(),
-                  type: "confirmation",
-                  uid_from: currentUser.uid,
-                  email_from: currentUser.email,
-                  uid_to: noti.uid_from,
-                  message: mes,
-                  event_id: noti.event_id,
-                  event_title: noti.event_title,
-                  status: "pending",
-                  member_id: noti.member_id
-                };
-                db.collection("notification")
-                  .doc(noti.uid_from)
-                  .collection("member_notify")
-                  .add(confirmation);
-              });
-          });
-      })
-      .then(result => {
-        console.log("update member is ok");
-      })
-      .catch(error => {
-        console.log("add member error", error);
-      });
-  };
-
-  const handleDeclinedEvent = async noti => {
-    await db
-      .collection("events")
-      .doc(noti.uid_from)
-      .collection("list")
-      .doc(noti.event_id)
-      .collection("members")
-      .doc(noti.member_id)
-      .delete()
-      .then(() => {
-        //delete current notification
-        db.collection("notification")
-          .doc(currentUser.uid)
-          .collection("member_notify")
-          .doc(noti.id)
-          .delete()
-          .then(() => {
-            //send declined notification to owner
-            const mes = getUserName(noti) + " has declined your invitation: ";
-            const confirmation = {
-              created: Date.now(),
-              type: "declinedEvent",
-              uid_from: currentUser.uid,
-              email_from: currentUser.email,
-              uid_to: noti.uid_from,
-              message: mes,
-              event_id: noti.event_id,
-              event_title: noti.event_title,
-              status: "done",
-              member_id: noti.member_id
-            };
-            db.collection("notification")
-              .doc(noti.uid_from)
-              .collection("member_notify")
-              .add(confirmation);
-          });
-      });
-  };
-
   const handleDone = async noti => {
     await db;
     db.collection("notification")
@@ -214,7 +116,6 @@ export const NotificationsFeedScreen = ({ navigation }) => {
               <NotificationListItem
                 itemDetail={item}
                 onPressVewDetail={() => console.log("detail click")}
-                handleAcceptedEvent={handleAcceptedEvent}
                 getUserName={getUserName}
                 handleDone={handleDone}
               />

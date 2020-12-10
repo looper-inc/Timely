@@ -13,12 +13,14 @@ import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
 import EventListItem from "../components/PlanScreen/EventListItem";
 import EventFilter from "./PlanScreen/EventFilter";
+import { shuffleData } from "../utils/utils";
 
 export const EventsScreen = ({ navigation }) => {
   const [eventList, setEventList] = useState(null);
   const [limit, setLimit] = useState(7);
   const [isFetching, setIsFetching] = useState(false);
   const [lastVisited, setLastVisited] = useState();
+  const [lastVisitedGroup, setLastVisitedGroup] = useState();
   const [loading, setLoading] = useState();
   const [eventFilter, setEventFilter] = useState(0);
   const { currentUser } = useContext(AuthContext);
@@ -26,11 +28,16 @@ export const EventsScreen = ({ navigation }) => {
   const db = firebase.firestore();
 
   useEffect(() => {
-    try {
-      retrieveData(getEventFromGroup, getEventList);
-    } catch (error) {
-      console.log("retrieveData error: " + error);
+    //clean up useEffect
+    let isSubscribed = true;
+    if (isSubscribed) {
+      try {
+        retrieveData(getEventFromGroup, getEventList);
+      } catch (error) {
+        console.log("retrieveData error: " + error);
+      }
     }
+    return () => (isSubscribed = false);
   }, [eventFilter]);
 
   const retrieveData = async (getEventFromGroup, getEventList) => {
@@ -49,13 +56,6 @@ export const EventsScreen = ({ navigation }) => {
         getEventFromGroup(initialQuery, events);
         break;
     }
-
-    //set events data to state
-    setTimeout(() => {
-      //console.log(events);
-      setEventList(events);
-      setLoading(false);
-    }, 200);
   };
 
   const getEventList = (initialQuery, events) => {
@@ -83,39 +83,70 @@ export const EventsScreen = ({ navigation }) => {
         } else {
           setLoading(false);
         }
+        setTimeout(() => {
+          //console.log(events);
+
+          setEventList(events);
+          setLoading(false);
+        }, 300);
       });
   };
 
   const getEventFromGroup = (initialQuery, events) => {
-    initialQuery.collection("group_list").onSnapshot(snapshot => {
-      setLoading(true);
-      if (snapshot.size) {
-        snapshot.forEach(event => {
-          db.collection("events")
-            .doc(event.data().uid_event_owner)
-            .collection("list")
-            .doc(event.data().event_id)
-            .get()
-            .then(item => {
-              //console.log(item.data());
-              events.push({
-                ...item.data(),
-                id: item.id,
-                uid_owner: event.data().uid_event_owner
+    initialQuery
+      .collection("group_list")
+      .orderBy("created", "desc")
+      //.limit(limit)
+      .onSnapshot(snapshot => {
+        setLoading(true);
+        if (snapshot.size) {
+          snapshot.forEach(event => {
+            db.collection("events")
+              .doc(event.data().uid_event_owner)
+              .collection("list")
+              .doc(event.data().event_id)
+              .get()
+              .then(item => {
+                //console.log(item.data());
+                events.push({
+                  ...item.data(),
+                  id: item.id,
+                  uid_owner: event.data().uid_event_owner
+                });
               });
-            });
-        });
-      }
-    });
+            let last = snapshot.docs[snapshot.docs.length - 1];
+            //console.log('visited: ' + last);
+            setLastVisitedGroup(last);
+          });
+        }
+        setTimeout(() => {
+          setEventList(events);
+          setLoading(false);
+        }, 300);
+      });
   };
 
   const retrieveMoreData = async () => {
-    let initialQuery = await db
-      .collection("events")
-      .doc(currentUser.uid)
-      .collection("list");
+    let initialQuery = await db.collection("events").doc(currentUser.uid);
+    let moreEvents = [...eventList];
+    switch (eventFilter) {
+      case 1:
+        getMoreEventList(initialQuery, moreEvents);
+        break;
+      case 2:
+        getMoreEventFromGroup(initialQuery, moreEvents);
+        break;
+      case 0:
+      default:
+        getMoreEventList(initialQuery, moreEvents);
+        getMoreEventFromGroup(initialQuery, moreEvents);
+        break;
+    }
+  };
 
+  const getMoreEventList = (initialQuery, moreEvents) => {
     initialQuery
+      .collection("list")
       .orderBy("created", "desc")
       .startAfter(lastVisited)
       .limit(limit)
@@ -124,7 +155,6 @@ export const EventsScreen = ({ navigation }) => {
           //set loading
           setIsFetching(true);
 
-          let moreEvents = [...eventList];
           snapshot.forEach(item => {
             //console.log(item.data())
             moreEvents.push({
@@ -139,7 +169,7 @@ export const EventsScreen = ({ navigation }) => {
             //set events data to state
             setEventList(moreEvents);
             setIsFetching(false);
-          }, 500);
+          }, 300);
 
           let last = snapshot.docs[snapshot.docs.length - 1];
           setLastVisited(last);
@@ -149,7 +179,42 @@ export const EventsScreen = ({ navigation }) => {
         }
       });
   };
-
+  const getMoreEventFromGroup = (initialQuery, moreEvents) => {
+    initialQuery
+      .collection("group_list")
+      .orderBy("created", "desc")
+      .limit(limit)
+      .onSnapshot(snapshot => {
+        setLoading(true);
+        if (snapshot.size) {
+          snapshot.forEach(event => {
+            db.collection("events")
+              .doc(event.data().uid_event_owner)
+              .collection("list")
+              .doc(event.data().event_id)
+              .get()
+              .then(item => {
+                //console.log(item.data());
+                moreEvents.push({
+                  ...item.data(),
+                  id: item.id,
+                  uid_owner: event.data().uid_event_owner
+                });
+              });
+            let last = snapshot.docs[snapshot.docs.length - 1];
+            //console.log('visited: ' + last);
+            setLastVisitedGroup(last);
+          });
+        } else {
+          console.log("no more row to fetch");
+          setIsFetching(false);
+        }
+        setTimeout(() => {
+          setEventList(moreEvents);
+          setLoading(false);
+        }, 300);
+      });
+  };
   const handleEditEvent = itemDetail => {
     navigation.navigate("EditEvent", itemDetail);
   };
@@ -195,7 +260,7 @@ export const EventsScreen = ({ navigation }) => {
                   />
                 )}
                 //onEndReached={() => retrieveMoreData()}
-                //onEndReachedThreshold={0.1}
+                //onEndReachedThreshold={0.3}
               />
             </>
           ) : (
