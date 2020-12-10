@@ -20,34 +20,54 @@ export const EventsScreen = ({ navigation }) => {
   const [isFetching, setIsFetching] = useState(false);
   const [lastVisited, setLastVisited] = useState();
   const [loading, setLoading] = useState();
-  const [mergeMemberCount, setMergeMemberCount] = useState();
+  const [eventFilter, setEventFilter] = useState(0);
   const { currentUser } = useContext(AuthContext);
 
   const db = firebase.firestore();
 
   useEffect(() => {
     try {
-      retrieveData();
+      retrieveData(getEventFromGroup, getEventList);
     } catch (error) {
       console.log("retrieveData error: " + error);
     }
-  }, []);
+  }, [eventFilter]);
 
-  const retrieveData = async () => {
-    let initialQuery = await db
-      .collection("events")
-      .doc(currentUser.uid)
-      .collection("list");
+  const retrieveData = async (getEventFromGroup, getEventList) => {
+    let initialQuery = await db.collection("events").doc(currentUser.uid);
+    let events = [];
+    switch (eventFilter) {
+      case 1:
+        getEventList(initialQuery, events);
+        break;
+      case 2:
+        getEventFromGroup(initialQuery, events);
+        break;
+      case 0:
+      default:
+        getEventList(initialQuery, events);
+        getEventFromGroup(initialQuery, events);
+        break;
+    }
 
+    //set events data to state
+    setTimeout(() => {
+      //console.log(events);
+      setEventList(events);
+      setLoading(false);
+    }, 200);
+  };
+
+  const getEventList = (initialQuery, events) => {
     initialQuery
+      .collection("list")
       .orderBy("created", "desc")
-      .limit(limit)
+      //.limit(limit)
       .onSnapshot(snapshot => {
         if (snapshot.size) {
           //set loading
           setLoading(true);
 
-          let events = [];
           let count = [];
           snapshot.forEach(item => {
             events.push({
@@ -55,16 +75,6 @@ export const EventsScreen = ({ navigation }) => {
               id: item.id
             });
           });
-
-          //console.log events);
-          //set events data to state
-          setTimeout(() => {
-            console.log(events);
-
-            setEventList(events);
-            setLoading(false);
-          }, 500);
-          //Cloud Firestore: Last Visible Document
           //Document ID To Start From For Proceeding Queries
           let last = snapshot.docs[snapshot.docs.length - 1];
           //console.log('visited: ' + last);
@@ -75,6 +85,30 @@ export const EventsScreen = ({ navigation }) => {
         }
       });
   };
+
+  const getEventFromGroup = (initialQuery, events) => {
+    initialQuery.collection("group_list").onSnapshot(snapshot => {
+      setLoading(true);
+      if (snapshot.size) {
+        snapshot.forEach(event => {
+          db.collection("events")
+            .doc(event.data().uid_event_owner)
+            .collection("list")
+            .doc(event.data().event_id)
+            .get()
+            .then(item => {
+              //console.log(item.data());
+              events.push({
+                ...item.data(),
+                id: item.id,
+                uid_owner: event.data().uid_event_owner
+              });
+            });
+        });
+      }
+    });
+  };
+
   const retrieveMoreData = async () => {
     let initialQuery = await db
       .collection("events")
@@ -138,42 +172,36 @@ export const EventsScreen = ({ navigation }) => {
       });
   };
 
-  const mergeMemberCountIntoEventList = async event => {
-    await db
-      .collection("events")
-      .doc(currentUser.uid)
-      .collection("list")
-      .doc(event.id)
-      .collection("members")
-      .where("status", "==", "joined")
-      .onSnapshot(snapshot => {
-        console.log("newcount: " + event.id, snapshot.size);
-        setMergeMemberCount(snapshot.size);
-      });
+  const handleFilter = idx => {
+    //console.log("filter pressed", idx);
+    setEventFilter(idx);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <EventFilter
-        onPressAll={() => console.log("all pressed")}
-        onPressByYou={() => console.log("by you pressed")}
-        onPressByOther={() => console.log("by other pressed")}
-      />
+      <EventFilter onPressFilter={handleFilter} />
       {eventList ? (
         <>
-          <FlatList
-            data={eventList}
-            renderItem={({ item }) => (
-              <EventListItem
-                itemDetail={item}
-                onPressDetail={handleEditEvent}
-                onPressViewDetail={handleViewDetail}
-                onPressRemoveEvent={handleRemoveGoal}
+          {!loading ? (
+            <>
+              <FlatList
+                data={eventList}
+                renderItem={({ item }) => (
+                  <EventListItem
+                    itemDetail={item}
+                    onPressDetail={handleEditEvent}
+                    onPressViewDetail={handleViewDetail}
+                    onPressRemoveEvent={handleRemoveGoal}
+                  />
+                )}
+                //onEndReached={() => retrieveMoreData()}
+                //onEndReachedThreshold={0.1}
               />
-            )}
-            onEndReached={() => retrieveMoreData()}
-            onEndReachedThreshold={0.1}
-          />
+            </>
+          ) : (
+            <ActivityIndicator size="large" color="#0097e6" />
+          )}
+
           {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
         </>
       ) : (

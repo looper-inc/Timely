@@ -94,7 +94,8 @@ export const NotificationsFeedScreen = ({ navigation }) => {
           .doc(noti.event_id)
           .set({
             created: Date.now(),
-            event_id: noti.event_id
+            event_id: noti.event_id,
+            uid_event_owner: noti.uid_from
           })
           .then(() => {
             console.log("add group event successfully");

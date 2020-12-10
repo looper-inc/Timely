@@ -27,29 +27,67 @@ export const EventListItem = ({
 }) => {
   const { currentUser } = useContext(AuthContext);
   const db = firebase.firestore();
-  const [memberCount, setMemberCount] = useState();
+  const [memberCount, setMemberCount] = useState(0);
+  const [ownerDetail, setOwnerDetail] = useState();
   useEffect(() => {
-    try {
-      getMemberCount(itemDetail);
-    } catch (error) {
-      console.log("retrieve member count error: " + error);
+    //clean up useEffect
+    let isSubscribed = true;
+    if (isSubscribed) {
+      try {
+        getMemberCount(itemDetail);
+        getOwnerDetail(itemDetail);
+      } catch (error) {
+        console.log("retrieve member count error: " + error);
+      }
     }
+    return () => (isSubscribed = false);
   }, []);
 
   const getMemberCount = async event => {
+    let uid = currentUser.uid;
+    let countOwner = 0;
+    if (event.uid_owner) {
+      //log("owner: ", event.uid_owner))
+      uid = event.uid_owner;
+      countOwner = 1;
+    }
     await db
       .collection("events")
-      .doc(currentUser.uid)
+      .doc(uid)
       .collection("list")
       .doc(event.id)
       .collection("members")
       .where("status", "==", "joined")
       .onSnapshot(snapshot => {
         //console.log("newcount: " + event.id, snapshot.size);
-        setMemberCount(snapshot.size);
+        setMemberCount(snapshot.size + countOwner);
       });
   };
 
+  const getOwnerDetail = async event => {
+    if (event.uid_owner) {
+      await db
+        .collection("profiles")
+        .doc(event.uid_owner)
+        .get()
+        .then(owner => {
+          setOwnerDetail(owner.data());
+        });
+    }
+  };
+  const getUserName = info => {
+    let name;
+    if (info.first_name || info.last_name) {
+      const fullname =
+        upperCaseFirstLetter(info.first_name) +
+        " " +
+        upperCaseFirstLetter(info.last_name);
+      name = fullname;
+    } else {
+      name = info.email;
+    }
+    return name;
+  };
   const createDeleteAlert = () =>
     Alert.alert(
       "Event Delete",
@@ -70,9 +108,17 @@ export const EventListItem = ({
       <View style={styles.content}>
         <TouchableWithoutFeedback onPress={() => onPressViewDetail(itemDetail)}>
           <View style={styles.contentText}>
-            <View style={styles.ownContent}>
-              <Text style={styles.ownText}>Own by you</Text>
-            </View>
+            {!ownerDetail ? (
+              <View style={styles.ownContent}>
+                <Text style={styles.ownText}>Own by you</Text>
+              </View>
+            ) : (
+              <View style={styles.ownContent}>
+                <Text style={styles.ownerText}>
+                  Own by {getUserName(ownerDetail)}
+                </Text>
+              </View>
+            )}
             <Text style={styles.title} numberOfLines={3}>
               {upperCaseFirstLetter(itemDetail.title)}
             </Text>
@@ -89,20 +135,24 @@ export const EventListItem = ({
             </View>
           </View>
         </TouchableWithoutFeedback>
-        <View style={styles.buttonSetting}>
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => onPressDetail(itemDetail)}
-          >
-            <AntDesign name="edit" size={18} color="#f9fafd" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.removeButton}
-            onPress={() => createDeleteAlert()}
-          >
-            <AntDesign name="delete" size={18} color="#f9fafd" />
-          </TouchableOpacity>
-        </View>
+        {!itemDetail.uid_owner && (
+          <>
+            <View style={styles.buttonSetting}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => onPressDetail(itemDetail)}
+              >
+                <AntDesign name="edit" size={18} color="#f9fafd" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={() => createDeleteAlert()}
+              >
+                <AntDesign name="delete" size={18} color="#f9fafd" />
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
       </View>
     </View>
   );
@@ -146,6 +196,16 @@ const styles = StyleSheet.create({
   },
   ownText: {
     backgroundColor: "#e58e26",
+    fontSize: 9,
+    color: "#ecf0f1",
+    fontWeight: "bold",
+    borderRadius: 3,
+    paddingVertical: 3,
+    paddingHorizontal: 5,
+    alignSelf: "flex-end"
+  },
+  ownerText: {
+    backgroundColor: "#192a56",
     fontSize: 9,
     color: "#ecf0f1",
     fontWeight: "bold",
