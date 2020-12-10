@@ -48,7 +48,7 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={styles.dispText}>Name: {name}</Text>
             <Text style={styles.dispText}>Email: {email}</Text>
             <Text style={styles.dispText}>Bio: {profile.bio}</Text>
-            <FormButton buttonTitle="Edit Profile" onPress={()=>{navigation.navigate("EditProfile")}}/>
+            <FormButton buttonTitle="Edit Profile" onPress={()=>{navigation.navigate("EditProfile", profile)}}/>
             <FormButton buttonTitle="Sign Out" onPress={handleSignOut}/>
           
         </SafeAreaView>

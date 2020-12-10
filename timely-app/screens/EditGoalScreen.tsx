@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
         height: windowHeight / 4,
         width: windowWidth / 1.5,
         borderColor: '#ccc',
-        borderRadius: 3,
+        borderRadius: 30,
         borderWidth: 1,
         justifyContent: 'center',
         alignSelf: 'center',

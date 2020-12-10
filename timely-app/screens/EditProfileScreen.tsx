@@ -4,7 +4,7 @@
 
 import * as React from 'react';
 import {useState, useContext, useEffect} from 'react';
-import AuthContext from "../providers/AuthProvider.js"
+import { AuthContext } from "../providers/AuthProvider.js"
 import { Image, View, Text, StyleSheet,  SafeAreaView, Platform, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
 import {windowHeight, windowWidth} from '../utils/Dimensions'
@@ -38,13 +38,6 @@ export const EditProfileScreen = ({navigation}) => {
             }
         }) ();
     }, []);
-
-    useEffect(() => { 
-        db.collection('profiles').doc(currentUser.uid).get().then(snapshot => {
-        const profile = snapshot.data();
-        setProfile(profile)
-        })
-      }, [])
   
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -142,12 +135,6 @@ export const EditProfileScreen = ({navigation}) => {
         }
     }
 
-    const initialValues = {
-        firstName:  profile.firstName,
-        lastName:   profile.lastName,
-        email:      profile.email,
-        bio: ''
-    }
 
     return(
         
@@ -197,7 +184,7 @@ export default EditProfileScreen;
    
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#f9fafd',
+        backgroundColor: '#111111',
         flex: 1,
         justifyContent: 'center',
         padding: 10,
