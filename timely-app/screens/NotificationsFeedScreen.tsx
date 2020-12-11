@@ -29,7 +29,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
         console.log("retrieveData error: " + error);
       }
     }
-    return () => (isSubscribed = false);
+    return () => { isSubscribed = false };
   }, []);
 
   const retrieveData = async () => {
@@ -46,7 +46,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
       if (snapshot.size) {
         let noti = [];
         snapshot.forEach(item => {
-          //console.log(item.data());
+          console.log(item.data());
           return db
             .collection("profiles")
             .doc(item.data().uid_from)
@@ -64,6 +64,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
         //set goals data to state
         setTimeout(() => {
           setNotificationList(noti);
+          console.log(noti)
           setLoading(false);
         }, 300);
         //Cloud Firestore: Last Visible Document
@@ -122,13 +123,13 @@ export const NotificationsFeedScreen = ({ navigation }) => {
           {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
         </>
       ) : (
-        <>
-          {loading && <ActivityIndicator size="large" color="#0097e6" />}
-          {!notificationList && !loading && (
-            <Text style={styles.noDataText}>No any notification.</Text>
-          )}
-        </>
-      )}
+          <>
+            {loading && <ActivityIndicator size="large" color="#0097e6" />}
+            {!notificationList && !loading && (
+              <Text style={styles.noDataText}>No any notification.</Text>
+            )}
+          </>
+        )}
     </SafeAreaView>
   );
 };

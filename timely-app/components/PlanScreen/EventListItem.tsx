@@ -19,7 +19,12 @@ import {
   getFormattedDateString
 } from "../../utils/utils";
 
-export const EventListItem = ({ onPressDetail, itemDetail, navigation }) => {
+export const EventListItem = ({
+  onPressDetail,
+  itemDetail,
+  onPressVewDetail,
+  onPressRemoveEvent
+}: any) => {
   const { currentUser } = useContext(AuthContext);
   const db = firebase.firestore();
   const [memberCount, setMemberCount] = useState(0);
@@ -36,10 +41,10 @@ export const EventListItem = ({ onPressDetail, itemDetail, navigation }) => {
         console.log("retrieve member count error: " + error);
       }
     }
-    return () => (isSubscribed = false);
+    return () => { isSubscribed = false };
   }, []);
 
-  const getMemberCount = async event => {
+  const getMemberCount = (event: any) => {
     let uid = currentUser.uid;
     let countOwner = 0;
     if (event.uid_owner) {
@@ -47,7 +52,7 @@ export const EventListItem = ({ onPressDetail, itemDetail, navigation }) => {
       uid = event.uid_owner;
       countOwner = 1;
     }
-    await db
+    db
       .collection("events")
       .doc(uid)
       .collection("list")
@@ -60,13 +65,13 @@ export const EventListItem = ({ onPressDetail, itemDetail, navigation }) => {
       });
   };
 
-  const getOwnerDetail = async event => {
+  const getOwnerDetail = (event: any) => {
     if (event.uid_owner) {
-      await db
+      db
         .collection("profiles")
         .doc(event.uid_owner)
         .get()
-        .then(owner => {
+        .then((owner: any) => {
           setOwnerDetail(owner.data());
         });
     }
@@ -144,10 +149,10 @@ export const EventListItem = ({ onPressDetail, itemDetail, navigation }) => {
         //delete event
         query
           .delete()
-          .then(function() {
+          .then(function () {
             console.log("Document successfully deleted!");
           })
-          .catch(function(error) {
+          .catch(function (error) {
             console.error("Error removing document: ", error);
           });
         //delete current user's event notification
@@ -194,19 +199,19 @@ export const EventListItem = ({ onPressDetail, itemDetail, navigation }) => {
   return (
     <View style={styles.list}>
       <View style={styles.content}>
-        <TouchableWithoutFeedback onPress={() => handleViewDetail(itemDetail)}>
+        <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
           <View style={styles.contentText}>
             {!ownerDetail ? (
               <View style={styles.ownContent}>
                 <Text style={styles.ownText}>Own by you</Text>
               </View>
             ) : (
-              <View style={styles.ownContent}>
-                <Text style={styles.ownerText}>
-                  Own by {getUserName(ownerDetail)}
-                </Text>
-              </View>
-            )}
+                <View style={styles.ownContent}>
+                  <Text style={styles.ownerText}>
+                    Own by {getUserName(ownerDetail)}
+                  </Text>
+                </View>
+              )}
             <Text style={styles.title} numberOfLines={3}>
               {upperCaseFirstLetter(itemDetail.title)}
             </Text>
