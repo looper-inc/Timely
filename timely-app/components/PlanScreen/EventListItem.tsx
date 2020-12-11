@@ -22,8 +22,7 @@ import {
 export const EventListItem = ({
   onPressDetail,
   itemDetail,
-  onPressVewDetail,
-  onPressRemoveEvent
+  navigation
 }: any) => {
   const { currentUser } = useContext(AuthContext);
   const db = firebase.firestore();
@@ -41,7 +40,9 @@ export const EventListItem = ({
         console.log("retrieve member count error: " + error);
       }
     }
-    return () => { isSubscribed = false };
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
   const getMemberCount = (event: any) => {
@@ -52,8 +53,7 @@ export const EventListItem = ({
       uid = event.uid_owner;
       countOwner = 1;
     }
-    db
-      .collection("events")
+    db.collection("events")
       .doc(uid)
       .collection("list")
       .doc(event.id)
@@ -67,8 +67,7 @@ export const EventListItem = ({
 
   const getOwnerDetail = (event: any) => {
     if (event.uid_owner) {
-      db
-        .collection("profiles")
+      db.collection("profiles")
         .doc(event.uid_owner)
         .get()
         .then((owner: any) => {
@@ -149,10 +148,10 @@ export const EventListItem = ({
         //delete event
         query
           .delete()
-          .then(function () {
+          .then(function() {
             console.log("Document successfully deleted!");
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.error("Error removing document: ", error);
           });
         //delete current user's event notification
@@ -199,19 +198,19 @@ export const EventListItem = ({
   return (
     <View style={styles.list}>
       <View style={styles.content}>
-        <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
+        <TouchableWithoutFeedback onPress={() => handleViewDetail(itemDetail)}>
           <View style={styles.contentText}>
             {!ownerDetail ? (
               <View style={styles.ownContent}>
                 <Text style={styles.ownText}>Own by you</Text>
               </View>
             ) : (
-                <View style={styles.ownContent}>
-                  <Text style={styles.ownerText}>
-                    Own by {getUserName(ownerDetail)}
-                  </Text>
-                </View>
-              )}
+              <View style={styles.ownContent}>
+                <Text style={styles.ownerText}>
+                  Own by {getUserName(ownerDetail)}
+                </Text>
+              </View>
+            )}
             <Text style={styles.title} numberOfLines={3}>
               {upperCaseFirstLetter(itemDetail.title)}
             </Text>
