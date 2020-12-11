@@ -23,8 +23,8 @@ export const NotificationListItem = ({
 }) => {
   const { currentUser } = useContext(AuthContext);
   const db = firebase.firestore();
-  const [message, setMessage] = useState();
-  const [controlType, setControlType] = useState();
+  const [message, setMessage] = useState('');
+  const [controlType, setControlType] = useState(false);
 
   useEffect(() => {
     //clean up useEffect
@@ -36,7 +36,7 @@ export const NotificationListItem = ({
         console.log("retrieve member count error: " + error);
       }
     }
-    return () => (isSubscribed = false);
+    return () => { isSubscribed = false };
   }, []);
 
   const defineTypeNotification = type => {
@@ -59,6 +59,18 @@ export const NotificationListItem = ({
         setControlType(true);
         setMessage(getUserName(itemDetail) + itemDetail.message);
         break;
+      case "friendRequest":
+        setControlType(true);
+        setMessage(getUserName(itemDetail) + " wants to be your friend.");
+        break;
+      case "acceptedFriend":
+        setControlType(true);
+        setMessage(itemDetail.message);
+        break;
+      case "declinedFriend":
+        setControlType(true);
+        setMessage(itemDetail.message);
+        break;
       default:
         break;
     }
@@ -70,7 +82,9 @@ export const NotificationListItem = ({
       handleAcceptedEvent(noti);
     }
 
-    //handle for accepting friend request
+    if (noti.type === 'friendRequest') {
+      handleAcceptedFriend(noti)
+    }
   };
 
   const handleAcceptedEvent = async noti => {
@@ -136,13 +150,63 @@ export const NotificationListItem = ({
       });
   };
 
+  const handleAcceptedFriend = (noti: any) => {
+    console.log(noti);
+
+    // Update our friend list
+    db.collection('profiles').doc(noti.uid_to).collection('friend_list').doc(noti.uid_from).set({
+      friend_id: noti.uid_from,
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+      pending: false
+    })
+    // Update their friendlist
+    db.collection('profiles').doc(noti.uid_from).collection('friend_list').doc(noti.uid_to).set({
+      friend_id: noti.uid_to,
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+      pending: false
+    })
+
+    // Update notifications
+    db.collection("notification")
+      .doc(currentUser.uid)
+      .collection("member_notify")
+      .doc(noti.id)
+      .update({
+        type: "acceptedFriend",
+        message: "You are now friends with " + getUserName(noti),
+        status: "done"
+      })
+      .then(() => {
+        //send other notification to owner to confirm
+        const mes = " has accepted your friend request. ";
+        const confirmation = {
+          created: Date.now(),
+          type: "confirmation",
+          uid_from: currentUser.uid,
+          email_from: currentUser.email,
+          uid_to: noti.uid_from,
+          message: mes,
+          event_id: noti.event_id,
+          event_title: noti.event_title,
+          status: "pending",
+          member_id: noti.member_id
+        };
+        db.collection("notification")
+          .doc(noti.uid_from)
+          .collection("member_notify")
+          .add(confirmation);
+      });
+  };
+
   const handleDeclined = noti => {
     //if this notification for declining event
     if (noti.event_id) {
       handleDeclinedEvent(noti);
     }
 
-    //handle for declining friend request
+    if (noti.type === 'friendRequest') {
+      handleDeclinedFriend(noti)
+    }
   };
   const handleDeclinedEvent = async noti => {
     //console.log("decline", noti);
@@ -188,6 +252,41 @@ export const NotificationListItem = ({
       });
   };
 
+  const handleDeclinedFriend = (noti: any) => {
+    //console.log("decline", noti);
+
+    // Update our friend list
+    db.collection('profiles').doc(noti.uid_to).collection('friend_list').doc(noti.uid_from).delete()
+
+    //delete current notification
+    db.collection("notification")
+      .doc(currentUser.uid)
+      .collection("member_notify")
+      .doc(noti.id)
+      .delete()
+      .then(() => {
+        //send declined notification to owner
+
+        const mes = getUserName(noti) + " has declined your friend request. :( ";
+        const confirmation = {
+          created: Date.now(),
+          type: "declinedFriend",
+          uid_from: currentUser.uid,
+          email_from: currentUser.email,
+          uid_to: noti.uid_from,
+          message: mes,
+          event_id: noti.event_id,
+          event_title: noti.event_title,
+          status: "done",
+          member_id: noti.member_id
+        };
+        db.collection("notification")
+          .doc(noti.uid_from)
+          .collection("member_notify")
+          .add(confirmation);
+      });
+  };
+
   return (
     <View style={styles.list}>
       <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
@@ -214,41 +313,37 @@ export const NotificationListItem = ({
           </View>
         </TouchableWithoutFeedback>
         <View style={styles.buttonSetting}>
-<<<<<<< HEAD
-        {yesNoButton()}
-=======
           {!controlType ? (
-          <>
-            <TouchableOpacity
-              style={styles.acceptButton}
-              onPress={() => handleAccepted(itemDetail)}
-            >
-              <Text style={styles.acceptText}>
-                <AntDesign name="check" size={11} color="#10ac84" /> Accept
+            <>
+              <TouchableOpacity
+                style={styles.acceptButton}
+                onPress={() => handleAccepted(itemDetail)}
+              >
+                <Text style={styles.acceptText}>
+                  <AntDesign name="check" size={11} color="#10ac84" /> Accept
                 </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => handleDeclined(itemDetail)}
-            >
-              <Text style={styles.cancelText}>
-                <AntDesign name="close" size={11} color="#ee5253" /> Decline
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => handleDeclined(itemDetail)}
+              >
+                <Text style={styles.cancelText}>
+                  <AntDesign name="close" size={11} color="#ee5253" /> Decline
                 </Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => handleDone(itemDetail)}
-            >
-              <Text style={styles.cancelText}>
-                <AntDesign name="close" size={11} color="#ee5253" /> Done
+              </TouchableOpacity>
+            </>
+          ) : (
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => handleDone(itemDetail)}
+              >
+                <Text style={styles.cancelText}>
+                  <AntDesign name="close" size={11} color="#ee5253" /> Done
               </Text>
-            </TouchableOpacity>
-          )}
->>>>>>> main
+              </TouchableOpacity>
+            )}
+        </View>
       </View>
-    </View>
     </View >
   );
 };

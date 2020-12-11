@@ -29,7 +29,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
         console.log("retrieveData error: " + error);
       }
     }
-    return () => (isSubscribed = false);
+    return () => { isSubscribed = false };
   }, []);
 
   const retrieveData = async () => {
@@ -122,13 +122,13 @@ export const NotificationsFeedScreen = ({ navigation }) => {
           {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
         </>
       ) : (
-        <>
-          {loading && <ActivityIndicator size="large" color="#0097e6" />}
-          {!notificationList && !loading && (
-            <Text style={styles.noDataText}>No any notification.</Text>
-          )}
-        </>
-      )}
+          <>
+            {loading && <ActivityIndicator size="large" color="#0097e6" />}
+            {!notificationList && !loading && (
+              <Text style={styles.noDataText}>No any notification.</Text>
+            )}
+          </>
+        )}
     </SafeAreaView>
   );
 };
