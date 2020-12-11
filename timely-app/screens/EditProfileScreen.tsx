@@ -248,7 +248,6 @@ export const EditProfileScreen = ({ route, navigation }) => {
             handleChange,
             handleBlur,
             handleSubmit,
-            setFieldValue,
             values,
             errors,
             isValid,
@@ -294,7 +293,10 @@ export const EditProfileScreen = ({ route, navigation }) => {
           )}
         </Formik>
 
-        <TouchableOpacity style={styles.pButtonContainer}>
+        <TouchableOpacity 
+          style={styles.pButtonContainer} onPress={() => {
+            navigation.navigate("EditPassword", profile);
+        }}>
           <Text style={styles.pButtonText}>Edit Password</Text>
         </TouchableOpacity>
       </SafeAreaView>
