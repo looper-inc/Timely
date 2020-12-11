@@ -51,6 +51,7 @@ const FriendListModal = props => {
         .collection("profiles")
         .doc(currentUser.uid)
         .collection("friend_list")
+        .where("pending", "==", false)
         .onSnapshot(snapshot => {
           if (snapshot.size) {
             setIsFetching(true);
