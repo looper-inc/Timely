@@ -4,7 +4,7 @@ import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig";
 import * as Yup from 'yup';
-import { Text, View } from '../components/Themed';
+import { Text } from '../components/Themed';
 import { Formik } from 'formik';
 
 

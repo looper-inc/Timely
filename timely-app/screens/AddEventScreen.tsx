@@ -1,22 +1,18 @@
-
 import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   SafeAreaView,
   Switch,
-  TextInput,
   Alert,
   ScrollView,
   TouchableOpacity,
   FlatList
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 import firebase from "../fbconfig";
-import { Formik, Form, Field, ErrorMessage, yupToFormErrors } from "formik";
+import { Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import FormInput from "../components/FormInput";
 import FormButton from "../components/FormButton";
 import FormikInput from "../components/FormikInput";
 import { AuthContext } from "../providers/AuthProvider";
@@ -98,24 +94,6 @@ export const AddEvent = ({ route, navigation }) => {
           if (inviteFriends) {
             setMessText("Adding members...");
             inviteFriends.forEach((data, idx) => {
-              const noti_data = {
-                created: now,
-                type: "inviteToEvent",
-                uid_from: currentUser.uid,
-                email_from: currentUser.email,
-                uid_to: data.id,
-                message: "",
-                event_id: doc.id,
-                event_title: values.title,
-                status: "pending"
-              };
-              db.collection("notification")
-                .doc(data.id)
-                .collection("member_notify")
-                .add(noti_data)
-                .then(() => {
-                  console.log("added notification successfully");
-                });
               query
                 .doc(doc.id)
                 .collection("members")
@@ -124,8 +102,27 @@ export const AddEvent = ({ route, navigation }) => {
                   status: "pending",
                   friend_id: data.id
                 })
-                .then(() => {
+                .then(member => {
                   //console.log("added members to event successfully");
+                  const noti_data = {
+                    created: now,
+                    type: "inviteToEvent",
+                    uid_from: currentUser.uid,
+                    email_from: currentUser.email,
+                    uid_to: data.id,
+                    message: "",
+                    event_id: doc.id,
+                    event_title: values.title,
+                    status: "pending",
+                    member_id: member.id
+                  };
+                  db.collection("notification")
+                    .doc(data.id)
+                    .collection("member_notify")
+                    .add(noti_data)
+                    .then(() => {
+                      console.log("added notification successfully");
+                    });
                   setIsDone(true);
                 });
             });

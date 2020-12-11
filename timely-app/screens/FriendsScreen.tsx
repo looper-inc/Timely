@@ -1,10 +1,6 @@
 import * as React from 'react';
-import { FlatList, StyleSheet, StatusBar, ActivityIndicator } from 'react-native';
-
-import EditScreenInfo from '../components/EditScreenInfo';
+import { FlatList, StyleSheet, StatusBar } from 'react-native';
 import { Text, View } from '../components/Themed';
-
-import FormButton from '../components/FormButton';
 import firebase from "../fbconfig";
 import { SearchBar } from 'react-native-elements';
 import FriendBlock from '../components/FriendsScreen/FriendBlock';

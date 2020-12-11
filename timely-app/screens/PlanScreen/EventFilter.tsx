@@ -3,7 +3,7 @@ import { Text } from "../../components/Themed";
 import React, { useState, useEffect, useContext } from "react";
 import { ButtonGroup } from "react-native-elements";
 
-const EventFilter = ({ onPressAll, onPressByYou, onPressByOther }) => {
+const EventFilter = ({ onPressFilter }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState();
 
@@ -12,19 +12,22 @@ const EventFilter = ({ onPressAll, onPressByYou, onPressByOther }) => {
     //console.log("all pressed", index);
     switch (index) {
       case 0:
-        console.log("all pressed", index);
+        //console.log("all pressed", index);
+        onPressFilter(index);
         setSelectedColor({
           backgroundColor: "#0097e6"
         });
         break;
       case 1:
-        console.log("Own by you pressed", index);
+        //console.log("Own by you pressed", index);
+        onPressFilter(index);
         setSelectedColor({
           backgroundColor: "#e58e26"
         });
         break;
       case 2:
-        console.log("Own by other pressed", index);
+        //console.log("Own by other pressed", index);
+        onPressFilter(index);
         setSelectedColor({
           backgroundColor: "#192a56"
         });

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useContext } from 'react'
-import { StyleSheet, Alert, Text, ActivityIndicator } from "react-native";
+import { StyleSheet, ActivityIndicator } from "react-native";
 import { AuthContext } from "../providers/AuthProvider";
 import firebase from "../fbconfig"
 import { SafeAreaView } from 'react-navigation';
@@ -25,6 +25,8 @@ export const followingFeedScreen = ({ navigation }) => {
     }, []);
 
     const retrieveEvents = async () => {
+        
+        let eventsList: any[] = [];
 
         setIsFetching(true)
         let initialQuery = await db.collection('profiles')
@@ -43,7 +45,6 @@ export const followingFeedScreen = ({ navigation }) => {
 
             }
 
-            let eventsList: any[] = [];
 
             userList.forEach(user => {
                 let tempEvents = db.collection('events')
@@ -54,7 +55,9 @@ export const followingFeedScreen = ({ navigation }) => {
                 tempEvents.onSnapshot((snap) => {
                     if (snap.size) {
                         snap.forEach(event => {
-                            eventsList.push({ ...event.data(), id: event.id });
+                            var a = eventsList.push({ ...event.data(), id: event.id, user_id: user });
+                            //console.log(eventsList[a-1].id)
+                            //console.log(eventsList[a-1].user_id)
                         })
                         setEventsList(eventsList)
                         setIsFetching(false);

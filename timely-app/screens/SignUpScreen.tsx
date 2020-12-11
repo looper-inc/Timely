@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, Alert} from 'react-native';
-import React, {useContext, useState} from 'react'
+import React from 'react'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig"; 
@@ -15,7 +15,10 @@ export const SignUpScreen = ({navigation}) => {
     const initialValues = {
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      firstName: '',
+      lastName: '',
+      bio: '',
     }
     
     // With Yup validationSchema
@@ -40,9 +43,13 @@ export const SignUpScreen = ({navigation}) => {
             values.email,
             values.password
           ).then((res)=>{
+              console.log(full_name)
               //save user info to firestore
               return db.collection('profiles').doc(res.user.uid).set(
                   {
+                      firstName: values.firstName,
+                      lastName: values.lastName,
+                      profileImgURL: '../assets/images/profile_pic_default',
                       email: res.user.email,
                       profile_visibility: true,
                       status: 0,
@@ -81,11 +88,28 @@ export const SignUpScreen = ({navigation}) => {
           touched
           }) => (
           <>  
+          <FormInput
+            labelValue={values.firstName}
+            onChangeText={handleChange('firstName')}
+            placeholderText="First Name"
+            iconType="user"
+            autoCorrect={false}
+            onBlur={handleBlur('firstName')}
+          />
+
+          <FormInput
+            labelValue={values.lastName}
+            onChangeText={handleChange('lastName')}
+            placeholderText="Last Name"
+            iconType="user"
+            onBlur={handleBlur('lastName')}
+          />
+            
             <FormInput
               labelValue={values.email}
               onChangeText={handleChange('email')}
               placeholderText="Email"
-              iconType="user"
+              iconType="mail"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -149,7 +173,7 @@ export default SignUpScreen;
 
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: '#f9fafd',
+      backgroundColor: '#ffffff',
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',

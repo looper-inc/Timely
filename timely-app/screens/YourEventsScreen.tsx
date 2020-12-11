@@ -1,11 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, SafeAreaView, FlatList, Alert } from 'react-native';
-
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
 import EventBlock from '../components/EventBlock';
 import firebase from "../fbconfig";
-import { events12 } from '../constants/DummyData'
 import { AuthContext } from '../providers/AuthProvider';
 
 export default class YourEventsScreen extends React.Component<{}, { events_list: any[] }>{

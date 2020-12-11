@@ -1,5 +1,5 @@
 import {StyleSheet, TouchableOpacity, Alert, Image} from 'react-native';
-import React, { useContext, useState} from 'react'
+import React, { useContext } from 'react'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig";
@@ -21,7 +21,7 @@ export const SignInScreen = ({navigation}) => {
             firebase
             .auth()
             .signInWithEmailAndPassword(values.email, values.password).then((res) =>{
-                console.log('SIGNED IN SUCCESSFULLY: ', res.user.email)
+                console.log('SIGNED IN SUCCESSFULLY: ')
                 return db.collection('profiles').doc(res.user.uid).update(
                   {
                     last_logged_in: Date.now()
@@ -161,7 +161,7 @@ export const SignInScreen = ({navigation}) => {
             labelValue={values.email}
             onChangeText={handleChange('email')}
             placeholderText="Email"
-            iconType="user"
+            iconType="mail"
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -233,6 +233,8 @@ const styles = StyleSheet.create({
     logo: {
       height: 200,
       width: 200,
+      marginTop: -35,
+      marginBottom: 35,
       resizeMode: 'cover',
     },
     text: {
