@@ -134,7 +134,8 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   contentText: {
-    color: "#2f3542"
+    color: "#2f3542",
+    fontSize: 13
   },
   memberSelect: {
     padding: 5,
@@ -170,7 +171,8 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   memberInvitedText: {
-    color: "#dcdde1"
+    color: "#dcdde1",
+    fontSize: 11
   },
   defaultPic: {
     backgroundColor: "#dcdde1",

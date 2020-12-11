@@ -44,8 +44,8 @@ export default class FeedScreen extends React.Component<
         .collection("notification")
         .doc(uid)
         .collection("member_notify")
-        .get()
-        .then(snapshot => {
+        .where("status", "==", "pending")
+        .onSnapshot(snapshot => {
           if (snapshot.size) {
             this.setState({ badge: snapshot.size });
           } else {

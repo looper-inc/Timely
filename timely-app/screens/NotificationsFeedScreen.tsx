@@ -9,6 +9,7 @@ import React, { useState, useEffect, useContext } from "react";
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
 import NotificationListItem from "../components/FeedScreen/NotificationListItem";
+import { upperCaseFirstLetter } from "../utils/utils";
 
 export const NotificationsFeedScreen = ({ navigation }) => {
   const [notificationList, setNotificationList] = useState(null);
@@ -20,11 +21,15 @@ export const NotificationsFeedScreen = ({ navigation }) => {
   const db = firebase.firestore();
 
   useEffect(() => {
-    try {
-      retrieveData();
-    } catch (error) {
-      console.log("retrieveData error: " + error);
+    let isSubscribed = true;
+    if (isSubscribed) {
+      try {
+        retrieveData();
+      } catch (error) {
+        console.log("retrieveData error: " + error);
+      }
     }
+    return () => (isSubscribed = false);
   }, []);
 
   const retrieveData = async () => {
@@ -54,7 +59,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
               });
             });
         });
-        console.log(noti);
+        //console.log(noti);
 
         //set goals data to state
         setTimeout(() => {
@@ -73,6 +78,32 @@ export const NotificationsFeedScreen = ({ navigation }) => {
     });
   };
 
+  const handleDone = async noti => {
+    await db;
+    db.collection("notification")
+      .doc(currentUser.uid)
+      .collection("member_notify")
+      .doc(noti.id)
+      .delete()
+      .then(() => {
+        console.log("deleted notification successfully");
+      });
+  };
+
+  const getUserName = info => {
+    let name;
+    if (info.info_from.first_name || info.info_from.last_name) {
+      const fullname =
+        upperCaseFirstLetter(info.info_from.first_name) +
+        " " +
+        upperCaseFirstLetter(info.info_from.last_name);
+      name = fullname;
+    } else {
+      name = info.info_from.email;
+    }
+    return name;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {notificationList ? (
@@ -83,6 +114,8 @@ export const NotificationsFeedScreen = ({ navigation }) => {
               <NotificationListItem
                 itemDetail={item}
                 onPressVewDetail={() => console.log("detail click")}
+                getUserName={getUserName}
+                handleDone={handleDone}
               />
             )}
           />
