@@ -208,7 +208,7 @@ export const SignInScreen = ({navigation}) => {
         style={styles.verticalButton}
         onPress={() => navigation.navigate('SignUp')}>          
           <Text style={styles.navButtonText}>
-            Don't have an acount? Create here
+            Don't have an account? Create here
           </Text>
         </TouchableOpacity>
         <TouchableOpacity 
