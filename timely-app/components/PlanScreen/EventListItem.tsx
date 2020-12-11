@@ -22,8 +22,7 @@ import {
 export const EventListItem = ({
   onPressDetail,
   itemDetail,
-  onPressViewDetail,
-  onPressRemoveEvent
+  onPressViewDetail
 }) => {
   const { currentUser } = useContext(AuthContext);
   const db = firebase.firestore();
@@ -88,6 +87,21 @@ export const EventListItem = ({
     }
     return name;
   };
+
+  const handleRemoveGoal = itemDetail => {
+    db.collection("events")
+      .doc(currentUser.uid)
+      .collection("list")
+      .doc(itemDetail.id)
+      .delete()
+      .then(function() {
+        console.log("Document successfully deleted!");
+      })
+      .catch(function(error) {
+        console.error("Error removing document: ", error);
+      });
+  };
+
   const createDeleteAlert = () =>
     Alert.alert(
       "Event Delete",
@@ -98,7 +112,7 @@ export const EventListItem = ({
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
-        { text: "DELETE", onPress: () => onPressRemoveEvent(itemDetail) }
+        { text: "DELETE", onPress: () => handleRemoveGoal(itemDetail) }
       ],
       { cancelable: false }
     );
