@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useContext } from 'react'
-import { StyleSheet, Alert, Text, ActivityIndicator } from "react-native";
+import { StyleSheet, ActivityIndicator } from "react-native";
 import { AuthContext } from "../providers/AuthProvider";
 import firebase from "../fbconfig"
 import { SafeAreaView } from 'react-navigation';
@@ -25,6 +25,8 @@ export const followingFeedScreen = ({ navigation }) => {
     }, []);
 
     const retrieveEvents = async () => {
+        
+        let eventsList: any[] = [];
 
         setIsFetching(true)
         let initialQuery = await db.collection('profiles')
@@ -43,7 +45,6 @@ export const followingFeedScreen = ({ navigation }) => {
 
             }
 
-            let eventsList: any[] = [];
 
             userList.forEach(user => {
                 let tempEvents = db.collection('events')
@@ -71,6 +72,7 @@ export const followingFeedScreen = ({ navigation }) => {
     }
 
     const handleViewDetail = (itemDetail) => {
+        console.log('lol')
         navigation.navigate('EventDetail', itemDetail);
     }
 
@@ -83,7 +85,7 @@ export const followingFeedScreen = ({ navigation }) => {
                         <EventListItem
                             itemDetail={item}
                             onPressDetail={handleDetail}
-                            onPressViewDetail={handleViewDetail}
+                            onPressVewDetail={handleViewDetail}
                         />}
                     onEndReachedThreshold={0.1}
                 />

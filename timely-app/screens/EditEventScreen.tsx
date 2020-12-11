@@ -3,19 +3,16 @@ import {
   StyleSheet,
   SafeAreaView,
   Switch,
-  TextInput,
   Alert,
   ScrollView,
   TouchableOpacity,
   FlatList
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 import firebase from "../fbconfig";
-import { Formik, Form, Field, ErrorMessage, yupToFormErrors } from "formik";
+import { Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import FormInput from "../components/FormInput";
 import FormButton from "../components/FormButton";
 import FormikInput from "../components/FormikInput";
 import { AuthContext } from "../providers/AuthProvider";
@@ -108,7 +105,7 @@ export const EditEventScreen = ({ route, navigation }) => {
           console.log("delete invitation from database error", error);
         }
       } else {
-        console.log("go there", item.id);
+        //console.log("go there", item.id);
         //after deleted members, should update state
         updateMembersAfterRemoved(item.id);
       }
@@ -213,25 +210,6 @@ export const EditEventScreen = ({ route, navigation }) => {
             inviteFriends.forEach((data, idx) => {
               //update new member only
               if (!data.member) {
-                const noti_data = {
-                  created: now,
-                  type: "inviteToEvent",
-                  uid_from: currentUser.uid,
-                  email_from: currentUser.email,
-                  uid_to: data.id,
-                  message: "",
-                  event_id: current_event_id,
-                  event_title: values.title,
-                  status: "pending"
-                };
-                db.collection("notification")
-                  .doc(data.id)
-                  .collection("member_notify")
-                  .add(noti_data)
-                  .then(() => {
-                    console.log("added notification successfully");
-                  });
-
                 query
                   .collection("members")
                   .add({
@@ -239,9 +217,27 @@ export const EditEventScreen = ({ route, navigation }) => {
                     status: "pending",
                     friend_id: data.id
                   })
-                  .then(() => {
+                  .then(member => {
                     //console.log("added members to event successfully");
-                    setIsDone(true);
+                    const noti_data = {
+                      created: now,
+                      type: "inviteToEvent",
+                      uid_from: currentUser.uid,
+                      email_from: currentUser.email,
+                      uid_to: data.id,
+                      message: "",
+                      event_id: current_event_id,
+                      event_title: values.title,
+                      status: "pending",
+                      member_id: member.id
+                    };
+                    db.collection("notification")
+                      .doc(data.id)
+                      .collection("member_notify")
+                      .add(noti_data)
+                      .then(() => {
+                        console.log("added notification successfully");
+                      });
                   });
               }
             });
