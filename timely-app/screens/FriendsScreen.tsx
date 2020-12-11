@@ -1,16 +1,17 @@
 import * as React from 'react';
-import { FlatList, StyleSheet, StatusBar } from 'react-native';
+import { FlatList, StyleSheet, StatusBar, ActivityIndicator } from 'react-native';
 import { Text, View } from '../components/Themed';
 import firebase from "../fbconfig";
 import { SearchBar } from 'react-native-elements';
 import FriendBlock from '../components/FriendsScreen/FriendBlock';
 import Navigation from '../navigation';
+import { AuthContext } from '../providers/AuthProvider';
 
-const db = firebase.firestore();
 
 type thisStates = {
     search: string,
     searchResults: any[],
+    friendList: any[],
     lastTyped: Date,
     loading: boolean
 }
@@ -21,17 +22,48 @@ export default class FriendsScreen extends React.Component<{ navigation: any }, 
     db: any = firebase.firestore()
     constructor(props: any) {
         super(props)
+
         this.state = {
             search: '',
             lastTyped: new Date(),
             searchResults: [],
-            loading: false
+            loading: true,
+            friendList: []
         };
         this.timeout = 0;
         this.handleGet = this.handleGet.bind(this)
+        this.getFriends = this.getFriends.bind(this)
         this.onChangeText = this.onChangeText.bind(this)
     }
 
+    componentDidMount() {
+        this.getFriends()
+    }
+
+    async getFriends() {
+        const { uid } = this.context.currentUser
+        console.log(uid)
+        try {
+            const snapshot = await this.db.collection("profiles").doc(uid).collection('friend_list').where('pending', '==', false).get();
+
+            const friendDocs: any[] = []
+            snapshot.forEach(friendDoc => friendDocs.push(friendDoc.data()))
+            const friendList: any[] = []
+            for (const friendDoc of friendDocs) {
+                // Get each user's info
+                const uSnapshot = await this.db.collection("profiles").doc(friendDoc.friend_id).get();
+                // TODO: Push to the search result list.
+                friendList.push({
+                    title: uSnapshot.data().email,
+                    uid: friendDoc.friend_id,
+                });
+                console.log(friendList)
+            }
+            console.log('appended', friendList)
+            this.setState({ friendList, loading: false })
+        }
+        catch (err) { console.log(err) }
+    }
     async onChangeText(search: string) {
         this.setState({ search });
         if (search.length) {
@@ -74,7 +106,7 @@ export default class FriendsScreen extends React.Component<{ navigation: any }, 
     );
 
     render() {
-        const { search, loading, searchResults } = this.state;
+        const { search, loading, searchResults, friendList } = this.state;
 
         return (
             <View>
@@ -87,7 +119,7 @@ export default class FriendsScreen extends React.Component<{ navigation: any }, 
                     <ActivityIndicator size="large" color="#0097e6" />
                     :
                     <FlatList
-                        data={searchResults}
+                        data={search.length ? searchResults : friendList}
                         // data={testArr}
                         renderItem={this.renderItem}
                     />
@@ -99,3 +131,5 @@ export default class FriendsScreen extends React.Component<{ navigation: any }, 
         );
     }
 }
+
+FriendsScreen.contextType = AuthContext;

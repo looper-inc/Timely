@@ -46,7 +46,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
       if (snapshot.size) {
         let noti = [];
         snapshot.forEach(item => {
-          //console.log(item.data());
+          console.log(item.data());
           return db
             .collection("profiles")
             .doc(item.data().uid_from)
@@ -64,6 +64,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
         //set goals data to state
         setTimeout(() => {
           setNotificationList(noti);
+          console.log(noti)
           setLoading(false);
         }, 500);
         //Cloud Firestore: Last Visible Document

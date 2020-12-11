@@ -56,7 +56,7 @@ const OtherProfileScreen = ({ navigation, route }: any) => {
             pending: true
         })
         // Add notif
-        db.collection('notifications').doc(route.params.uid).collection('member_notify').doc(currentUser.uid).set({
+        db.collection('notification').doc(route.params.uid).collection('member_notify').doc(currentUser.uid).set({
             created: firebase.firestore.FieldValue.serverTimestamp(),
             type: "friendRequest",
             uid_from: currentUser.uid,

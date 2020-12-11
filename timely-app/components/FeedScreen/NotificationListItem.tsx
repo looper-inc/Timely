@@ -29,6 +29,7 @@ export const NotificationListItem = ({
   useEffect(() => {
     //clean up useEffect
     let isSubscribed = true;
+    console.log('i detail', itemDetail)
     if (isSubscribed) {
       try {
         defineTypeNotification(itemDetail.type);
@@ -60,8 +61,9 @@ export const NotificationListItem = ({
         setMessage(getUserName(itemDetail) + itemDetail.message);
         break;
       case "friendRequest":
-        setControlType(true);
+        setControlType(false);
         setMessage(getUserName(itemDetail) + " wants to be your friend.");
+        console.log('fr')
         break;
       case "acceptedFriend":
         setControlType(true);
@@ -171,31 +173,29 @@ export const NotificationListItem = ({
       .doc(currentUser.uid)
       .collection("member_notify")
       .doc(noti.id)
-      .update({
-        type: "acceptedFriend",
-        message: "You are now friends with " + getUserName(noti),
-        status: "done"
-      })
-      .then(() => {
-        //send other notification to owner to confirm
-        const mes = " has accepted your friend request. ";
-        const confirmation = {
-          created: Date.now(),
-          type: "confirmation",
-          uid_from: currentUser.uid,
-          email_from: currentUser.email,
-          uid_to: noti.uid_from,
-          message: mes,
-          event_id: noti.event_id,
-          event_title: noti.event_title,
-          status: "pending",
-          member_id: noti.member_id
-        };
-        db.collection("notification")
-          .doc(noti.uid_from)
-          .collection("member_notify")
-          .add(confirmation);
-      });
+      .delete()
+
+    db.collection("notification").doc(currentUser.uid).collection('member_notify').add({
+      ...noti,
+      type: "acceptedFriend",
+      message: "You are now friends with " + getUserName(noti),
+      status: "done"
+    })
+    //send other notification to owner to confirm
+    const mes = " has accepted your friend request. ";
+    const confirmation = {
+      created: Date.now(),
+      type: "confirmation",
+      uid_from: currentUser.uid,
+      email_from: currentUser.email,
+      uid_to: noti.uid_from,
+      message: mes,
+      status: "pending",
+    };
+    db.collection("notification")
+      .doc(noti.uid_from)
+      .collection("member_notify")
+      .add(confirmation);
   };
 
   const handleDeclined = noti => {
@@ -264,27 +264,25 @@ export const NotificationListItem = ({
       .collection("member_notify")
       .doc(noti.id)
       .delete()
-      .then(() => {
-        //send declined notification to owner
+    //send declined notification to owner
 
-        const mes = getUserName(noti) + " has declined your friend request. :( ";
-        const confirmation = {
-          created: Date.now(),
-          type: "declinedFriend",
-          uid_from: currentUser.uid,
-          email_from: currentUser.email,
-          uid_to: noti.uid_from,
-          message: mes,
-          event_id: noti.event_id,
-          event_title: noti.event_title,
-          status: "done",
-          member_id: noti.member_id
-        };
-        db.collection("notification")
-          .doc(noti.uid_from)
-          .collection("member_notify")
-          .add(confirmation);
-      });
+    const mes = getUserName(noti) + " has declined your friend request. :( ";
+    const confirmation = {
+      created: Date.now(),
+      type: "declinedFriend",
+      uid_from: currentUser.uid,
+      email_from: currentUser.email,
+      uid_to: noti.uid_from,
+      message: mes,
+      event_id: noti.event_id,
+      event_title: noti.event_title,
+      status: "done",
+      member_id: noti.member_id
+    };
+    db.collection("notification")
+      .doc(noti.uid_from)
+      .collection("member_notify")
+      .add(confirmation);
   };
 
   return (
@@ -308,7 +306,7 @@ export const NotificationListItem = ({
               {message}
             </Text>
             <Text style={styles.titleEvent} numberOfLines={3}>
-              {upperCaseFirstLetter(itemDetail.event_title)}
+              {itemDetail.event_title && upperCaseFirstLetter(itemDetail.event_title)}
             </Text>
           </View>
         </TouchableWithoutFeedback>
@@ -333,14 +331,16 @@ export const NotificationListItem = ({
               </TouchableOpacity>
             </>
           ) : (
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => handleDone(itemDetail)}
-              >
-                <Text style={styles.cancelText}>
-                  <AntDesign name="close" size={11} color="#ee5253" /> Done
+              <>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => handleDone(itemDetail)}
+                >
+                  <Text style={styles.cancelText}>
+                    <AntDesign name="close" size={11} color="#ee5253" /> Done
               </Text>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </>
             )}
         </View>
       </View>
