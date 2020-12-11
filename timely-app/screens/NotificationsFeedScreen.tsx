@@ -65,7 +65,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
         setTimeout(() => {
           setNotificationList(noti);
           setLoading(false);
-        }, 500);
+        }, 300);
         //Cloud Firestore: Last Visible Document
         //Document ID To Start From For Proceeding Queries
         let last = snapshot.docs[snapshot.docs.length - 1];

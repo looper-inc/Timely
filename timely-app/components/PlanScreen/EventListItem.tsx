@@ -19,17 +19,12 @@ import {
   getFormattedDateString
 } from "../../utils/utils";
 
-export const EventListItem = ({
-  onPressDetail,
-  itemDetail,
-  onPressViewDetail,
-  onPressRemoveEvent
-}) => {
+export const EventListItem = ({ onPressDetail, itemDetail, navigation }) => {
   const { currentUser } = useContext(AuthContext);
   const db = firebase.firestore();
   const [memberCount, setMemberCount] = useState(0);
   const [ownerDetail, setOwnerDetail] = useState();
-  
+
   useEffect(() => {
     //clean up useEffect
     let isSubscribed = true;
@@ -89,8 +84,15 @@ export const EventListItem = ({
     }
     return name;
   };
+  const handleViewDetail = itemDetail => {
+    //console.log("detail pressed", itemDetail);
+    navigation.navigate("EventDetail", {
+      itemDetail: itemDetail,
+      ownerDetail: ownerDetail
+    });
+  };
 
-  const handleRemoveGoal = async itemDetail => {
+  const handleRemoveEvent = async itemDetail => {
     let query = await db
       .collection("events")
       .doc(currentUser.uid)
@@ -103,6 +105,12 @@ export const EventListItem = ({
       .then(members => {
         if (members.size) {
           members.forEach(member => {
+            //delete all members
+            query
+              .collection("members")
+              .doc(member.id)
+              .delete();
+
             //delete member in group list
             db.collection("events")
               .doc(member.data().friend_id)
@@ -178,7 +186,7 @@ export const EventListItem = ({
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
-        { text: "DELETE", onPress: () => handleRemoveGoal(itemDetail) }
+        { text: "DELETE", onPress: () => handleRemoveEvent(itemDetail) }
       ],
       { cancelable: false }
     );
@@ -186,7 +194,7 @@ export const EventListItem = ({
   return (
     <View style={styles.list}>
       <View style={styles.content}>
-        <TouchableWithoutFeedback onPress={() => onPressViewDetail(itemDetail)}>
+        <TouchableWithoutFeedback onPress={() => handleViewDetail(itemDetail)}>
           <View style={styles.contentText}>
             {!ownerDetail ? (
               <View style={styles.ownContent}>
