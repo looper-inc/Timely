@@ -43,13 +43,13 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
         <>
           <TouchableOpacity
             style={styles.acceptButton}
-            onPress={() => console.log("accept invitation")}
+            onPress={onYes}
           >
             <AntDesign name="check" size={15} color="#10ac84" />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.cancelButton}
-            onPress={() => console.log("cancel invitation")}
+            onPress={onNo}
           >
             <AntDesign name="close" size={15} color="#ee5253" />
           </TouchableOpacity>
@@ -57,6 +57,13 @@ export const NotificationListItem = ({ itemDetail, onPressVewDetail }) => {
       )
     }
     else return null
+  }
+
+  function onYes() {
+  }
+
+  function onNo() {
+
   }
 
   return (
