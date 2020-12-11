@@ -3,6 +3,7 @@ import * as React from 'react';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import EditPasswordScreen from '../screens/EditPasswordScreen';
 
 import {
     ProfileParamList
@@ -21,17 +22,24 @@ export default function ProfileNavigator() {
                 }}
             />
             <ProfileStack.Screen
-                name="EditProfile"
-                component={EditProfileScreen}
-                options={{
-                    headerTitle: 'EditProfile',
-                }}
-            />
-            <ProfileStack.Screen
                 name="Settings"
                 component={SettingsScreen}
                 options={{
                     headerTitle: 'Settings',
+                }}
+            />
+            <ProfileStack.Screen
+                name="EditProfile"
+                component={EditProfileScreen}
+                options={{
+                    headerTitle: 'Edit Profile',
+                }}
+            />
+            <ProfileStack.Screen
+                name="EditPassword"
+                component={EditPasswordScreen}
+                options={{
+                    headerTitle: 'Edit Password'
                 }}
             />
         </ProfileStack.Navigator>

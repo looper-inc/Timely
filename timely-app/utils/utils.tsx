@@ -16,7 +16,10 @@ export const getFormattedDateString = date => {
     month: "short",
     day: "numeric"
   };
-  return event.toLocaleDateString("en-US", options);
+  const day = date.getDate();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  return "" + month + "/" + day + "/" + year;
 };
 
 export const createRandomString = () => {
@@ -27,4 +30,13 @@ export const createRandomString = () => {
 
 export const upperCaseFirstLetter = text => {
   return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
+export const shuffleData = unshuffled => {
+  //let tmp = JSON.parse(JSON.stringify(unshuffled));
+  let shuffled = unshuffled
+    .map(a => ({ sort: Math.random(), value: a }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(a => a.value);
+  return shuffled;
 };
