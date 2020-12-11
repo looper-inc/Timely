@@ -88,17 +88,81 @@ export const EventListItem = ({
     return name;
   };
 
-  const handleRemoveGoal = itemDetail => {
-    db.collection("events")
+  const handleRemoveGoal = async itemDetail => {
+    let query = await db
+      .collection("events")
       .doc(currentUser.uid)
       .collection("list")
-      .doc(itemDetail.id)
-      .delete()
-      .then(function() {
-        console.log("Document successfully deleted!");
-      })
-      .catch(function(error) {
-        console.error("Error removing document: ", error);
+      .doc(itemDetail.id);
+
+    query
+      .collection("members")
+      .get()
+      .then(members => {
+        if (members.size) {
+          members.forEach(member => {
+            //delete member in group list
+            db.collection("events")
+              .doc(member.data().friend_id)
+              .collection("group_list")
+              .doc(itemDetail.id)
+              .delete();
+            //delete all notifications from this event
+            let notiQuery = db
+              .collection("notification")
+              .doc(member.data().friend_id)
+              .collection("member_notify");
+            //search for all notifications that belong to this event
+            notiQuery
+              .where("event_id", "==", itemDetail.id)
+              .get()
+              .then(items => {
+                if (items.size) {
+                  items.forEach(item => {
+                    //delete notification
+                    notiQuery
+                      .doc(item.id)
+                      .delete()
+                      .then(() => {
+                        console.log("delete event's notification successfully");
+                      });
+                  });
+                }
+              });
+          });
+        }
+        //delete event
+        query
+          .delete()
+          .then(function() {
+            console.log("Document successfully deleted!");
+          })
+          .catch(function(error) {
+            console.error("Error removing document: ", error);
+          });
+        //delete current user's event notification
+        let notiOwnerQuery = db
+          .collection("notification")
+          .doc(currentUser.uid)
+          .collection("member_notify");
+        notiOwnerQuery
+          .where("event_id", "==", itemDetail.id)
+          .get()
+          .then(items => {
+            if (items.size) {
+              items.forEach(item => {
+                //delete notification
+                notiOwnerQuery
+                  .doc(item.id)
+                  .delete()
+                  .then(() => {
+                    console.log(
+                      "delete onwer event's notification successfully"
+                    );
+                  });
+              });
+            }
+          });
       });
   };
 
