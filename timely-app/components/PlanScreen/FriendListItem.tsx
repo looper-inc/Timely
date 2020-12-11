@@ -13,8 +13,6 @@ import { windowHeight, windowWidth } from "../../utils/Dimensions";
 import React, { useState, useEffect } from "react";
 //import { TouchableOpacity} from 'react-native-gesture-handler'
 
-let itemColor;
-
 const FriendListItem = ({
   member,
   addMember,

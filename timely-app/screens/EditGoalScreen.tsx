@@ -176,7 +176,7 @@ export const EditGoalScreen = ({ route, navigation }) => {
                       setMessText("Updated goal successfully!");
                       setTimeout(() => {
                         setLoading(false);
-                        navigation.navigate("PlanScreen");
+                        navigation.navigate("Profile");
                       }, 1500);
                     });
                 });
