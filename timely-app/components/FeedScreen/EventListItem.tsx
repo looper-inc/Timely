@@ -6,7 +6,7 @@ import {
   Alert,
   TouchableWithoutFeedback
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Text } from "../Themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -15,6 +15,8 @@ import {
   getFormattedDateString
 } from "../../utils/utils";
 import joinEvent from "../../screens/JoinEvent"
+import { AuthContext } from "../../providers/AuthProvider";
+import firebase from "../../fbconfig";
 
 export const EventListItem = ({
   onPressDetail,
@@ -22,6 +24,69 @@ export const EventListItem = ({
   onPressVewDetail,
   onPressRemoveGoal
 }) => {
+
+  const { currentUser } = useContext(AuthContext);
+  const db = firebase.firestore();
+  const [memberCount, setMemberCount] = useState(0);
+  const [ownerDetail, setOwnerDetail] = useState();
+  useEffect(() => {
+    //clean up useEffect
+    let isSubscribed = true;
+    if (isSubscribed) {
+      try {
+        getMemberCount(itemDetail);
+        getOwnerDetail(itemDetail);
+      } catch (error) {
+        console.log("retrieve member count error: " + error);
+      }
+    }
+    return () => (isSubscribed = false);
+  }, []);
+
+  const getOwnerDetail = async event => {
+    if (event.uid_owner) {
+      await db
+        .collection("profiles")
+        .doc(event.uid_owner)
+        .get()
+        .then(owner => {
+          setOwnerDetail(owner.data());
+        });
+    }
+  };
+  const getMemberCount = async event => {
+    let uid = currentUser.uid;
+    let countOwner = 0;
+    if (event.uid_owner) {
+      //log("owner: ", event.uid_owner))
+      uid = event.uid_owner;
+      countOwner = 1;
+    }
+    await db
+      .collection("events")
+      .doc(uid)
+      .collection("list")
+      .doc(event.id)
+      .collection("members")
+      .where("status", "==", "joined")
+      .onSnapshot(snapshot => {
+        //console.log("newcount: " + event.id, snapshot.size);
+        setMemberCount(snapshot.size + countOwner);
+      });
+  };
+  const getUserName = info => {
+    let name;
+    if (info.first_name || info.last_name) {
+      const fullname =
+        upperCaseFirstLetter(info.first_name) +
+        " " +
+        upperCaseFirstLetter(info.last_name);
+      name = fullname;
+    } else {
+      name = info.email;
+    }
+    return name;
+  };
   const createDeleteAlert = () =>
     Alert.alert(
       "Event Delete",
@@ -42,10 +107,21 @@ export const EventListItem = ({
       <View style={styles.content}>
         <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
           <View style={styles.contentText}>
+          {!ownerDetail ? (
+              <View style={styles.ownContent}>
+                <Text style={styles.ownText}>Own by you</Text>
+              </View>
+            ) : (
+              <View style={styles.ownContent}>
+                <Text style={styles.ownerText}>
+                  Own by {getUserName(ownerDetail)}
+                </Text>
+              </View>
+            )}
             <Text style={styles.title} numberOfLines={3}>
               {upperCaseFirstLetter(itemDetail.title)}
             </Text>
-            <Text style={styles.memberText}>Members: 0</Text>
+            <Text style={styles.memberText}>Members: {memberCount}</Text>
             <View style={styles.dateContent}>
               <Text style={styles.titleStart}>
                 Start:{"  "}
@@ -172,6 +248,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 3,
     marginBottom: 4
+  },
+  ownerText: {
+    backgroundColor: "#192a56",
+    fontSize: 9,
+    color: "#ecf0f1",
+    fontWeight: "bold",
+    borderRadius: 3,
+    paddingVertical: 3,
+    paddingHorizontal: 5,
+    alignSelf: "flex-end"
   }
 });
 
