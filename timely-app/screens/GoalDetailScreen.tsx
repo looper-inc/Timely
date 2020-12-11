@@ -1,8 +1,8 @@
-import {SafeAreaView, Switch,StyleSheet, ScrollView, View,
-    Text, TextInput,TouchableOpacity, Image, Platform, Dimensions} from 'react-native'
-import  React,{useState, useEffect, useContext} from 'react'
+import { SafeAreaView, StyleSheet, ScrollView, View,
+    Text, Image } from 'react-native'
+import  * as React from 'react'
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {windowHeight, windowWidth} from '../utils/Dimensions';
+import { windowHeight } from '../utils/Dimensions';
 
 export const GoalDetailScreen = ({route, navigation}) => {
     const endDate = route.params.end.toDate();

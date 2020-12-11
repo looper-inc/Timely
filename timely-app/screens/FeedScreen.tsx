@@ -1,17 +1,12 @@
 import * as React from "react";
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import { StyleSheet, SafeAreaView } from "react-native";
 import SelectFeed from "./FeedScreen/SelectFeed";
 import { createStackNavigator } from "@react-navigation/stack";
 import { FeedSelectParamList } from "../types";
-import NewEventButton from "./PlanScreen/NewEventButton";
-import { NavigationContainer } from "@react-navigation/native";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FollowingFeedScreen from "./FollowingFeedScreen";
 import NotificationsFeedScreen from "./NotificationsFeedScreen";
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider";
-import FormButton from "../components/FormButton"
 
 const FeedSelectStack = createStackNavigator<FeedSelectParamList>();
 

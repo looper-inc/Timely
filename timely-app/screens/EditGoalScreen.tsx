@@ -1,8 +1,7 @@
 import {SafeAreaView, Switch,StyleSheet, ScrollView, View,
-    Text, TextInput,TouchableOpacity, Image, Platform, Dimensions} from 'react-native'
+    Text, TextInput,TouchableOpacity, Image, Platform } from 'react-native'
 import  React,{useState, useEffect, useContext} from 'react'
 import FormButton from '../components/FormButton';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 import * as ImagePicker from 'expo-image-picker';
 import FormInput from '../components/FormInput';
 import AntDesign from 'react-native-vector-icons/AntDesign';

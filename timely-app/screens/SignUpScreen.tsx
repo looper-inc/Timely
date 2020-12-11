@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, Alert} from 'react-native';
-import React, {useContext, useState} from 'react'
+import React from 'react'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import firebase from "../fbconfig"; 

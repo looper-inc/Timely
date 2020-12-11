@@ -1,10 +1,8 @@
 import * as React from "react";
-import { StyleSheet, Button, SafeAreaView } from "react-native";
-import { Text, View } from "../components/Themed";
+import { StyleSheet, SafeAreaView } from "react-native";
 import SelectPlan from "./PlanScreen/SelectPlan";
 import EventsScreen from "./EventsScreen";
 import GoalsScreen from "./GoalsScreen";
-import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { PlanSelectParamList } from "../types";
 import NewEventButton from "./PlanScreen/NewEventButton";

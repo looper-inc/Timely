@@ -3,9 +3,6 @@ import {
   SafeAreaView,
   FlatList,
   ActivityIndicator,
-  View,
-  Alert,
-  TouchableOpacity
 } from "react-native";
 import { Text } from "../components/Themed";
 import React, { useState, useEffect, useContext } from "react";

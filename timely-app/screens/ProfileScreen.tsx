@@ -1,20 +1,13 @@
 import {
   SafeAreaView,
-  Switch,
   StyleSheet,
-  ScrollView,
-  TextInput,
   Image,
-  Platform,
-  Dimensions,
-  TouchableWithoutFeedback
 } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { windowHeight, windowWidth } from "../utils/Dimensions";
+import { windowHeight } from "../utils/Dimensions";
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
-
 import { Text, View } from "../components/Themed";
 import FormButton from "../components/FormButton";
 

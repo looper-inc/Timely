@@ -3,9 +3,7 @@ import {
   SafeAreaView,
   FlatList,
   ActivityIndicator,
-  View,
-  Text,
-  Alert
+  Text
 } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import firebase from "../fbconfig";

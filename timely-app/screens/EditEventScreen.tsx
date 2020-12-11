@@ -3,19 +3,16 @@ import {
   StyleSheet,
   SafeAreaView,
   Switch,
-  TextInput,
   Alert,
   ScrollView,
   TouchableOpacity,
   FlatList
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 import firebase from "../fbconfig";
-import { Formik, Form, Field, ErrorMessage, yupToFormErrors } from "formik";
+import { Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import FormInput from "../components/FormInput";
 import FormButton from "../components/FormButton";
 import FormikInput from "../components/FormikInput";
 import { AuthContext } from "../providers/AuthProvider";

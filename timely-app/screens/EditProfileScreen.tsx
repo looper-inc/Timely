@@ -21,11 +21,10 @@ import * as firebase from "firebase";
 import { AntDesign } from "@expo/vector-icons";
 import { Formik } from "formik";
 import FormButton from "../components/FormButton";
-import { ScrollView, TextInput } from "react-native-gesture-handler";
 import Loader from "../components/Modal/Loader";
 import { createRandomString } from "../utils/utils";
 import FormInput from "../components/FormInput";
-import Navigation from "../navigation/index.js";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export const EditProfileScreen = ({ route, navigation }) => {
   const { currentUser } = useContext(AuthContext);
@@ -218,7 +217,7 @@ export const EditProfileScreen = ({ route, navigation }) => {
   const profileValidationSchema = Yup.object().shape({});
 
   return (
-    <ScrollView>
+    <KeyboardAwareScrollView>
       <SafeAreaView style={styles.container}>
         {loading ? (
           <Loader progress={progress} isDone={isDone} messText={messText} />
@@ -297,7 +296,7 @@ export const EditProfileScreen = ({ route, navigation }) => {
           <Text style={styles.pButtonText}>Edit Password</Text>
         </TouchableOpacity>
       </SafeAreaView>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 

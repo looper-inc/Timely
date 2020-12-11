@@ -1,11 +1,6 @@
 import firebase from "../fbconfig";
 import {
-    StyleSheet,
-    SafeAreaView,
-    View,
-    Image,
-    Alert,
-    TouchableWithoutFeedback
+    Alert
   } from "react-native";
 
 const JoinEvent = async (friend_id, event_id) => {

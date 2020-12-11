@@ -3,14 +3,8 @@
 //Then create a new password and save that password for that user.
 
 import * as React from 'react';
-import { StyleSheet, Button, TextInput, Alert,  SafeAreaView } from 'react-native';
-import { Text, View } from '../components/Themed';
+import { StyleSheet, TextInput, Alert,  SafeAreaView } from 'react-native';
 import FormButton from '../components/FormButton';
-import { Formik } from 'formik';
-import ImagePicker from 'react-native-image-picker';
-import * as Progress from 'react-native-progress';
-
-import FormInput from '../components/FormInput';
 
 import * as firebase from 'firebase';
 
