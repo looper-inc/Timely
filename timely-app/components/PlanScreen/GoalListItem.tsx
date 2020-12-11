@@ -43,10 +43,10 @@ export const ListItem = ({
             style={styles.defaultPic}
           />
         ) : (
-          <View style={styles.defaultPic}>
-            <AntDesign name="picture" size={35} color="#666" />
-          </View>
-        )}
+            <View style={styles.defaultPic}>
+              <AntDesign name="picture" size={35} color="#666" />
+            </View>
+          )}
       </TouchableWithoutFeedback>
       <View style={styles.content}>
         <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
@@ -57,8 +57,8 @@ export const ListItem = ({
             {itemDetail.status ? (
               <Text style={styles.status}>Completed</Text>
             ) : (
-              <Text style={styles.statusNotComp}>Not yet completed</Text>
-            )}
+                <Text style={styles.statusNotComp}>Not yet completed</Text>
+              )}
             <Text style={styles.titleComplete}>
               Complete By:{" "}
               {new Date(itemDetail.end.toDate()).toLocaleString("en-US")}

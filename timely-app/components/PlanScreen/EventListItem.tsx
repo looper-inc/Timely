@@ -22,14 +22,14 @@ import {
 export const EventListItem = ({
   onPressDetail,
   itemDetail,
-  onPressViewDetail,
+  onPressVewDetail,
   onPressRemoveEvent
-}) => {
+}: any) => {
   const { currentUser } = useContext(AuthContext);
   const db = firebase.firestore();
   const [memberCount, setMemberCount] = useState(0);
   const [ownerDetail, setOwnerDetail] = useState();
-  
+
   useEffect(() => {
     //clean up useEffect
     let isSubscribed = true;
@@ -41,10 +41,10 @@ export const EventListItem = ({
         console.log("retrieve member count error: " + error);
       }
     }
-    return () => (isSubscribed = false);
+    return () => { isSubscribed = false };
   }, []);
 
-  const getMemberCount = async event => {
+  const getMemberCount = (event: any) => {
     let uid = currentUser.uid;
     let countOwner = 0;
     if (event.uid_owner) {
@@ -52,7 +52,7 @@ export const EventListItem = ({
       uid = event.uid_owner;
       countOwner = 1;
     }
-    await db
+    db
       .collection("events")
       .doc(uid)
       .collection("list")
@@ -65,13 +65,13 @@ export const EventListItem = ({
       });
   };
 
-  const getOwnerDetail = async event => {
+  const getOwnerDetail = (event: any) => {
     if (event.uid_owner) {
-      await db
+      db
         .collection("profiles")
         .doc(event.uid_owner)
         .get()
-        .then(owner => {
+        .then((owner: any) => {
           setOwnerDetail(owner.data());
         });
     }
@@ -89,8 +89,15 @@ export const EventListItem = ({
     }
     return name;
   };
+  const handleViewDetail = itemDetail => {
+    //console.log("detail pressed", itemDetail);
+    navigation.navigate("EventDetail", {
+      itemDetail: itemDetail,
+      ownerDetail: ownerDetail
+    });
+  };
 
-  const handleRemoveGoal = async itemDetail => {
+  const handleRemoveEvent = async itemDetail => {
     let query = await db
       .collection("events")
       .doc(currentUser.uid)
@@ -103,6 +110,12 @@ export const EventListItem = ({
       .then(members => {
         if (members.size) {
           members.forEach(member => {
+            //delete all members
+            query
+              .collection("members")
+              .doc(member.id)
+              .delete();
+
             //delete member in group list
             db.collection("events")
               .doc(member.data().friend_id)
@@ -136,10 +149,10 @@ export const EventListItem = ({
         //delete event
         query
           .delete()
-          .then(function() {
+          .then(function () {
             console.log("Document successfully deleted!");
           })
-          .catch(function(error) {
+          .catch(function (error) {
             console.error("Error removing document: ", error);
           });
         //delete current user's event notification
@@ -178,7 +191,7 @@ export const EventListItem = ({
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
-        { text: "DELETE", onPress: () => handleRemoveGoal(itemDetail) }
+        { text: "DELETE", onPress: () => handleRemoveEvent(itemDetail) }
       ],
       { cancelable: false }
     );
@@ -186,19 +199,19 @@ export const EventListItem = ({
   return (
     <View style={styles.list}>
       <View style={styles.content}>
-        <TouchableWithoutFeedback onPress={() => onPressViewDetail(itemDetail)}>
+        <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
           <View style={styles.contentText}>
             {!ownerDetail ? (
               <View style={styles.ownContent}>
                 <Text style={styles.ownText}>Own by you</Text>
               </View>
             ) : (
-              <View style={styles.ownContent}>
-                <Text style={styles.ownerText}>
-                  Own by {getUserName(ownerDetail)}
-                </Text>
-              </View>
-            )}
+                <View style={styles.ownContent}>
+                  <Text style={styles.ownerText}>
+                    Own by {getUserName(ownerDetail)}
+                  </Text>
+                </View>
+              )}
             <Text style={styles.title} numberOfLines={3}>
               {upperCaseFirstLetter(itemDetail.title)}
             </Text>

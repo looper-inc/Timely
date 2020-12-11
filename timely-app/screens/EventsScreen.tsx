@@ -2,7 +2,7 @@ import {
   StyleSheet,
   SafeAreaView,
   FlatList,
-  ActivityIndicator,
+  ActivityIndicator
 } from "react-native";
 import { Text } from "../components/Themed";
 import React, { useState, useEffect, useContext } from "react";
@@ -173,10 +173,6 @@ export const EventsScreen = ({ route, navigation }) => {
     navigation.navigate("EditEvent", itemDetail);
   };
 
-  const handleViewDetail = itemDetail => {
-    //navigation.navigate("EventDetail", itemDetail);
-  };
-
   const handleFilter = idx => {
     //console.log("filter pressed", idx);
     setEventFilter(idx);
@@ -195,7 +191,7 @@ export const EventsScreen = ({ route, navigation }) => {
                   <EventListItem
                     itemDetail={item}
                     onPressDetail={handleEditEvent}
-                    onPressViewDetail={handleViewDetail}
+                    navigation={navigation}
                   />
                 )}
                 //onEndReached={() => retrieveMoreData()}
