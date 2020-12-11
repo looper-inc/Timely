@@ -37,6 +37,11 @@ const ProfileScreen = ({ navigation }) => {
       upperCaseFirstLetter(profile.first_name) +
       " " +
       upperCaseFirstLetter(profile.last_name);
+  } else if (profile.firstName && profile.lastName) {
+    fullName =
+      upperCaseFirstLetter(profile.firstName) +
+      " " +
+      upperCaseFirstLetter(profile.lastName);
   } else {
     fullName = "Not yet set";
   }
