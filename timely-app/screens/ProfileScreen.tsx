@@ -1,8 +1,4 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  Image,
-} from "react-native";
+import { SafeAreaView, StyleSheet, Image } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { windowHeight } from "../utils/Dimensions";
@@ -10,9 +6,7 @@ import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
 import { Text, View } from "../components/Themed";
 import FormButton from "../components/FormButton";
-
-const db = firebase.firestore();
-const fStorage = firebase.storage();
+import { upperCaseFirstLetter } from "../utils/utils";
 
 const ProfileScreen = ({ navigation }) => {
   const db = firebase.firestore();
@@ -36,14 +30,20 @@ const ProfileScreen = ({ navigation }) => {
   const image = profile.profileImgURL;
   const email = currentUser.email;
   const bio = currentUser.bio ? currentUser.bio : "Not bio yet";
-  const name = currentUser.displayName
-    ? currentUser.displayName
-    : "Not name yet";
-  //console.log(currentUser);
+
+  let fullName;
+  if (profile.first_name && profile.last_name) {
+    fullName =
+      upperCaseFirstLetter(profile.first_name) +
+      " " +
+      upperCaseFirstLetter(profile.last_name);
+  } else {
+    fullName = "Not yet set";
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.nameText}>{name}</Text>
+      <Text style={styles.nameText}>{fullName}</Text>
       {image ? (
         <Image
           source={{ uri: profile.profileImgURL }}
@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
   },
 
   nameText: {
-    fontSize: 36
+    fontSize: 36,
+    color: "#8395a7"
   },
 
   profile_picture: {
@@ -100,12 +101,14 @@ const styles = StyleSheet.create({
   emailText: {
     fontSize: 18,
     textDecorationLine: "underline",
-    marginBottom: 25
+    marginBottom: 25,
+    color: "#8395a7"
   },
 
   bioText: {
     fontSize: 18,
-    marginBottom: 25
+    marginBottom: 25,
+    color: "#576574"
   },
 
   buttonContainer: {

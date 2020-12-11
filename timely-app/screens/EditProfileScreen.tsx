@@ -12,7 +12,8 @@ import {
   StyleSheet,
   SafeAreaView,
   Platform,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { windowHeight, windowWidth } from "../utils/Dimensions";
@@ -24,7 +25,7 @@ import FormButton from "../components/FormButton";
 import Loader from "../components/Modal/Loader";
 import { createRandomString } from "../utils/utils";
 import FormInput from "../components/FormInput";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export const EditProfileScreen = ({ route, navigation }) => {
   const { currentUser } = useContext(AuthContext);
@@ -158,15 +159,19 @@ export const EditProfileScreen = ({ route, navigation }) => {
 
                 setTimeout(() => {
                   setMessText("Updating profile...");
-                  console.log(values)
+                  console.log(values);
                   return db
                     .collection("profiles")
                     .doc(currentUser.uid)
-                    .set({ // changed
-                      ...values,
-                      modifiedDate: Date.now(),
-                      profileImgURL: downloadURL
-                    }, {merge : true})
+                    .set(
+                      {
+                        // changed
+                        ...values,
+                        modifiedDate: Date.now(),
+                        profileImgURL: downloadURL
+                      },
+                      { merge: true }
+                    )
                     .then(() => {
                       setIsDone(true);
                       console.log("Updated Profile Successfully");
@@ -184,21 +189,25 @@ export const EditProfileScreen = ({ route, navigation }) => {
       } else {
         setMessText("Updating profile...");
         setTimeout(() => {
-          console.log(values)
+          console.log(values);
           return db
             .collection("profiles")
             .doc(currentUser.uid)
-            .set({ // changed
-              ...values,
-              modifiedDate: Date.now()
-            }, {merge: true})
+            .set(
+              {
+                // changed
+                ...values,
+                modifiedDate: Date.now()
+              },
+              { merge: true }
+            )
             .then(() => {
               console.log("Updated Profile wihtout a picture successfully!");
               setIsDone(true);
               setMessText("Updated Profile Successfully!");
               setTimeout(() => {
                 setLoading(false);
-                navigation.navigate("ProfileScreen");
+                navigation.navigate("Profile");
               }, 300);
             });
         }, 500);
@@ -211,12 +220,15 @@ export const EditProfileScreen = ({ route, navigation }) => {
   const initialValues = {
     first_name: route.params.first_name,
     last_name: route.params.last_name,
-    email: route.params.email,
-    bio: "",
-    profile_visibility: route.params.profile_visibility
+    bio: route.params.bio
+    //profile_visibility: route.params.profile_visibility
   };
 
-  const profileValidationSchema = Yup.object().shape({});
+  const profileValidationSchema = Yup.object().shape({
+    first_name: Yup.string().required("First name is Required"),
+    last_name: Yup.string().required("Last name is Required"),
+    bio: Yup.string().max(220, "Bio too long")
+  });
 
   return (
     <KeyboardAwareScrollView>
@@ -240,17 +252,15 @@ export const EditProfileScreen = ({ route, navigation }) => {
         <Formik
           initialValues={initialValues}
           validationSchema={profileValidationSchema}
-          onSubmit={values => {
-            handleEditProfile(values);
-          }}
         >
           {({
             handleChange,
             handleBlur,
-            handleSubmit,
+
             values,
             errors,
             isValid,
+            dirty,
             touched
           }) => (
             <>
@@ -262,6 +272,9 @@ export const EditProfileScreen = ({ route, navigation }) => {
                 autoCorrect={false}
                 onBlur={handleBlur("firstName")}
               />
+              {errors.first_name && touched.first_name && (
+                <Text style={styles.alertText}>{errors.first_name}</Text>
+              )}
               <FormInput
                 labelValue={values.last_name}
                 onChangeText={handleChange("last_name")}
@@ -270,14 +283,12 @@ export const EditProfileScreen = ({ route, navigation }) => {
                 autoCorrect={false}
                 onBlur={handleBlur("lastName")}
               />
-              <FormInput
-                labelValue={values.email}
-                onChangeText={handleChange("email")}
-                placeholderText={"Email: " + values.email}
-                autoCapitalize="none"
-                autoCorrect={false}
-                onBlur={handleBlur("email")}
-              />
+              {errors.last_name && touched.last_name && (
+                <Text style={styles.alertText}>{errors.last_name}</Text>
+              )}
+              <View style={styles.emailContainer}>
+                <Text style={styles.emailText}>{route.params.email}</Text>
+              </View>
               <FormInput
                 nOfLines={3}
                 labelValue={values.bio}
@@ -288,15 +299,25 @@ export const EditProfileScreen = ({ route, navigation }) => {
                 onBlur={handleBlur("bio")}
               />
 
-              <FormButton buttonTitle="Update" onPress={handleSubmit} />
+              <FormButton
+                buttonTitle="Update"
+                onPress={() => {
+                  if (!dirty) return Alert.alert("Please update values");
+                  if (!isValid) return Alert.alert("Invalid fields");
+                  return handleEditProfile(values);
+                }}
+                //disabled={!isValid}
+              />
             </>
           )}
         </Formik>
 
-        <TouchableOpacity 
-          style={styles.pButtonContainer} onPress={() => {
+        <TouchableOpacity
+          style={styles.pButtonContainer}
+          onPress={() => {
             navigation.navigate("EditPassword", profile);
-        }}>
+          }}
+        >
           <Text style={styles.pButtonText}>Edit Password</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -320,16 +341,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#0984e3",
     padding: 10,
     alignSelf: "center",
-    borderRadius: 3
+    borderRadius: 3,
+    justifyContent: "center",
+    marginTop: 10
   },
 
   choosePicText: {
     fontSize: 12,
     fontWeight: "bold",
-    color: "#fff",
-    paddingTop: 5,
-    paddingLeft: 10,
-    paddingRight: 10
+    color: "#fff"
   },
 
   defaultPic: {
@@ -390,10 +410,23 @@ const styles = StyleSheet.create({
   },
 
   alertText: {
-    margin: 5,
     color: "#ff7979",
     fontSize: 12,
-    marginTop: 0,
+    margin: 5,
     fontWeight: "bold"
+  },
+  emailContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: "#ced6e090",
+    padding: 10,
+    marginBottom: 5,
+    height: windowHeight / 15,
+    justifyContent: "center"
+  },
+  emailText: {
+    color: "#8395a7",
+    fontSize: 16
   }
 });
