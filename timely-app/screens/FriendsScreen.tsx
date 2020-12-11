@@ -140,7 +140,7 @@ export default class FriendsScreen extends React.Component<
     return (
       <View>
         <SearchBar
-          placeholder="Search"
+          placeholder="Search By Email..."
           onChangeText={this.onChangeText}
           value={search}
         />
