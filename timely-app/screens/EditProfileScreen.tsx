@@ -159,14 +159,15 @@ export const EditProfileScreen = ({ route, navigation }) => {
 
                 setTimeout(() => {
                   setMessText("Updating profile...");
+                  console.log(values)
                   return db
                     .collection("profiles")
                     .doc(currentUser.uid)
-                    .update({
+                    .set({ // changed
                       ...values,
                       modifiedDate: Date.now(),
                       profileImgURL: downloadURL
-                    })
+                    }, {merge : true})
                     .then(() => {
                       setIsDone(true);
                       console.log("Updated Profile Successfully");
@@ -184,13 +185,14 @@ export const EditProfileScreen = ({ route, navigation }) => {
       } else {
         setMessText("Updating profile...");
         setTimeout(() => {
+          console.log(values)
           return db
             .collection("profiles")
             .doc(currentUser.uid)
-            .update({
+            .set({ // changed
               ...values,
               modifiedDate: Date.now()
-            })
+            }, {merge: true})
             .then(() => {
               console.log("Updated Profile wihtout a picture successfully!");
               setIsDone(true);
@@ -256,7 +258,7 @@ export const EditProfileScreen = ({ route, navigation }) => {
             <>
               <FormInput
                 labelValue={values.first_name}
-                onChangeText={handleChange("firstName")}
+                onChangeText={handleChange("first_name")}
                 placeholderText={"First Name: " + values.first_name}
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -264,7 +266,7 @@ export const EditProfileScreen = ({ route, navigation }) => {
               />
               <FormInput
                 labelValue={values.last_name}
-                onChangeText={handleChange("lastName")}
+                onChangeText={handleChange("last_name")}
                 placeholderText={"Last Name: " + values.last_name}
                 autoCapitalize="none"
                 autoCorrect={false}
