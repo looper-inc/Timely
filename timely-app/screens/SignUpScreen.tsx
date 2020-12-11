@@ -43,7 +43,6 @@ export const SignUpScreen = ({navigation}) => {
             values.email,
             values.password
           ).then((res)=>{
-              console.log(full_name)
               //save user info to firestore
               return db.collection('profiles').doc(res.user.uid).set(
                   {
