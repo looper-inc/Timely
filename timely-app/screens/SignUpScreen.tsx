@@ -46,8 +46,8 @@ export const SignUpScreen = ({navigation}) => {
               //save user info to firestore
               return db.collection('profiles').doc(res.user.uid).set(
                   {
-                      firstName: values.firstName,
-                      lastName: values.lastName,
+                      first_name: values.firstName,
+                      last_name: values.lastName,
                       profileImgURL: '../assets/images/profile_pic_default',
                       email: res.user.email,
                       profile_visibility: true,
