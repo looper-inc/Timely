@@ -6,7 +6,6 @@ import {
   Alert,
   TouchableWithoutFeedback
 } from "react-native";
-import React from "react";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Text } from "../Themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -14,14 +13,34 @@ import {
   upperCaseFirstLetter,
   getFormattedDateString
 } from "../../utils/utils";
-import joinEvent from "../../screens/JoinEvent"
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../providers/AuthProvider.js";
 
+import firebase from "../../fbconfig";
 export const EventListItem = ({
   onPressDetail,
   itemDetail,
   onPressVewDetail,
   onPressRemoveGoal
 }) => {
+  const [isSelected, setIsSelected] = useState(false);
+  const { currentUser } = useContext(AuthContext);
+  const db = firebase.firestore();
+  const [memberCount, setMemberCount] = useState(0);
+  useEffect(() => {
+    //clean up useEffect
+    let isSubscribed = true;
+    if (isSubscribed) {
+      try {
+        getMemberCount(itemDetail);
+      } catch (error) {
+        console.log("retrieve member count error: " + error);
+      }
+    }
+    return () => {
+      isSubscribed = false;
+    };
+  }, []);
   const createDeleteAlert = () =>
     Alert.alert(
       "Event Delete",
@@ -37,15 +56,42 @@ export const EventListItem = ({
       { cancelable: false }
     );
 
+  const getMemberCount = (event: any) => {
+    db.collection("events")
+      .doc(event.friend_id)
+      .collection("list")
+      .doc(event.id)
+      .collection("members")
+      .where("status", "==", "joined")
+      .onSnapshot(snapshot => {
+        //console.log("newcount: " + event.id, snapshot.size);
+        setMemberCount(snapshot.size);
+      });
+  };
+
+  const getUserName = info => {
+    let name;
+    if (info.first_name || info.last_name) {
+      const fullname =
+        upperCaseFirstLetter(info.first_name) +
+        " " +
+        upperCaseFirstLetter(info.last_name);
+      name = fullname;
+    } else {
+      name = info.email;
+    }
+    return name;
+  };
+
   return (
     <View style={styles.list}>
       <View style={styles.content}>
         <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
           <View style={styles.contentText}>
-            <Text style={styles.title} numberOfLines={3}>
+            <Text style={styles.title} numberOfLines={1}>
               {upperCaseFirstLetter(itemDetail.title)}
             </Text>
-            <Text style={styles.memberText}>Members: 0</Text>
+            <Text style={styles.memberText}>Members: {memberCount}</Text>
             <View style={styles.dateContent}>
               <Text style={styles.titleStart}>
                 Start:{"  "}
@@ -56,18 +102,40 @@ export const EventListItem = ({
                 {getFormattedDateString(itemDetail.end.toDate())}
               </Text>
             </View>
+            <Text style={styles.memberText}>
+              From:{"  "}
+              {getUserName(itemDetail.friend_info)}
+            </Text>
           </View>
         </TouchableWithoutFeedback>
         <View style={styles.buttonSetting}>
-          <TouchableOpacity
-            style={styles.joinEventButton}
-            onPress={() => {
-              console.log("pressed joinEvent")
-              joinEvent(itemDetail.user_id,itemDetail.id)
-            }}
-          >
-            <Text>Join</Text>
-          </TouchableOpacity>
+          {!isSelected ? (
+            <TouchableOpacity
+              style={styles.joinEventButton}
+              onPress={() => {
+                console.log("pressed joinEvent");
+                setIsSelected(true);
+              }}
+            >
+              <Text style={styles.buttonText}>
+                <AntDesign name="plus" size={12} color="#ecf0f1" />
+                JOIN
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.pendingButton}
+              onPress={() => {
+                console.log("pressed to cancel");
+                setIsSelected(false);
+              }}
+            >
+              <Text style={styles.buttonText}>
+                <AntDesign name="close" size={12} color="#ecf0f1" />
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -102,7 +170,7 @@ const styles = StyleSheet.create({
     margin: 5
   },
   contentText: {
-    width: "85%",
+    width: "78%",
     //height: '90%',
     alignSelf: "flex-start",
     margin: 1
@@ -110,14 +178,13 @@ const styles = StyleSheet.create({
   ownContent: {
     flex: 1
   },
-  ownText: {
-    backgroundColor: "#e58e26",
-    fontSize: 9,
+  buttonText: {
+    fontSize: 12,
     color: "#ecf0f1",
     fontWeight: "bold",
     borderRadius: 3,
-    paddingVertical: 3,
-    paddingHorizontal: 5,
+    paddingVertical: 7,
+    paddingHorizontal: 7,
     alignSelf: "flex-end"
   },
   memberText: {
@@ -139,18 +206,16 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginBottom: 4
   },
-  removeButton: {
-    backgroundColor: "#353b48",
-    width: 38,
-    height: 38,
+  pendingButton: {
+    backgroundColor: "#ee5253",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 3,
-    marginTop: 4
+    borderRadius: 3
   },
   dateContent: {
     flex: 1,
-    flexDirection: "row"
+    flexDirection: "row",
+    marginVertical: 3
   },
   titleStart: {
     fontSize: 12,
@@ -166,12 +231,10 @@ const styles = StyleSheet.create({
   },
   joinEventButton: {
     backgroundColor: "#20bf6b",
-    width: 50,
-    height: 38,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 3,
-    marginBottom: 4
+    alignSelf: "center",
+    borderRadius: 3
   }
 });
 
