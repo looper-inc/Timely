@@ -15,10 +15,16 @@ const JoinEvent = async (friend_id, event_id) => {
             .collection('list').doc(event_id).collection('members').get()
         const membersId = members.docs.map(doc => doc.data())
         var hasJoined = false
+        var hasSend = false
         
         membersId.forEach(element => {
-            if(element.friend_id == user.uid && element.status == "joined"){
-                hasJoined = true
+            if(element.friend_id == user.uid){
+                console.log("firstlog" + element.status)
+                if(element.status == "joined"){
+                    hasJoined = true
+                } else if (element.status == "pending"){
+                    hasSend = true
+                }
             }
         });
         if(hasJoined){ 
@@ -26,6 +32,8 @@ const JoinEvent = async (friend_id, event_id) => {
             // Need to pop up a window
             Alert.alert("You are already in, have fun!")
             //tag, ract component, alert, modal
+        } else if (hasSend) {
+            Alert.alert("Join Request Send", "waiting for owner's response")
         } else {
             //add my id to the partisapant list
             // NOTE: if you need to change the format of partisapant id,
