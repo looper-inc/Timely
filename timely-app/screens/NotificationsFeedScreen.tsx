@@ -46,7 +46,6 @@ export const NotificationsFeedScreen = ({ navigation }) => {
       if (snapshot.size) {
         let noti = [];
         snapshot.forEach(item => {
-          console.log(item.data());
           return db
             .collection("profiles")
             .doc(item.data().uid_from)

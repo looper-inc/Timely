@@ -146,7 +146,6 @@ export const EditProfileScreen = ({ route, navigation }) => {
                     .then(() => {
                       console.log("old pic deleted");
                       setMessText("Old pic has been deleted!");
-                      setLoading(false);
                     })
                     .catch(function(error) {
                       setMessText("Uh-oh, an error occurred!");
