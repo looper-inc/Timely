@@ -15,7 +15,7 @@ import {
 } from "../../utils/utils";
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../providers/AuthProvider.js";
-
+import joinEvent from "../../screens/JoinEvent"
 import firebase from "../../fbconfig";
 export const EventListItem = ({ itemDetail, navigation }) => {
   const [isSelected, setIsSelected] = useState(false);
@@ -110,8 +110,11 @@ export const EventListItem = ({ itemDetail, navigation }) => {
           {!isSelected ? (
             <TouchableOpacity
               style={styles.joinEventButton}
-              onPress={() => {
+              onPress={() => { 
                 console.log("pressed joinEvent");
+                console.log(itemDetail.user_id)
+                console.log(itemDetail.id)
+                joinEvent(itemDetail.friend_id,itemDetail.id)
                 setIsSelected(true);
               }}
             >

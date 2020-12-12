@@ -17,7 +17,7 @@ const JoinEvent = async (friend_id, event_id) => {
         var hasJoined = false
         
         membersId.forEach(element => {
-            if(element.friend_id == user.uid){
+            if(element.friend_id == user.uid && element.status == "joined"){
                 hasJoined = true
             }
         });
