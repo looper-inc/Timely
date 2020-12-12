@@ -8,7 +8,7 @@ import { FlatList } from "react-native-gesture-handler";
 import EventListItem from "../components/FeedScreen/EventListItem";
 import FollowingFilter from "../components/FeedScreen/FollowingFilter";
 
-export const followingFeedScreen = ({ navigation }) => {
+export const FollowingFeedScreen = ({ navigation }) => {
   const [eventsList, setEventsList] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [eventFilter, setEventFilter] = useState(0);
@@ -90,7 +90,7 @@ export const followingFeedScreen = ({ navigation }) => {
   if (eventsList)
     return (
       <SafeAreaView style={styles.container}>
-        <FollowingFilter onPressFilter={handleFilter} />
+        {/* <FollowingFilter onPressFilter={handleFilter} /> */}
         <FlatList
           data={eventsList}
           renderItem={({ item }) => (
@@ -100,7 +100,6 @@ export const followingFeedScreen = ({ navigation }) => {
               onPressVewDetail={handleViewDetail}
             />
           )}
-          onEndReachedThreshold={0.1}
         />
         {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
       </SafeAreaView>
@@ -124,4 +123,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default followingFeedScreen;
+export default FollowingFeedScreen;
