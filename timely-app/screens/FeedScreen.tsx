@@ -3,12 +3,15 @@ import { StyleSheet, SafeAreaView } from "react-native";
 import SelectFeed from "./FeedScreen/SelectFeed";
 import { createStackNavigator } from "@react-navigation/stack";
 import { FeedSelectParamList } from "../types";
-import FollowingFeedScreen from "./FollowingFeedScreen";
+import { ContentSelectParamList } from "../types";
+import FollowingScreen from "./FollowingScreen";
 import NotificationsFeedScreen from "./NotificationsFeedScreen";
 import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider";
+import SelectContent from "./FeedScreen/SelectContent";
 
 const FeedSelectStack = createStackNavigator<FeedSelectParamList>();
+const ContentSelectStack = createStackNavigator<ContentSelectParamList>();
 
 export default class FeedScreen extends React.Component<
   { route: any; navigation: any },
@@ -64,7 +67,7 @@ export default class FeedScreen extends React.Component<
         <FeedSelectStack.Navigator>
           <FeedSelectStack.Screen
             name="Following"
-            component={FollowingFeedScreen}
+            component={FollowingScreen}
           />
           <FeedSelectStack.Screen
             name="Notifications"

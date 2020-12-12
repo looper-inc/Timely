@@ -8,8 +8,8 @@ import { FlatList } from 'react-native-gesture-handler';
 import EventListItem from "../components/FeedScreen/EventListItem"
 import GoalListItem from "../components/FeedScreen/GoalListItem";
 
-export const followingFeedScreen = ({ navigation }) => {
-    const [eventsList, setEventsList] = useState<any[]>([]);
+export const followingGoalScreen = ({ navigation }) => {
+    //const [eventsList, setEventsList] = useState<any[]>([]);
     const [isFetching, setIsFetching] = useState(false);
     const { currentUser } = useContext(AuthContext);
 
@@ -20,18 +20,18 @@ export const followingFeedScreen = ({ navigation }) => {
 
     useEffect(() => {
         try {
-            retrieveEvents();
+            retrieveGoals();
         }
         catch (error) {
             console.log('retrieveData error: ' + error);
         }
     }, []);
 
-    const handleEditEvent = itemDetail => {
-        navigation.navigate("EditEvent", itemDetail);
-    };
+    // const handleEditEvent = itemDetail => {
+    //     navigation.navigate("EditEvent", itemDetail);
+    // };
 
-    const retrieveEvents = async () => {
+    const retrieveGoals = async () => {
         let items: any[] = [];
         let eventsList: any[] = [];
         
@@ -43,7 +43,7 @@ export const followingFeedScreen = ({ navigation }) => {
             .collection('friend_list');
 
         let userList = [];
-        // get friends public events
+        //get friends public events
         initialQuery.onSnapshot((snapshot) => {
             if (snapshot.size) {
                 loading = true
@@ -56,27 +56,27 @@ export const followingFeedScreen = ({ navigation }) => {
 
 
             userList.forEach(user => {
-                let tempEvents = db.collection('events')
+                // let tempEvents = db.collection('events')
+                //     .doc(user)
+                //     .collection('list')
+                //     .where('public', '==', true);
+
+                 let tempGoals = db.collection('goal')
                     .doc(user)
                     .collection('list')
                     .where('public', '==', true);
 
-                let tempGoals = db.collection('goal')
-                    .doc(user)
-                    .collection('list')
-                    .where('public', '==', true);
-
-                tempEvents.onSnapshot((snap) => {
-                    if (snap.size) {
-                        snap.forEach(event => {
-                            var a = eventsList.push({ ...event.data(), id: event.id, user_id: user });
-                            //console.log(eventsList[a-1].id)
-                            //console.log(eventsList[a-1].user_id)
-                        })
-                        setEventsList(eventsList)
-                        setIsFetching(false);
-                    }
-                })
+        //         tempEvents.onSnapshot((snap) => {
+        //             if (snap.size) {
+        //                 snap.forEach(event => {
+        //                     var a = eventsList.push({ ...event.data(), id: event.id, user_id: user });
+        //                     //console.log(eventsList[a-1].id)
+        //                     //console.log(eventsList[a-1].user_id)
+        //                 })
+        //                 setEventsList(eventsList)
+        //                 setIsFetching(false);
+        //             }
+        //         })
 
                 tempGoals.onSnapshot((snap) => {
                     if (snap.size) {
@@ -110,7 +110,7 @@ export const followingFeedScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            {eventsList ? (
+            {/* {eventsList ? (
                 <>
                     {!loading ? (
                         <>
@@ -140,9 +140,9 @@ export const followingFeedScreen = ({ navigation }) => {
                             <Text style={styles.noDataText}>No Events Available.</Text>
                         )}
                     </>
-            )}
+                )} */}
 
-            {/* {goalsList ? (
+            {goalsList ? (
                 <>
                     <FlatList
                         data={goalsList}
@@ -166,7 +166,7 @@ export const followingFeedScreen = ({ navigation }) => {
                             <Text style={styles.noDataText}>No Goals Available.</Text>
                         )}
                     </>
-                )} */}
+                )}
         </SafeAreaView>
     );
 
@@ -194,4 +194,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default followingFeedScreen;
+export default followingGoalScreen;

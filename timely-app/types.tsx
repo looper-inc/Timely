@@ -28,6 +28,10 @@ export type PlanSelectParamList = {
   Goals: undefined;
 };
 
+export type ContentSelectParamList = {
+  Event: undefined;
+  Goal: undefined;
+}
 export type FeedSelectParamList = {
   Following: undefined;
   Notifications: undefined;
