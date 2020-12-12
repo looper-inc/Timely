@@ -48,7 +48,11 @@ export const SignUpScreen = ({navigation}) => {
                   {
                       first_name: values.firstName,
                       last_name: values.lastName,
+<<<<<<< HEAD
                       profileImgURL: 'assets/images/profile_pic_default',
+=======
+                      profileImgURL: '',
+>>>>>>> staging
                       email: res.user.email,
                       profile_visibility: true,
                       status: 0,
