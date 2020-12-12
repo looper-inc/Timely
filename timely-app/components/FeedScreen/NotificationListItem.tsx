@@ -84,14 +84,60 @@ export const NotificationListItem = ({
   };
 
   const handleAccepted = noti => {
-    //if this notification for accepting event
-    if (noti.event_id) {
+    if (noti.type === 'joinRequest') {
+      handleAcceptedJoin(noti)
+    } else if (noti.event_id) {
       handleAcceptedEvent(noti);
-    }
-
-    if (noti.type === 'friendRequest') {
+    } else if (noti.type === 'friendRequest') {
       handleAcceptedFriend(noti)
     }
+  };
+
+  const handleAcceptedJoin = async noti => {
+    console.log(noti)
+    await db
+      .collection("events")
+      .doc(noti.uid_to)
+      .collection("list")
+      .doc(noti.event_id)
+      .collection("members")
+      .doc(noti.member_id)
+      .update({ status: "joined" })
+      .then(() => {
+        db.collection("events")
+          .doc(noti.uid_from)
+          .collection("group_list")
+          .doc(noti.event_id)
+          .set({
+            created: Date.now(),
+            event_id: noti.event_id,
+            uid_event_owner: noti.uid_to
+          })
+          .then(() => {
+            const confirmation = {
+              created: Date.now(),
+              type: "confirmation",
+              uid_from: currentUser.uid,
+              email_from:currentUser.uid,
+              uid_to: noti.uid_from,
+              event_id: noti.event_id,
+              event_title: noti.event_title,
+              message: "You have joined " + noti.event_title + "!",
+              status: "done",
+              member_id: noti.member_id
+            };
+            db.collection("notification")
+              .doc(noti.uid_from)
+              .collection("member_notify")
+              .add(confirmation)
+          });
+      })
+      .then(result => {
+        console.log("update member is ok");
+      })
+      .catch(error => {
+        console.log("add member error", error);
+      });
   };
 
   const handleAcceptedEvent = async noti => {
@@ -124,7 +170,7 @@ export const NotificationListItem = ({
               .doc(noti.id)
               .update({
                 type: "acceptedEvent",
-                message: "You've now joined " + getUserName(noti) + " event:",
+                message: "You've now joined " + getUserName(noti) + "'s event:",
                 status: "done"
               })
               .then(() => {

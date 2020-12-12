@@ -57,6 +57,7 @@ const JoinEvent = async (friend_id, event_id) => {
                     created: Date.now(),
                     type: "joinRequest",
                     uid_from: user.uid,
+                    member_id: neweventId,
                     email_from: user.email,
                     uid_to: friend_id,
                     message: "",
