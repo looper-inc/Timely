@@ -63,6 +63,7 @@ export const FollowingFeedScreen = ({ navigation }) => {
                       .doc(event.id)
                       .collection("members")
                       .where("friend_id", "==", currentUser.uid)
+                      .where("status","==","joined")
                       .onSnapshot(snapshot => {
                         if (!snapshot.size) {
                           eventsList.push({

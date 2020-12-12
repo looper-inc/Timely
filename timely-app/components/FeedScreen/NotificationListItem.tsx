@@ -46,6 +46,11 @@ export const NotificationListItem = ({
         const name = getUserName(itemDetail);
         setMessage(name + " has invited you to join an event: ");
         break;
+      case "joinRequest":
+        setControlType(false);
+        setMessage(getUserName(itemDetail) + " wants to join your event: ")
+        console.log('jr');
+        break;
       case "joinEvent":
         break;
       case "acceptedEvent":
@@ -63,7 +68,7 @@ export const NotificationListItem = ({
       case "friendRequest":
         setControlType(false);
         setMessage(getUserName(itemDetail) + " wants to be your friend.");
-        console.log('fr')
+        console.log('fr');
         break;
       case "acceptedFriend":
         setControlType(true);

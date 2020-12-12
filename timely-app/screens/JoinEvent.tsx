@@ -33,7 +33,7 @@ const JoinEvent = async (friend_id, event_id) => {
             Alert.alert("You are already in, have fun!")
             //tag, ract component, alert, modal
         } else if (hasSend) {
-            Alert.alert("Join Request Send", "waiting for owner's response")
+            Alert.alert("Join Request Sent", "waiting for owner's response")
         } else {
             //add my id to the partisapant list
             // NOTE: if you need to change the format of partisapant id,
@@ -55,7 +55,7 @@ const JoinEvent = async (friend_id, event_id) => {
                 // create and push notification
                 const noti_data = {
                     created: Date.now(),
-                    type: "inviteToEvent",
+                    type: "joinRequest",
                     uid_from: user.uid,
                     email_from: user.email,
                     uid_to: friend_id,
