@@ -55,32 +55,30 @@ export default class FriendsScreen extends React.Component<
         .doc(uid)
         .collection("friend_list")
         .where("pending", "==", false)
-        .get();
+        .onSnapshot(snapshot => {
+          const friendList: any[] = [];
+          snapshot.forEach(friendDoc => {
+            this.db
+              .collection("profiles")
+              .doc(friendDoc.data().friend_id)
+              .onSnapshot(uSnapshot => {
+                //console.log(uSnapshot.data());
 
-      const friendDocs: any[] = [];
-      snapshot.forEach(friendDoc => friendDocs.push(friendDoc.data()));
-      const friendList: any[] = [];
-      for (const friendDoc of friendDocs) {
-        // Get each user's info
-        await this.db
-          .collection("profiles")
-          .doc(friendDoc.friend_id)
-          .onSnapshot(uSnapshot => {
-            //console.log(uSnapshot.data());
-
-            // TODO: Push to the search result list.
-            friendList.push({
-              title: uSnapshot.data().email,
-              uid: friendDoc.friend_id,
-              fullInfo: uSnapshot.data()
-            });
+                // TODO: Push to the search result list.
+                friendList.push({
+                  title: uSnapshot.data().email,
+                  uid: friendDoc.friend_id,
+                  fullInfo: uSnapshot.data()
+                });
+              });
           });
-      }
+          //console.log(friendList);
+          setTimeout(async () => {
+            await this.setState({ friendList, loading: false });
+          }, 300);
+        });
+
       //console.log("appended", friendList);
-      console.log(friendList);
-      setTimeout(async () => {
-        await this.setState({ friendList, loading: false });
-      }, 300);
     } catch (err) {
       console.log(err);
     }

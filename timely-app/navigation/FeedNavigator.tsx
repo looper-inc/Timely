@@ -2,7 +2,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import FeedScreen from "../screens/FeedScreen";
 import { FeedParamList } from "../types";
-
+import FollowingEventDetailScreen from "../screens/FollowingEventDetailScreen";
+import FollowingGoalDetail from "../screens/GoalDetailScreen";
 const FeedStack = createStackNavigator<FeedParamList>();
 
 export default function FeedNavigator() {
@@ -13,6 +14,20 @@ export default function FeedNavigator() {
         component={FeedScreen}
         options={{
           headerTitle: "Feed"
+        }}
+      />
+      <FeedStack.Screen
+        name="FollowingEventDetail"
+        component={FollowingEventDetailScreen}
+        options={{
+          headerTitle: "Detail"
+        }}
+      />
+      <FeedStack.Screen
+        name="FollowingGoalDetail"
+        component={FollowingGoalDetail}
+        options={{
+          headerTitle: "Detail"
         }}
       />
     </FeedStack.Navigator>

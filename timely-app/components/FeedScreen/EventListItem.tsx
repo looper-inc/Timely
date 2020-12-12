@@ -17,12 +17,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../providers/AuthProvider.js";
 
 import firebase from "../../fbconfig";
-export const EventListItem = ({
-  onPressDetail,
-  itemDetail,
-  onPressVewDetail,
-  onPressRemoveGoal
-}) => {
+export const EventListItem = ({ itemDetail, navigation }) => {
   const [isSelected, setIsSelected] = useState(false);
   const { currentUser } = useContext(AuthContext);
   const db = firebase.firestore();
@@ -82,11 +77,14 @@ export const EventListItem = ({
     }
     return name;
   };
-
+  const handleViewDetail = itemDetail => {
+    //console.log("view detail pressed", itemDetail);
+    navigation.navigate("FollowingEventDetail", itemDetail);
+  };
   return (
     <View style={styles.list}>
       <View style={styles.content}>
-        <TouchableWithoutFeedback onPress={() => onPressVewDetail(itemDetail)}>
+        <TouchableWithoutFeedback onPress={() => handleViewDetail(itemDetail)}>
           <View style={styles.contentText}>
             <Text style={styles.title} numberOfLines={1}>
               {upperCaseFirstLetter(itemDetail.title)}

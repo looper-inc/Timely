@@ -7,9 +7,10 @@ import { SafeAreaView } from "react-navigation";
 import { FlatList } from "react-native-gesture-handler";
 import EventListItem from "../components/FeedScreen/EventListItem";
 import FollowingFilter from "../components/FeedScreen/FollowingFilter";
-
+import FollowingGoalListItem from "../components//FeedScreen/FollowingGoalListItem";
 export const FollowingFeedScreen = ({ navigation }) => {
   const [eventsList, setEventsList] = useState<any[]>([]);
+  const [goalsList, setGoalsList] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [eventFilter, setEventFilter] = useState(0);
   const { currentUser } = useContext(AuthContext);
@@ -17,72 +18,112 @@ export const FollowingFeedScreen = ({ navigation }) => {
   const db = firebase.firestore();
   const fStorage = firebase.storage();
 
+  let query = db
+    .collection("profiles")
+    .doc(currentUser.uid)
+    .collection("friend_list")
+    .where("pending", "==", false);
+
   useEffect(() => {
     try {
       retrieveEvents();
+      retrieveGoals();
     } catch (error) {
       console.log("retrieveData error: " + error);
     }
-  }, []);
+  }, [eventFilter]);
 
   const retrieveEvents = async () => {
-    let eventsList: any[] = [];
-
     setIsFetching(true);
-    let initialQuery = await db
-      .collection("profiles")
-      .doc(currentUser.uid)
-      .collection("friend_list")
-      .where("pending", "==", false);
+    let initialQuery = await query;
 
-    let userList = [currentUser.uid];
-
+    let eventsList: any[] = [];
     initialQuery.onSnapshot(snapshot => {
       if (snapshot.size) {
         snapshot.forEach(user => {
-          let tempEvents = db
-            .collection("events")
-            .doc(user.data().friend_id)
-            .collection("list")
-            .where("public", "==", true);
-
           //get friend's info
+
           db.collection("profiles")
             .doc(user.data().friend_id)
             .get()
             .then(info => {
-              tempEvents.onSnapshot(snap => {
+              let tempEvents = db
+                .collection("events")
+                .doc(user.data().friend_id)
+                .collection("list")
+                .where("public", "==", true);
+
+              tempEvents.get().then(snap => {
                 if (snap.size) {
                   snap.forEach(event => {
-                    eventsList.push({
-                      ...event.data(),
-                      id: event.id,
-                      friend_id: user.data().friend_id,
-                      friend_info: info.data()
-                    });
-                    //console.log(eventsList[a-1].id)
-                    //console.log(eventsList[a-1].user_id)
+                    // check if current user is already member in event
+                    db.collection("events")
+                      .doc(user.data().friend_id)
+                      .collection("list")
+                      .doc(event.id)
+                      .collection("members")
+                      .where("friend_id", "==", currentUser.uid)
+                      .onSnapshot(snapshot => {
+                        if (!snapshot.size) {
+                          eventsList.push({
+                            ...event.data(),
+                            id: event.id,
+                            friend_id: user.data().friend_id,
+                            friend_info: info.data()
+                          });
+                        }
+                      });
                   });
+                  setTimeout(() => {
+                    setEventsList(eventsList);
+                    setIsFetching(false);
+                  }, 1000);
                 }
               });
-              setTimeout(() => {
-                setEventsList(eventsList);
-                setIsFetching(false);
-              }, 300);
             });
         });
       }
     });
   };
 
-  const handleDetail = itemDetail => {
-    navigation.navigate("EditGoal", itemDetail);
+  const retrieveGoals = async () => {
+    setIsFetching(true);
+    let initialQuery = await query;
+    let goalsList: any[] = [];
+    initialQuery.onSnapshot(snapshot => {
+      if (snapshot.size) {
+        snapshot.forEach(user => {
+          db.collection("profiles")
+            .doc(user.data().friend_id)
+            .get()
+            .then(info => {
+              db.collection("goals")
+                .doc(user.id)
+                .collection("list")
+                .where("public", "==", true)
+                .get()
+                .then(goals => {
+                  if (goals.size) {
+                    goals.forEach(goal => {
+                      goalsList.push({
+                        ...goal.data(),
+                        id: goal.id,
+                        friend_id: user.data().friend_id,
+                        friend_info: info.data()
+                      });
+                    });
+                  }
+                });
+            });
+        });
+      }
+      setTimeout(() => {
+        setGoalsList(goalsList);
+        setIsFetching(false);
+      }, 400);
+    });
   };
 
-  const handleViewDetail = itemDetail => {
-    console.log("lol");
-    navigation.navigate("EventDetail", itemDetail);
-  };
   const handleFilter = idx => {
     //console.log("filter pressed", idx);
     setEventFilter(idx);
@@ -90,17 +131,25 @@ export const FollowingFeedScreen = ({ navigation }) => {
   if (eventsList)
     return (
       <SafeAreaView style={styles.container}>
-        {/* <FollowingFilter onPressFilter={handleFilter} /> */}
-        <FlatList
-          data={eventsList}
-          renderItem={({ item }) => (
-            <EventListItem
-              itemDetail={item}
-              onPressDetail={handleDetail}
-              onPressVewDetail={handleViewDetail}
-            />
-          )}
-        />
+        <FollowingFilter onPressFilter={handleFilter} />
+        {!eventFilter ? (
+          <FlatList
+            data={eventsList}
+            renderItem={({ item }) => (
+              <EventListItem itemDetail={item} navigation={navigation} />
+            )}
+          />
+        ) : (
+          <FlatList
+            data={goalsList}
+            renderItem={({ item }) => (
+              <FollowingGoalListItem
+                itemDetail={item}
+                navigation={navigation}
+              />
+            )}
+          />
+        )}
         {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
       </SafeAreaView>
     );

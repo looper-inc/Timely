@@ -217,15 +217,19 @@ export const EditProfileScreen = ({ route, navigation }) => {
   };
 
   const initialValues = {
-    first_name: route.params.first_name,
-    last_name: route.params.last_name,
-    bio: route.params.bio
+    first_name: route.params.first_name ? route.params.first_name : "",
+    last_name: route.params.last_name ? route.params.last_name : "",
+    bio: route.params.bio ? route.params.bio : ""
     //profile_visibility: route.params.profile_visibility
   };
 
   const profileValidationSchema = Yup.object().shape({
-    first_name: Yup.string().required("First name is Required"),
-    last_name: Yup.string().required("Last name is Required"),
+    first_name: Yup.string()
+      .max(20, "First name too long")
+      .required("First name is Required"),
+    last_name: Yup.string()
+      .max(20, "Last name too long")
+      .required("Last name is Required"),
     bio: Yup.string().max(220, "Bio too long")
   });
 
@@ -301,7 +305,7 @@ export const EditProfileScreen = ({ route, navigation }) => {
               <FormButton
                 buttonTitle="Update"
                 onPress={() => {
-                  if (!dirty) return Alert.alert("Please update values");
+                  //if (!dirty) return Alert.alert("Please update values");
                   if (!isValid) return Alert.alert("Invalid fields");
                   return handleEditProfile(values);
                 }}
