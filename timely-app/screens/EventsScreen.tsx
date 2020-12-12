@@ -98,8 +98,8 @@ export const EventsScreen = ({ route, navigation }) => {
       .orderBy("created", "desc")
       //.limit(limit)
       .onSnapshot(snapshot => {
-        setIsFetching(true);
         if (snapshot.size) {
+          setIsFetching(true);
           let eventGroup = [...events];
           snapshot.forEach(event => {
             db.collection("events")
@@ -120,9 +120,12 @@ export const EventsScreen = ({ route, navigation }) => {
             setLastVisitedGroup(last);
             setTimeout(() => {
               setEventList(eventGroup);
-              setLoading(false);
+              setIsFetching(false);
             }, 300);
           });
+        } else {
+          console.log("no more rows to fetch");
+          setIsFetching(false);
         }
       });
   };

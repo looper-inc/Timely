@@ -151,7 +151,7 @@ export const GoalsScreen = ({ navigation }) => {
             onEndReached={() => retrieveMoreData()}
             onEndReachedThreshold={0.1}
           />
-          {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
+          {isFetching && <ActivityIndicator size="large" color="#9997e6" />}
         </>
       ) : (
           <>
