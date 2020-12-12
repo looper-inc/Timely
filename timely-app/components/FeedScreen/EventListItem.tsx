@@ -153,7 +153,7 @@ export const EventListItem = async ({
               joinEvent(itemDetail.user_id,itemDetail.id)
             }}
           >
-            <Text>{'joinEventText'}</Text>
+            <Text>{joinEventText}</Text>
           </TouchableOpacity>
         </View>
       </View>
