@@ -7,6 +7,7 @@ const JoinEvent = async (friend_id, event_id) => {
     var db
     db = firebase.firestore()
     var user = firebase.auth().currentUser; // user might be null
+    var hasJoined = false
 
     try {
         // check if user has already added the event by checking
@@ -14,7 +15,7 @@ const JoinEvent = async (friend_id, event_id) => {
         var members = await db.collection('events').doc(friend_id)
             .collection('list').doc(event_id).collection('members').get()
         const membersId = members.docs.map(doc => doc.data())
-        var hasJoined = false
+        //var hasJoined = false
         
         membersId.forEach(element => {
             if(element.friend_id == user.uid && element.status == "joined"){
@@ -77,6 +78,7 @@ const JoinEvent = async (friend_id, event_id) => {
     } catch (error) {
         console.log('join event error', error)
     }
+    //return (hasJoined)
 }
 
 export default JoinEvent

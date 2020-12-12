@@ -17,6 +17,7 @@ import {
 import joinEvent from "../../screens/JoinEvent"
 import { AuthContext } from "../../providers/AuthProvider";
 import firebase from "../../fbconfig";
+import { JoinEventText } from "./JoinEventText";
 
 export const EventListItem = ({
   onPressDetail,
@@ -29,11 +30,16 @@ export const EventListItem = ({
   const db = firebase.firestore();
   const [memberCount, setMemberCount] = useState(0);
   const [ownerDetail, setOwnerDetail] = useState();
+  var joinEventText = "";
+
+  joinEventText = JoinEventText(itemDetail.user_id,itemDetail.id);
+
   useEffect(() => {
     //clean up useEffect
     let isSubscribed = true;
     if (isSubscribed) {
       try {
+        console.log(itemDetail)
         getMemberCount(itemDetail);
         getOwnerDetail(itemDetail);
       } catch (error) {
@@ -45,6 +51,7 @@ export const EventListItem = ({
 
   const getOwnerDetail = async event => {
     if (event.uid_owner) {
+      console.log("there is a owner")
       await db
         .collection("profiles")
         .doc(event.uid_owner)
@@ -142,7 +149,7 @@ export const EventListItem = ({
               joinEvent(itemDetail.user_id,itemDetail.id)
             }}
           >
-            <Text>Join</Text>
+            <Text>{JoinEventText(itemDetail.user_id,itemDetail.id)}</Text>
           </TouchableOpacity>
         </View>
       </View>
