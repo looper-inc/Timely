@@ -10,7 +10,6 @@ import firebase from "../fbconfig";
 import { AuthContext } from "../providers/AuthProvider.js";
 import EventListItem from "../components/PlanScreen/EventListItem";
 import EventFilter from "./PlanScreen/EventFilter";
-import { shuffleData } from "../utils/utils";
 
 export const EventsScreen = ({ route, navigation }) => {
   const [eventList, setEventList] = useState(null);
@@ -99,7 +98,7 @@ export const EventsScreen = ({ route, navigation }) => {
       .orderBy("created", "desc")
       //.limit(limit)
       .onSnapshot(snapshot => {
-        setLoading(true);
+        setIsFetching(true);
         if (snapshot.size) {
           let eventGroup = [...events];
           snapshot.forEach(event => {
@@ -218,13 +217,14 @@ export const EventsScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   noDataText: {
     fontSize: 16,
     color: "#f5f6fa",
     textTransform: "capitalize",
     fontWeight: "bold",
+    marginTop: 275,
     alignSelf: "center"
   }
 });

@@ -157,7 +157,7 @@ export const GoalsScreen = ({ navigation }) => {
           <>
             {loading && <ActivityIndicator size="large" color="#0097e6" />}
             {!goalList && !loading && (
-              <Text style={styles.noDataText}>No Goals Available.</Text>
+              <Text style={styles.noDataText}>No Goals Available</Text>
             )}
           </>
         )}

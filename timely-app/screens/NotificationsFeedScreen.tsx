@@ -126,7 +126,7 @@ export const NotificationsFeedScreen = ({ navigation }) => {
           <>
             {loading && <ActivityIndicator size="large" color="#0097e6" />}
             {!notificationList && !loading && (
-              <Text style={styles.noDataText}>No any notification.</Text>
+              <Text style={styles.noDataText}>No notifications</Text>
             )}
           </>
         )}

@@ -202,12 +202,12 @@ export const EventListItem = ({
           <View style={styles.contentText}>
             {!ownerDetail ? (
               <View style={styles.ownContent}>
-                <Text style={styles.ownText}>Own by you</Text>
+                <Text style={styles.ownText}>Owned by you</Text>
               </View>
             ) : (
               <View style={styles.ownContent}>
                 <Text style={styles.ownerText}>
-                  Own by {getUserName(ownerDetail)}
+                  Owned by {getUserName(ownerDetail)}
                 </Text>
               </View>
             )}

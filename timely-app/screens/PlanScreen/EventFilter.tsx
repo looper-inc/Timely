@@ -35,7 +35,7 @@ const EventFilter = ({ onPressFilter }) => {
     }
   };
 
-  const buttons = ["All", "Own by you", "Own by other"];
+  const buttons = ["All", "You", "Friends"];
 
   return (
     <View style={styles.filterContent}>

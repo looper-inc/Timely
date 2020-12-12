@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useContext } from 'react'
-import { StyleSheet, ActivityIndicator } from "react-native";
+import { Text, StyleSheet, ActivityIndicator } from "react-native";
 import { AuthContext } from "../providers/AuthProvider";
 import firebase from "../fbconfig"
 import { SafeAreaView } from 'react-navigation';
@@ -58,8 +58,12 @@ export const followingFeedScreen = ({ navigation }) => {
                             var a = eventsList.push({ ...event.data(), id: event.id, user_id: user });
                             //console.log(eventsList[a-1].id)
                             //console.log(eventsList[a-1].user_id)
+                        });
+                        setTimeout(() => {
+                            setEventsList(eventsList);
+                            setIsFetching(false)
                         })
-                        setEventsList(eventsList)
+                    } else {
                         setIsFetching(false);
                     }
                 })
@@ -78,6 +82,35 @@ export const followingFeedScreen = ({ navigation }) => {
 
     if (eventsList)
         return (
+
+            <SafeAreaView style={styles.container}>
+                {eventsList ? (
+                    <>
+                        <FlatList
+                            data={eventsList}
+                            renderItem={({ item }) => (
+                                <EventListItem
+                                    itemDetail={item}
+                                    onPressDetail={handleDetail}
+                                    onPressVewDetail={handleViewDetail}
+                                />
+                            )}
+                            onEndReachedThreshold={0.1}
+                        />
+                        {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
+                    </>
+                ) : (
+                    <>
+                        {isFetching && <ActivityIndicator size="large" color="#0097e6" />}
+                        {!eventsList && !isFetching && (
+                            <Text style={styles.noDataText}>No Events Available</Text>
+                        )}
+                    </>
+                )}
+
+            </SafeAreaView>
+
+            /*
             <SafeAreaView style={styles.container}>
                 <FlatList
                     data={eventsList}
@@ -97,7 +130,7 @@ export const followingFeedScreen = ({ navigation }) => {
         <SafeAreaView style={styles.container}>
             <ActivityIndicator size="large" color="#0097e6" />
         </SafeAreaView>
-    )
+    */)
 }
 
 
@@ -106,12 +139,18 @@ export const followingFeedScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center"
     },
     title: {
         fontSize: 20,
         fontWeight: "bold"
-    }
+    },
+    noDataText: {
+        fontSize: 16,
+        color: "#f5f6fa",
+        textTransform: "capitalize",
+        fontWeight: "bold",
+        alignSelf: "center"
+      }
 });
 
 export default followingFeedScreen;
