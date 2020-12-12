@@ -17,6 +17,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../providers/AuthProvider.js";
 import joinEvent from "../../screens/JoinEvent"
 import firebase from "../../fbconfig";
+import CancelJoinEvent from "./CancelJoinEvent"
 export const EventListItem = ({ itemDetail, navigation }) => {
   const [isSelected, setIsSelected] = useState(false);
   const { currentUser } = useContext(AuthContext);
@@ -112,8 +113,8 @@ export const EventListItem = ({ itemDetail, navigation }) => {
               style={styles.joinEventButton}
               onPress={() => { 
                 console.log("pressed joinEvent");
-                console.log(itemDetail.user_id)
-                console.log(itemDetail.id)
+                //console.log(itemDetail.user_id)
+                //console.log(itemDetail.id)
                 joinEvent(itemDetail.friend_id,itemDetail.id)
                 setIsSelected(true);
               }}
@@ -128,6 +129,7 @@ export const EventListItem = ({ itemDetail, navigation }) => {
               style={styles.pendingButton}
               onPress={() => {
                 console.log("pressed to cancel");
+                CancelJoinEvent(itemDetail.friend_id,itemDetail.id)
                 setIsSelected(false);
               }}
             >

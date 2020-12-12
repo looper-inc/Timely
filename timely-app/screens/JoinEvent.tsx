@@ -16,10 +16,10 @@ const JoinEvent = async (friend_id, event_id) => {
         const membersId = members.docs.map(doc => doc.data())
         var hasJoined = false
         var hasSend = false
+        var neweventId
         
         membersId.forEach(element => {
             if(element.friend_id == user.uid){
-                console.log("firstlog" + element.status)
                 if(element.status == "joined"){
                     hasJoined = true
                 } else if (element.status == "pending"){
@@ -40,7 +40,9 @@ const JoinEvent = async (friend_id, event_id) => {
             // content in the .add need to be changed with
             db.collection('events').doc(friend_id)
                 .collection('list').doc(event_id).collection('members')
-                .add({friend_id: user.uid, status: "pending"});
+                .add({friend_id: user.uid, status: "pending"}).then(
+                    (docRef) => {neweventId = docRef.id}
+                );
             //get partisapant list
             members = await db.collection('events').doc(friend_id)
                 .collection('list').doc(event_id).collection('members').get()
@@ -65,7 +67,11 @@ const JoinEvent = async (friend_id, event_id) => {
 
                 db.collection("notification").doc(friend_id)
                   .collection("member_notify").add(noti_data)
-                  .then(() => {
+                  .then((docRef) => {
+                    db.collection('events').doc(friend_id)
+                    .collection('list').doc(event_id).collection('members')
+                    .doc(neweventId)
+                    .update({requestId: neweventId, notificationId: docRef.id})
                     console.log("added notification successfully");
                   });
                 
