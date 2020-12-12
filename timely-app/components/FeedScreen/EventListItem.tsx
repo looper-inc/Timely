@@ -19,7 +19,7 @@ import { AuthContext } from "../../providers/AuthProvider";
 import firebase from "../../fbconfig";
 import { JoinEventText } from "./JoinEventText";
 
-export const EventListItem = ({
+export const EventListItem = async ({
   onPressDetail,
   itemDetail,
   onPressVewDetail,
@@ -30,10 +30,13 @@ export const EventListItem = ({
   const db = firebase.firestore();
   const [memberCount, setMemberCount] = useState(0);
   const [ownerDetail, setOwnerDetail] = useState();
-  var joinEventText = "";
+  var joinEventText = "In";
 
-  joinEventText = JoinEventText(itemDetail.user_id,itemDetail.id);
-
+  // await JoinEventText(itemDetail.user_id,itemDetail.id).then((result) =>{
+  // joinEventText = result
+  // console.log("first" + joinEventText)})
+  // console.log("second" + joinEventText)
+  
   useEffect(() => {
     //clean up useEffect
     let isSubscribed = true;
@@ -108,7 +111,8 @@ export const EventListItem = ({
       ],
       { cancelable: false }
     );
-
+    
+  console.log("third" + joinEventText)
   return (
     <View style={styles.list}>
       <View style={styles.content}>
@@ -149,13 +153,14 @@ export const EventListItem = ({
               joinEvent(itemDetail.user_id,itemDetail.id)
             }}
           >
-            <Text>{JoinEventText(itemDetail.user_id,itemDetail.id)}</Text>
+            <Text>{'joinEventText'}</Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
-};
+//})
+}
 
 const styles = StyleSheet.create({
   list: {
