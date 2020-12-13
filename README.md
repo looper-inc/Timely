@@ -1,9 +1,8 @@
 # Timely
 
-## Note: Do not make commits without verifying with the team on Discord. 
+## About
 
-Status - Template code for a simple tab switch application. Note: The current template uses TypeScript, but we(the team) probably don't need much of it.
-React-native is fairly different from React so please do read a little about it. 
+Timely is a mobile app that combines scheduling with social media. Harness this strength by organizing your goals, managing your time around those goals, and finding others to collaborate with you all in the same place.
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -16,15 +15,18 @@ To get a local copy up and running follow these simple example steps.
 ```sh
 npm install npm@latest -g
 ```
-(OR)
-* yarn
-```sh
-npm install npm@latest -g
-```
+
 * expo - make sure that your path variable is configured, if not the terminal may not find the command. If so try https://forums.expo.io/t/expo-cli-looks-installed-but-expo-command-not-found/14535
+
 ```sh
 npm install -g expo-cli
 ```
+
+* expo app - to run Timely on your device's native Operating System, download the Expo app from either the Google Play or Apple App Store.
+  
+  https://apps.apple.com/us/app/expo-client/id982107779
+
+  https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en_US&gl=US
 
 ### Installation
 
@@ -49,15 +51,5 @@ npm start
 ```
 3. Scan the generated QR code with a mobile device to view the app
 
-#### Alternate environments
-* Run IOS version on Xcode
-```sh
-npm run ios
-```
-(OR)
-* Run Android version on Android Studio
-```sh
-npm run android
-```
 
 
