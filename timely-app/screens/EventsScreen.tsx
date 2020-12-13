@@ -13,12 +13,13 @@ import EventFilter from "./PlanScreen/EventFilter";
 
 export const EventsScreen = ({ route, navigation }) => {
   const [eventList, setEventList] = useState(null);
+  const [eventFriendList, setFriendEventList] = useState(null);
   const [limit, setLimit] = useState(7);
   const [isFetching, setIsFetching] = useState(false);
   const [lastVisited, setLastVisited] = useState();
   const [lastVisitedGroup, setLastVisitedGroup] = useState();
   const [loading, setLoading] = useState();
-  const [eventFilter, setEventFilter] = useState(0);
+  const [eventFilter, setEventFilter] = useState(false);
   const { currentUser } = useContext(AuthContext);
 
   const db = firebase.firestore();
@@ -27,7 +28,7 @@ export const EventsScreen = ({ route, navigation }) => {
     let isSubscribed = true;
     if (isSubscribed) {
       try {
-        retrieveFilterData();
+        retrieveAllData();
       } catch (error) {
         console.log("retrieveData error: " + error);
       }
@@ -35,9 +36,10 @@ export const EventsScreen = ({ route, navigation }) => {
     return () => (isSubscribed = false);
   }, [eventFilter]);
 
-  const retrieveAllData = async isGroup => {
+  const retrieveAllData = async () => {
     let initialQuery = await db.collection("events").doc(currentUser.uid);
-
+    //set loading
+    setLoading(true);
     initialQuery
       .collection("list")
       .orderBy("created", "desc")
@@ -45,20 +47,13 @@ export const EventsScreen = ({ route, navigation }) => {
       .onSnapshot(snapshot => {
         let events = [];
         if (snapshot.size) {
-          //set loading
-          setLoading(true);
-
           snapshot.forEach(item => {
             events.push({
               ...item.data(),
               id: item.id
             });
           });
-          setTimeout(() => {
-            //console.log(events);
-            setEventList(events);
-            setLoading(false);
-          }, 300);
+
           //Document ID To Start From For Proceeding Queries
           let last = snapshot.docs[snapshot.docs.length - 1];
           //console.log('visited: ' + last);
@@ -67,40 +62,37 @@ export const EventsScreen = ({ route, navigation }) => {
         } else {
           setLoading(false);
         }
-        if (isGroup) {
-          getEventFromGroup(initialQuery, events);
-        }
+        setTimeout(() => {
+          //console.log(events);
+          setEventList(events);
+          setLoading(false);
+        }, 300);
       });
   };
-  const retrieveFilterData = async () => {
-    let initialQuery = await db.collection("events").doc(currentUser.uid);
-    let events = [];
-    switch (eventFilter) {
-      case 1:
+
+  const retrieveFilterData = idx => {
+    switch (idx) {
+      case false:
         //get only events by current user
-        retrieveAllData(false);
+        retrieveAllData();
         break;
-      case 2:
+      case true:
         //get only other events from group
-        getEventFromGroup(initialQuery, events);
-        break;
-      case 0:
-      default:
-        //get owner and other events
-        retrieveAllData(true);
+        getEventFromGroup();
         break;
     }
   };
 
-  const getEventFromGroup = (initialQuery, events) => {
+  const getEventFromGroup = async () => {
+    let initialQuery = await db.collection("events").doc(currentUser.uid);
+    setLoading(true);
     initialQuery
       .collection("group_list")
       .orderBy("created", "desc")
       //.limit(limit)
       .onSnapshot(snapshot => {
+        let eventGroup = [];
         if (snapshot.size) {
-          setIsFetching(true);
-          let eventGroup = [...events];
           snapshot.forEach(event => {
             db.collection("events")
               .doc(event.data().uid_event_owner)
@@ -118,15 +110,21 @@ export const EventsScreen = ({ route, navigation }) => {
             let last = snapshot.docs[snapshot.docs.length - 1];
             //console.log('visited: ' + last);
             setLastVisitedGroup(last);
-            setTimeout(() => {
-              setEventList(eventGroup);
-              setIsFetching(false);
-            }, 300);
           });
         } else {
           console.log("no more rows to fetch");
-          setIsFetching(false);
+          setLoading(false);
         }
+        setTimeout(() => {
+          // if eventGroup is empty and set the state to show No Event Available
+          if (eventGroup === undefined || eventGroup.length == 0) {
+            setEventList(null);
+          } else {
+            setEventList(eventGroup);
+          }
+
+          setLoading(false);
+        }, 300);
       });
   };
 
@@ -176,8 +174,9 @@ export const EventsScreen = ({ route, navigation }) => {
   };
 
   const handleFilter = idx => {
+    retrieveFilterData(idx);
     //console.log("filter pressed", idx);
-    setEventFilter(idx);
+    //setEventFilter(idx);
   };
 
   return (
@@ -220,7 +219,7 @@ export const EventsScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   noDataText: {
     fontSize: 16,

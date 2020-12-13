@@ -11,23 +11,23 @@ const EventFilter = ({ onPressFilter }) => {
     setSelectedIndex(index);
     //console.log("all pressed", index);
     switch (index) {
+      // case 0:
+      //   //console.log("all pressed", index);
+      //   onPressFilter(index);
+      //   setSelectedColor({
+      //     backgroundColor: "#0097e6"
+      //   });
+      //   break;
       case 0:
-        //console.log("all pressed", index);
-        onPressFilter(index);
-        setSelectedColor({
-          backgroundColor: "#0097e6"
-        });
-        break;
-      case 1:
         //console.log("Own by you pressed", index);
-        onPressFilter(index);
+        onPressFilter(false);
         setSelectedColor({
           backgroundColor: "#e58e26"
         });
         break;
-      case 2:
+      case 1:
         //console.log("Own by other pressed", index);
-        onPressFilter(index);
+        onPressFilter(true);
         setSelectedColor({
           backgroundColor: "#192a56"
         });
@@ -35,7 +35,7 @@ const EventFilter = ({ onPressFilter }) => {
     }
   };
 
-  const buttons = ["All", "You", "Friends"];
+  const buttons = ["You", "Friends"];
 
   return (
     <View style={styles.filterContent}>
