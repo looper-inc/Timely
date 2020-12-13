@@ -23,8 +23,9 @@ To run the version of Timely currently published to Expo, follow these steps.
  
  * Login to the Expo app on your phone with the following credentials:
  
-  -username: `looper-inc` 
-  -pw:       `looperlooper` 
+   username: `looper-inc`.
+   
+   password:       `looperlooper`. 
  
  ### Follow Link to Published App
 
