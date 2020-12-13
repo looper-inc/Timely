@@ -4,10 +4,43 @@
 
 Timely is a mobile app that combines scheduling with social media. Harness this strength by organizing your goals, managing your time around those goals, and finding others to collaborate with you all in the same place.
 
-<!-- GETTING STARTED -->
-## Getting Started
+Timely can either be run directly from [Expo](https://expo.io/), or from the command line.
 
-To get a local copy up and running follow these simple example steps.
+<!-- From Expo -->
+## Running From Expo
+
+To run the version of Timely currently published to Expo, follow these steps.
+
+### Prerequisites
+
+* Expo app - to run Timely on your device's native Operating System, download the Expo app from either the Google Play or Apple App Store.
+  
+  https://apps.apple.com/us/app/expo-client/id982107779
+
+  https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en_US&gl=US
+  
+ ### Login
+ 
+ * Login to the Expo app on your phone with the following credentials:
+  - username: `looper-inc`
+  - pw:       `looperlooper`
+ 
+ ### Follow Link to Published App
+
+* Follow the link below to find the most recent version of Timely published to Expo.
+
+  https://expo.io/@looper-inc/timely-app
+  
+ ### Scan QR Code
+ 
+ * With your device: scan the QR code displayed after following the link above. This should prompt you to open Timely in the Expo app.
+
+ 
+
+<!-- From Source Code -->
+## Running From Source Code
+
+To get a local copy up and running follow these steps.
 
 ### Prerequisites
 
@@ -50,6 +83,4 @@ cd timely-app
 npm start
 ```
 3. Scan the generated QR code with a mobile device to view the app
-
-
 
